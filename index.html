@@ -127,6 +127,10 @@
       font-size: calc(var(--fs-body) * var(--font-scale));
       line-height: 1.65;
     }
+    .sub-text {
+      font-size: calc(12px * var(--font-scale));
+      line-height: 1.6;
+    }
     .principle-text {
       font-size: calc(var(--fs-principle) * var(--font-scale));
       line-height: 1.6;
@@ -144,7 +148,8 @@
     }
     .pill {
       display: inline-flex; align-items: center; gap: 4px;
-      padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600;
+      padding: 4px 10px; border-radius: 999px;
+      font-size: calc(12px * var(--font-scale)); font-weight: 600;
     }
     .pill-sage { background: var(--sage); color: var(--forest); }
     .pill-peach { background: var(--peach); color: #9A5B2C; }
@@ -237,7 +242,11 @@
     .modal-head {
       position: sticky; top: 0; background: var(--linen);
       padding: 14px 18px; border-bottom: 1px solid var(--hairline);
-      display: flex; align-items: center; justify-content: space-between; z-index: 2;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 8px; flex-wrap: wrap; z-index: 2;
+    }
+    .modal-head-actions {
+      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
     }
     .modal-body { padding: 18px; }
 
@@ -329,7 +338,7 @@
       </nav>
 
       <div class="top-actions">
-        <select class="font-select" id="font-size-select" title="調整整體閱讀字體大小" aria-label="調整字體大小">
+        <select class="font-select" id="font-size-select" data-font-scale-select title="調整整體閱讀字體大小" aria-label="調整字體大小">
           <option value="0.9">字體：較小</option>
           <option value="1" selected>字體：標準</option>
           <option value="1.15">字體：偏大</option>
@@ -504,12 +513,11 @@
       const CITIES = ['台北', '台中', '高雄', '台南', '新北', '新竹'];
       const STYLES = ['法式簡約', '森系自然', '韓系簡約', '極簡侘寂'];
 
-      // 狀態管理
       let state = loadState();
       let isAdminAuthed = false;
-      let viewMode = 'front'; // 'front' | 'admin'
-      let frontTab = 'home';  // 'home' | 'explore' | 'saved' | 'profile'
-      let adminTab = 'studios'; // 'studios' | 'fonts' | 'site' | 'inquiries' | 'backup'
+      let viewMode = 'front';
+      let frontTab = 'home';
+      let adminTab = 'studios';
       let editingStudioId = null;
       let draftStudio = null;
       let filters = { q: '', city: '全部', category: '全部', style: '全部' };
@@ -549,8 +557,24 @@
           rootStyle.setProperty(cfg.cssVar, px + 'px');
         });
 
-        const sel = document.getElementById('font-size-select');
-        if (sel) sel.value = String(scale);
+        document.querySelectorAll('[data-font-scale-select]').forEach((sel) => {
+          sel.value = String(scale);
+        });
+      }
+
+      function fontSelectHTML(extraId = '') {
+        const cur = Number(state.fontScale) || 1;
+        const opts = [
+          { v: '0.9', t: '字體：較小' },
+          { v: '1', t: '字體：標準' },
+          { v: '1.15', t: '字體：偏大' },
+          { v: '1.3', t: '字體：特大' }
+        ];
+        return `
+          <select class="font-select" ${extraId ? `id="${extraId}"` : ''} data-font-scale-select title="調整整體閱讀字體大小" aria-label="調整字體大小">
+            ${opts.map((o) => `<option value="${o.v}" ${String(cur) === o.v ? 'selected' : ''}>${o.t}</option>`).join('')}
+          </select>
+        `;
       }
 
       function esc(str) {
@@ -780,7 +804,7 @@
                     <div class="admin-row" style="padding:10px 0;">
                       <div>
                         <div class="body-text" style="font-weight:700;">${esc(inq.studioName)} — ${esc(inq.service)}</div>
-                        <div style="font-size:12px; color:var(--muted);">${esc(inq.datePref)} ・ ${esc(inq.createdAt)}</div>
+                        <div class="sub-text" style="color:var(--muted);">${esc(inq.datePref)} ・ ${esc(inq.createdAt)}</div>
                       </div>
                       <span class="pill pill-sage">${esc(inq.status)}</span>
                     </div>
@@ -1105,7 +1129,8 @@
         box.innerHTML = `
           <div class="modal-head">
             <strong class="section-heading">${esc(s.name)}</strong>
-            <div style="display:flex; gap:8px;">
+            <div class="modal-head-actions">
+              ${fontSelectHTML('modal-font-size-select')}
               <button class="btn btn-sm ${isSaved ? 'btn-forest' : 'btn-ivory'}" data-action="toggle-save" data-id="${esc(s.id)}">
                 ${isSaved ? '♥ 已收藏' : '♡ 收藏'}
               </button>
@@ -1122,7 +1147,7 @@
               </div>
               <p class="body-text" style="font-weight:600; margin-top:6px;">${esc(s.tagline)}</p>
               <p class="body-text" style="color:var(--muted); margin-top:6px;">${esc(s.story)}</p>
-              <p style="font-size:12px; color:var(--muted); margin-top:8px;">📍 ${esc(s.address)}<br>🗓️ ${esc(s.bookingInfo)}</p>
+              <p class="sub-text" style="color:var(--muted); margin-top:8px;">📍 ${esc(s.address)}<br>🗓️ ${esc(s.bookingInfo)}</p>
             </div>
 
             <div class="card" style="padding:14px;">
@@ -1131,9 +1156,9 @@
                 <div class="admin-row" style="padding:10px 4px; cursor:pointer;" data-action="pick-service" data-id="${esc(s.id)}" data-srv="${esc(srv.name)}" data-price="${esc(srv.price)}">
                   <div>
                     <div class="body-text" style="font-weight:600;">${esc(srv.name)}</div>
-                    <div style="font-size:12px; color:var(--muted);">${esc(srv.duration)}</div>
+                    <div class="sub-text" style="color:var(--muted);">${esc(srv.duration)}</div>
                   </div>
-                  <strong style="color:var(--forest);">${esc(srv.price)} →</strong>
+                  <strong class="body-text" style="color:var(--forest);">${esc(srv.price)} →</strong>
                 </div>
               `).join('')}
             </div>
@@ -1236,7 +1261,7 @@
           const box = document.getElementById('inquiry-box');
           box.classList.remove('hidden');
           box.innerHTML = `
-            <div style="font-weight:700; font-size:13px; color:var(--forest); margin-bottom:8px;">
+            <div class="body-text" style="font-weight:700; color:var(--forest); margin-bottom:8px;">
               預約詢問：${esc(el.dataset.srv)}（${esc(el.dataset.price)}）
             </div>
             <form id="inquiry-form" class="stack" style="margin-top:0;" data-studio-id="${esc(el.dataset.id)}" data-service="${esc(el.dataset.srv)}">
@@ -1332,14 +1357,6 @@
         }
       });
 
-      // 前台整體字體大小下拉選單
-      document.getElementById('font-size-select').addEventListener('change', (e) => {
-        state.fontScale = Number(e.target.value) || 1;
-        saveState();
-        applyFontSettings();
-        showToast('已調整整體字體大小');
-      });
-
       // 輸入同步事件（含各區塊字體滑桿即時預覽）
       document.addEventListener('input', (e) => {
         const t = e.target;
@@ -1368,6 +1385,14 @@
 
       document.addEventListener('change', (e) => {
         const t = e.target;
+        // 頂部與工作室彈窗內的「字體大小」同步切換
+        if (t.hasAttribute('data-font-scale-select')) {
+          state.fontScale = Number(t.value) || 1;
+          saveState();
+          applyFontSettings();
+          showToast('已調整整體字體大小');
+          return;
+        }
         if (t.dataset.filter && t.dataset.filter !== 'q') {
           filters[t.dataset.filter] = t.value;
           renderFront();
@@ -1478,7 +1503,7 @@
             status: '待回覆'
           });
           saveState();
-          document.getElementById('inquiry-box').innerHTML = `<div style="color:var(--forest); font-weight:700; font-size:13px; text-align:center;">✓ 已送出預約詢問！可於「申請進駐 / 紀錄」或「管理後台」查看。</div>`;
+          document.getElementById('inquiry-box').innerHTML = `<div class="body-text" style="color:var(--forest); font-weight:700; text-align:center;">✓ 已送出預約詢問！可於「申請進駐 / 紀錄」或「管理後台」查看。</div>`;
           showToast('預約詢問已送出');
         }
       });
