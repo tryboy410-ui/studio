@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>私室選｜嚴選獨立工作室指南（含管理後台）</title>
+  <title>私室選｜嚴選獨立工作室指南</title>
   <style>
     :root {
       --linen: #F6F2EA;
@@ -18,6 +18,19 @@
       --hairline: #E6DFD3;
       --gold: #C89E4C;
       --danger: #B91C1C;
+
+      /* 全站閱讀縮放倍率 + 各區塊獨立字體大小 */
+      --font-scale: 1;
+      --fs-brand: 20px;
+      --fs-hero: 28px;
+      --fs-hero-badge: 12px;
+      --fs-heading: 20px;
+      --fs-body: 14px;
+      --fs-principle: 13px;
+      --fs-quote: 16px;
+      --fs-card-title: 15px;
+      --fs-card-meta: 12px;
+      --fs-btn: 13px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -25,13 +38,14 @@
       background: var(--linen);
       color: var(--ink);
       font-family: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: calc(var(--fs-body) * var(--font-scale));
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
       padding-bottom: 76px;
     }
     @media (min-width: 768px) { body { padding-bottom: 32px; } }
 
-    a, button, input, select, textarea { font: inherit; color: inherit; }
+    a, button, input, select, textarea { font-family: inherit; color: inherit; }
     button { cursor: pointer; border: none; background: none; }
     img { display: block; max-width: 100%; }
 
@@ -43,53 +57,84 @@
       border-bottom: 1px solid var(--hairline);
     }
     .topbar-inner {
-      max-width: 980px; margin: 0 auto; padding: 12px 16px;
-      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      max-width: 980px; margin: 0 auto; padding: 10px 14px;
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      flex-wrap: wrap;
     }
-    .brand { display: flex; align-items: center; gap: 12px; text-align: left; }
+    .brand { display: flex; align-items: center; gap: 10px; text-align: left; }
     .brand-logo {
-      width: 44px; height: 44px; border-radius: 14px;
+      width: 40px; height: 40px; border-radius: 13px;
       background: var(--forest); display: flex; align-items: center; justify-content: center;
       flex-shrink: 0; box-shadow: 0 4px 10px rgba(34, 73, 55, 0.18);
     }
-    .brand-title { font-size: 20px; font-weight: 700; letter-spacing: 0.12em; line-height: 1.1; }
+    .brand-title {
+      font-size: calc(var(--fs-brand) * var(--font-scale));
+      font-weight: 700; letter-spacing: 0.1em; line-height: 1.15;
+    }
     .brand-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    @media (max-width: 480px) { .brand-sub { display: none; } }
 
-    .nav-links { display: none; gap: 22px; align-items: center; }
+    .nav-links { display: none; gap: 20px; align-items: center; }
     @media (min-width: 768px) { .nav-links { display: flex; } }
     .nav-btn { font-size: 14px; font-weight: 500; color: var(--muted); padding: 6px 2px; }
     .nav-btn.active { color: var(--forest); font-weight: 700; border-bottom: 2px solid var(--forest); }
 
-    .top-actions { display: flex; align-items: center; gap: 8px; }
+    .top-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .font-select {
+      padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 600;
+      background: var(--ivory); border: 1px solid var(--hairline); color: var(--ink);
+      cursor: pointer; outline: none;
+    }
+    .font-select:focus { border-color: var(--forest); }
+
     .btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-      padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 600;
-      transition: opacity 0.15s, transform 0.1s;
+      display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+      padding: 8px 15px; border-radius: 999px;
+      font-size: calc(var(--fs-btn) * var(--font-scale));
+      font-weight: 600; transition: opacity 0.15s, transform 0.1s;
     }
     .btn:active { transform: scale(0.98); }
     .btn-forest { background: var(--forest); color: #fff; }
     .btn-sage { background: var(--sage); color: var(--forest); }
     .btn-ivory { background: var(--ivory); color: var(--ink); border: 1px solid var(--hairline); }
     .btn-danger { background: #FEE2E2; color: var(--danger); }
-    .btn-sm { padding: 6px 12px; font-size: 12px; }
+    .btn-sm { padding: 6px 11px; font-size: 12px; }
 
     /* 手機底部導覽 */
     .bottom-nav {
       position: fixed; bottom: 0; left: 0; right: 0; z-index: 30;
       background: rgba(255, 254, 250, 0.96); backdrop-filter: blur(8px);
       border-top: 1px solid var(--hairline);
-      display: grid; grid-template-columns: repeat(4, 1fr); height: 64px;
+      display: grid; grid-template-columns: repeat(4, 1fr); height: 62px;
     }
     @media (min-width: 768px) { .bottom-nav { display: none; } }
     .bottom-nav button {
       display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
-      font-size: 11px; color: var(--muted);
+      font-size: 12px; color: var(--muted);
     }
     .bottom-nav button.active { color: var(--forest); font-weight: 700; }
 
     /* 版面容器 */
     .container { max-width: 980px; margin: 0 auto; padding: 20px 16px; }
     .stack > * + * { margin-top: 20px; }
+
+    /* 各區塊文字類別（受後台個別字體大小控制） */
+    .section-heading {
+      font-size: calc(var(--fs-heading) * var(--font-scale));
+      font-weight: 700; line-height: 1.35;
+    }
+    .body-text {
+      font-size: calc(var(--fs-body) * var(--font-scale));
+      line-height: 1.65;
+    }
+    .principle-text {
+      font-size: calc(var(--fs-principle) * var(--font-scale));
+      line-height: 1.6;
+    }
+    .quote-text {
+      font-size: calc(var(--fs-quote) * var(--font-scale));
+      font-weight: 700; line-height: 1.5;
+    }
 
     /* 卡片與通用元件 */
     .card {
@@ -99,7 +144,7 @@
     }
     .pill {
       display: inline-flex; align-items: center; gap: 4px;
-      padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 600;
+      padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600;
     }
     .pill-sage { background: var(--sage); color: var(--forest); }
     .pill-peach { background: var(--peach); color: #9A5B2C; }
@@ -107,25 +152,30 @@
     /* 首頁主視覺拼貼 */
     .hero {
       position: relative; border-radius: 22px; overflow: hidden;
-      height: 240px; border: 1px solid var(--hairline); background: var(--sand);
+      min-height: 240px; border: 1px solid var(--hairline); background: var(--sand);
     }
-    @media (min-width: 768px) { .hero { height: 290px; } }
-    .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; height: 100%; }
+    @media (min-width: 768px) { .hero { min-height: 290px; } }
+    .hero-grid { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 2px; height: 100%; }
     .hero-right { display: grid; grid-template-rows: 1fr 1fr; gap: 2px; height: 100%; }
     .hero img { width: 100%; height: 100%; object-fit: cover; }
     .hero-overlay {
-      position: absolute; inset: 0; background: rgba(35, 32, 28, 0.36);
+      position: relative; z-index: 2; min-height: 240px;
+      background: rgba(35, 32, 28, 0.38);
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      text-align: center; padding: 16px; color: #fff;
+      text-align: center; padding: 24px 16px; color: #fff;
     }
-    .hero-overlay h1 { font-size: 22px; font-weight: 700; line-height: 1.4; text-shadow: 0 2px 10px rgba(0,0,0,0.4); }
-    @media (min-width: 768px) { .hero-overlay h1 { font-size: 32px; } }
+    @media (min-width: 768px) { .hero-overlay { min-height: 290px; } }
+    .hero-overlay h1 {
+      font-size: calc(var(--fs-hero) * var(--font-scale));
+      font-weight: 700; line-height: 1.4; text-shadow: 0 2px 10px rgba(0,0,0,0.45);
+    }
     .hero-badge {
       margin-top: 10px; padding: 5px 14px; border-radius: 999px;
-      background: rgba(40, 38, 35, 0.68); font-size: 12px;
+      background: rgba(40, 38, 35, 0.7);
+      font-size: calc(var(--fs-hero-badge) * var(--font-scale));
     }
 
-    /* 雙欄與三欄網格 */
+    /* 網格 */
     .grid-2 { display: grid; grid-template-columns: 1fr; gap: 14px; }
     @media (min-width: 768px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
 
@@ -147,23 +197,29 @@
     .studio-cert-tag {
       position: absolute; top: 8px; left: 8px;
       background: rgba(255, 254, 250, 0.92); color: var(--forest);
-      padding: 3px 8px; border-radius: 999px; font-size: 10px; font-weight: 700;
+      padding: 3px 8px; border-radius: 999px; font-size: 11px; font-weight: 700;
     }
     .studio-body { padding: 12px; }
-    .studio-name { font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .studio-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; font-size: 12px; }
-    .studio-loc { color: var(--muted); }
-    .studio-price { color: var(--forest); font-weight: 700; }
+    .studio-name {
+      font-size: calc(var(--fs-card-title) * var(--font-scale));
+      font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .studio-meta {
+      display: flex; justify-content: space-between; align-items: center; margin-top: 4px;
+      font-size: calc(var(--fs-card-meta) * var(--font-scale)); gap: 6px;
+    }
+    .studio-loc { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .studio-price { color: var(--forest); font-weight: 700; flex-shrink: 0; }
 
     /* 表單與篩選 */
     .filter-bar { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
     .input, .select, .textarea {
       width: 100%; padding: 9px 12px; border-radius: 12px;
       border: 1px solid var(--hairline); background: var(--linen);
-      font-size: 13px; outline: none;
+      font-size: 14px; outline: none;
     }
     .input:focus, .select:focus, .textarea:focus { border-color: var(--forest); background: var(--ivory); }
-    .filter-bar .select, .filter-bar .input { width: auto; border-radius: 999px; background: var(--ivory); padding: 7px 14px; font-size: 12px; }
+    .filter-bar .select, .filter-bar .input { width: auto; border-radius: 999px; background: var(--ivory); padding: 7px 14px; font-size: 13px; }
     .label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 5px; }
 
     /* 彈窗 Modal */
@@ -177,6 +233,7 @@
       border-radius: 24px; border: 1px solid var(--hairline);
       overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.2);
     }
+    .modal-box-sm { max-width: 380px; }
     .modal-head {
       position: sticky; top: 0; background: var(--linen);
       padding: 14px 18px; border-bottom: 1px solid var(--hairline);
@@ -208,6 +265,33 @@
     }
     @media (max-width: 640px) { .service-edit-row { grid-template-columns: 1fr; } }
 
+    /* 字體設定列 */
+    .fs-control-card {
+      background: var(--linen); border: 1px solid var(--hairline);
+      border-radius: 14px; padding: 14px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .fs-control-top {
+      display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px;
+    }
+    .fs-slider-row {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .fs-range {
+      flex: 1; accent-color: var(--forest); cursor: pointer; height: 6px;
+    }
+    .fs-step-btn {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: var(--ivory); border: 1px solid var(--hairline);
+      font-weight: 700; font-size: 15px; display: inline-flex; align-items: center; justify-content: center;
+    }
+    .fs-step-btn:hover { border-color: var(--forest); color: var(--forest); }
+    .fs-preview-box {
+      background: var(--ivory); border: 1px dashed var(--hairline);
+      border-radius: 10px; padding: 8px 12px; color: var(--ink);
+    }
+
+    .error-text { color: var(--danger); font-size: 13px; font-weight: 600; margin-top: 6px; }
     .toast {
       position: fixed; top: 18px; left: 50%; transform: translateX(-50%);
       background: var(--forest); color: #fff; padding: 9px 18px;
@@ -224,7 +308,7 @@
     <div class="topbar-inner">
       <button class="brand" data-action="go-tab" data-tab="home">
         <div class="brand-logo">
-          <svg width="26" height="26" viewBox="0 0 40 40" fill="none">
+          <svg width="24" height="24" viewBox="0 0 40 40" fill="none">
             <rect x="2.5" y="2.5" width="35" height="35" rx="10" stroke="#D8B671" stroke-opacity="0.6" stroke-width="1.2"/>
             <path d="M11 31.5V18C11 13.03 15.03 9 20 9C24.97 9 29 13.03 29 18V31.5" stroke="#FAF7F0" stroke-width="2.2" stroke-linecap="round"/>
             <path d="M8.5 31.5H31.5" stroke="#FAF7F0" stroke-width="2" stroke-linecap="round"/>
@@ -245,6 +329,12 @@
       </nav>
 
       <div class="top-actions">
+        <select class="font-select" id="font-size-select" title="調整整體閱讀字體大小" aria-label="調整字體大小">
+          <option value="0.9">字體：較小</option>
+          <option value="1" selected>字體：標準</option>
+          <option value="1.15">字體：偏大</option>
+          <option value="1.3">字體：特大</option>
+        </select>
         <button class="btn btn-sage btn-sm" data-action="open-cert">優質認證</button>
         <button class="btn btn-forest btn-sm" id="toggle-mode-btn" data-action="toggle-admin">管理後台</button>
       </div>
@@ -272,9 +362,38 @@
 
   <script>
     (function () {
-      const STORAGE_KEY = 'sishixuan_unified_v1';
+      const STORAGE_KEY = 'sishixuan_unified_v3';
+
+      const DEFAULT_FONT_SIZES = {
+        brand: 20,
+        hero: 28,
+        heroBadge: 12,
+        heading: 20,
+        body: 14,
+        principle: 13,
+        quote: 16,
+        cardTitle: 15,
+        cardMeta: 12,
+        btn: 13
+      };
+
+      const FONT_SECTION_CONFIG = [
+        { key: 'brand', label: '頂部品牌名稱（私室選）', min: 14, max: 32, cssVar: '--fs-brand', sample: '私室選' },
+        { key: 'hero', label: '首頁主視覺大標題', min: 18, max: 46, cssVar: '--fs-hero', sample: '好作品值得被看見，對的工作室不該這麼難找' },
+        { key: 'heroBadge', label: '首頁主視覺副標（膠囊文字）', min: 10, max: 22, cssVar: '--fs-hero-badge', sample: '專屬於台灣獨立創作者與風格預約的安心空間' },
+        { key: 'heading', label: '各區塊與頁面標題', min: 16, max: 34, cssVar: '--fs-heading', sample: '真正動人的風格，不在連鎖店' },
+        { key: 'body', label: '內文與品牌故事說明文字', min: 12, max: 24, cssVar: '--fs-body', sample: '台灣許多獨立創作者，隱身在巷弄老宅或公寓一隅⋯⋯' },
+        { key: 'principle', label: '三大堅持卡片文字', min: 11, max: 22, cssVar: '--fs-principle', sample: '01 只收錄獨立創作者：不收大型連鎖門市' },
+        { key: 'quote', label: '創辦人承諾金句', min: 13, max: 28, cssVar: '--fs-quote', sample: '「我們不保證訂單，只承諾認真審核每一間工作室。」' },
+        { key: 'cardTitle', label: '探索頁・工作室卡片名稱', min: 13, max: 26, cssVar: '--fs-card-title', sample: '霧光美甲' },
+        { key: 'cardMeta', label: '探索頁・卡片地區與價格文字', min: 10, max: 20, cssVar: '--fs-card-meta', sample: '台北大安・美甲　$1,200起' },
+        { key: 'btn', label: '按鈕文字大小', min: 11, max: 20, cssVar: '--fs-btn', sample: '探索全台工作室' }
+      ];
 
       const DEFAULT_DATA = {
+        adminPassword: '1234',
+        fontScale: 1,
+        fontSizes: { ...DEFAULT_FONT_SIZES },
         site: {
           brandName: '私室選',
           brandSub: '嚴選獨立工作室指南',
@@ -387,10 +506,11 @@
 
       // 狀態管理
       let state = loadState();
+      let isAdminAuthed = false;
       let viewMode = 'front'; // 'front' | 'admin'
       let frontTab = 'home';  // 'home' | 'explore' | 'saved' | 'profile'
-      let adminTab = 'studios'; // 'studios' | 'site' | 'inquiries' | 'backup'
-      let editingStudioId = null; // null | string
+      let adminTab = 'studios'; // 'studios' | 'fonts' | 'site' | 'inquiries' | 'backup'
+      let editingStudioId = null;
       let draftStudio = null;
       let filters = { q: '', city: '全部', category: '全部', style: '全部' };
 
@@ -400,6 +520,9 @@
           if (raw) {
             const parsed = JSON.parse(raw);
             return {
+              adminPassword: parsed.adminPassword || DEFAULT_DATA.adminPassword,
+              fontScale: Number(parsed.fontScale) || 1,
+              fontSizes: { ...DEFAULT_FONT_SIZES, ...(parsed.fontSizes || {}) },
               site: { ...DEFAULT_DATA.site, ...(parsed.site || {}) },
               studios: Array.isArray(parsed.studios) ? parsed.studios : DEFAULT_DATA.studios,
               savedIds: Array.isArray(parsed.savedIds) ? parsed.savedIds : DEFAULT_DATA.savedIds,
@@ -414,6 +537,20 @@
         try {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
         } catch (e) {}
+      }
+
+      function applyFontSettings() {
+        const rootStyle = document.documentElement.style;
+        const scale = Number(state.fontScale) || 1;
+        rootStyle.setProperty('--font-scale', String(scale));
+
+        FONT_SECTION_CONFIG.forEach((cfg) => {
+          const px = Number(state.fontSizes?.[cfg.key]) || DEFAULT_FONT_SIZES[cfg.key];
+          rootStyle.setProperty(cfg.cssVar, px + 'px');
+        });
+
+        const sel = document.getElementById('font-size-select');
+        if (sel) sel.value = String(scale);
       }
 
       function esc(str) {
@@ -460,7 +597,7 @@
         const mobileNav = document.getElementById('mobile-nav');
 
         if (viewMode === 'admin') {
-          modeBtn.textContent = '回到前台預覽';
+          modeBtn.textContent = '回到前台';
           desktopNav.style.visibility = 'hidden';
           mobileNav.classList.add('hidden');
         } else {
@@ -496,29 +633,29 @@
 
             <section class="card">
               <span class="pill pill-sage" style="margin-bottom:10px;">為什麼創立這個平台</span>
-              <h2 style="font-size:19px; margin-bottom:10px;">${esc(s.whyTitle)}</h2>
-              <p style="font-size:14px; color:var(--muted); margin-bottom:8px;">${esc(s.whyDesc1)}</p>
-              <p style="font-size:14px; font-weight:500;">${esc(s.whyDesc2)}</p>
+              <h2 class="section-heading" style="margin-bottom:10px;">${esc(s.whyTitle)}</h2>
+              <p class="body-text" style="color:var(--muted); margin-bottom:8px;">${esc(s.whyDesc1)}</p>
+              <p class="body-text" style="font-weight:500;">${esc(s.whyDesc2)}</p>
             </section>
 
             <section class="grid-3">
               <div class="card" style="background:var(--sage);">
-                <div style="font-weight:700; color:var(--forest); margin-bottom:6px;">01 只收錄獨立創作者</div>
-                <p style="font-size:13px; color:var(--ink);">不收大型連鎖門市，也不接受花錢買排名，把舞台留給真正有手藝的獨立工作室。</p>
+                <div class="principle-text" style="font-weight:700; color:var(--forest); margin-bottom:6px;">01 只收錄獨立創作者</div>
+                <p class="principle-text" style="color:var(--ink);">不收大型連鎖門市，也不接受花錢買排名，把舞台留給真正有手藝的獨立工作室。</p>
               </div>
               <div class="card" style="background:var(--peach); cursor:pointer;" data-action="open-cert">
-                <div style="font-weight:700; color:#9A5B2C; margin-bottom:6px;">02 優質認證，不能用買的</div>
-                <p style="font-size:13px; color:var(--ink);">標章只看作品實拍與價格透明，由人工逐一審核。點此查看標準 →</p>
+                <div class="principle-text" style="font-weight:700; color:#9A5B2C; margin-bottom:6px;">02 優質認證，不能用買的</div>
+                <p class="principle-text" style="color:var(--ink);">標章只看作品實拍與價格透明，由人工逐一審核。點此查看標準 →</p>
               </div>
               <div class="card" style="background:var(--olive);">
-                <div style="font-weight:700; color:var(--forest); margin-bottom:6px;">03 不畫大餅、踏實同行</div>
-                <p style="font-size:13px; color:var(--ink);">不承諾誇張流量，也不綁定複雜抽成，陪創作者照自己的步調長久經營。</p>
+                <div class="principle-text" style="font-weight:700; color:var(--forest); margin-bottom:6px;">03 不畫大餅、踏實同行</div>
+                <p class="principle-text" style="color:var(--ink);">不承諾誇張流量，也不綁定複雜抽成，陪創作者照自己的步調長久經營。</p>
               </div>
             </section>
 
             <section class="card" style="background:#F3EDE2; text-align:center;">
-              <p style="font-size:16px; font-weight:700;">${esc(s.quote)}</p>
-              <p style="font-size:12px; color:var(--muted); margin-top:6px;">${esc(s.quoteAuthor)}</p>
+              <p class="quote-text">${esc(s.quote)}</p>
+              <p class="body-text" style="color:var(--muted); margin-top:6px;">${esc(s.quoteAuthor)}</p>
               <div style="margin-top:14px; display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
                 <button class="btn btn-ivory" data-action="go-tab" data-tab="explore">探索全台工作室</button>
                 <button class="btn btn-forest" data-action="go-tab" data-tab="profile">申請成為創始夥伴</button>
@@ -543,8 +680,8 @@
 
           main.innerHTML = `
             <div>
-              <h1 style="font-size:26px; font-weight:700;">探索工作室</h1>
-              <p style="font-size:13px; color:var(--muted);">發掘全台質感獨立創作者，尋找你的理想服務。</p>
+              <h1 class="section-heading">探索工作室</h1>
+              <p class="body-text" style="color:var(--muted);">發掘全台質感獨立創作者，尋找你的理想服務。</p>
               <div class="filter-bar">
                 <input class="input" style="min-width:180px; flex:1;" placeholder="搜尋工作室名稱、地區..." value="${esc(filters.q)}" data-filter="q" />
                 <select class="select" data-filter="city">
@@ -563,7 +700,7 @@
             </div>
             ${list.length === 0
               ? `<div class="card" style="text-align:center; padding:40px 20px;">
-                   <p style="font-weight:700; margin-bottom:10px;">找不到符合條件的工作室</p>
+                   <p class="body-text" style="font-weight:700; margin-bottom:10px;">找不到符合條件的工作室</p>
                    <button class="btn btn-forest btn-sm" data-action="reset-filters">顯示全部</button>
                  </div>`
               : `<div class="studio-grid">${list.map(studioCardHTML).join('')}</div>`
@@ -576,12 +713,12 @@
           const savedList = state.studios.filter((st) => state.savedIds.includes(st.id));
           main.innerHTML = `
             <div>
-              <h1 style="font-size:22px; font-weight:700;">我的收藏 (${savedList.length})</h1>
-              <p style="font-size:13px; color:var(--muted); margin-top:4px;">點開工作室詳情點擊「收藏」即可加入此清單</p>
+              <h1 class="section-heading">我的收藏 (${savedList.length})</h1>
+              <p class="body-text" style="color:var(--muted); margin-top:4px;">點開工作室詳情點擊「收藏」即可加入此清單</p>
             </div>
             ${savedList.length === 0
               ? `<div class="card" style="text-align:center; padding:36px 20px;">
-                   <p style="color:var(--muted); margin-bottom:12px;">目前還沒有收藏任何工作室</p>
+                   <p class="body-text" style="color:var(--muted); margin-bottom:12px;">目前還沒有收藏任何工作室</p>
                    <button class="btn btn-forest" data-action="go-tab" data-tab="explore">前往探索</button>
                  </div>`
               : `<div class="studio-grid">${savedList.map(studioCardHTML).join('')}</div>`
@@ -594,8 +731,8 @@
           main.innerHTML = `
             <div class="card">
               <span class="pill pill-sage" style="margin-bottom:8px;">創始工作室招募計畫</span>
-              <h2 style="font-size:18px; margin-bottom:4px;">申請進駐「${esc(state.site.brandName)}」</h2>
-              <p style="font-size:12px; color:var(--muted); margin-bottom:14px;">送出後會立即新增至工作室清單，您可隨時在「管理後台」編輯或給予優質認證。</p>
+              <h2 class="section-heading" style="margin-bottom:4px;">申請進駐「${esc(state.site.brandName)}」</h2>
+              <p class="body-text" style="color:var(--muted); margin-bottom:14px;">送出後會立即新增至工作室清單，經管理員審核後即可授予優質認證。</p>
               <form id="apply-form" class="stack" style="margin-top:0;">
                 <div class="grid-2">
                   <div>
@@ -636,13 +773,13 @@
             </div>
 
             <div class="card">
-              <h3 style="font-size:16px; margin-bottom:10px;">我的預約詢問紀錄 (${state.inquiries.length})</h3>
+              <h3 class="section-heading" style="margin-bottom:10px;">我的預約詢問紀錄 (${state.inquiries.length})</h3>
               ${state.inquiries.length === 0
-                ? `<p style="font-size:13px; color:var(--muted);">尚無詢問紀錄，點進任一工作室的服務項目即可送出預約詢問。</p>`
+                ? `<p class="body-text" style="color:var(--muted);">尚無詢問紀錄，點進任一工作室的服務項目即可送出預約詢問。</p>`
                 : state.inquiries.map((inq) => `
                     <div class="admin-row" style="padding:10px 0;">
                       <div>
-                        <div style="font-weight:700; font-size:14px;">${esc(inq.studioName)} — ${esc(inq.service)}</div>
+                        <div class="body-text" style="font-weight:700;">${esc(inq.studioName)} — ${esc(inq.service)}</div>
                         <div style="font-size:12px; color:var(--muted);">${esc(inq.datePref)} ・ ${esc(inq.createdAt)}</div>
                       </div>
                       <span class="pill pill-sage">${esc(inq.status)}</span>
@@ -789,6 +926,43 @@
               </div>
             `;
           }
+        } else if (adminTab === 'fonts') {
+          bodyHTML = `
+            <div class="card stack">
+              <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px;">
+                <div>
+                  <h2 style="font-size:17px;">各區塊獨立字體大小設定</h2>
+                  <p style="font-size:12px; color:var(--muted); margin-top:2px;">拖動滑桿或點擊 － / ＋，即可單獨調整網站每個部分的字體大小（即時儲存）</p>
+                </div>
+                <button class="btn btn-ivory btn-sm" data-action="reset-font-sizes">恢復各區塊預設大小</button>
+              </div>
+
+              <div class="grid-2">
+                ${FONT_SECTION_CONFIG.map((cfg) => {
+                  const curVal = Number(state.fontSizes?.[cfg.key]) || DEFAULT_FONT_SIZES[cfg.key];
+                  return `
+                    <div class="fs-control-card">
+                      <div class="fs-control-top">
+                        <strong style="font-size:13px;">${esc(cfg.label)}</strong>
+                        <span class="pill pill-sage" id="fs-val-${cfg.key}">${curVal} px</span>
+                      </div>
+                      <div class="fs-slider-row">
+                        <button type="button" class="fs-step-btn" data-action="step-fs" data-key="${cfg.key}" data-step="-1" data-min="${cfg.min}" data-max="${cfg.max}">－</button>
+                        <input type="range" class="fs-range" id="fs-range-${cfg.key}" min="${cfg.min}" max="${cfg.max}" step="1" value="${curVal}" data-fs-key="${cfg.key}" />
+                        <button type="button" class="fs-step-btn" data-action="step-fs" data-key="${cfg.key}" data-step="1" data-min="${cfg.min}" data-max="${cfg.max}">＋</button>
+                      </div>
+                      <div class="fs-preview-box">
+                        <div style="font-size:11px; color:var(--muted); margin-bottom:2px;">預覽效果：</div>
+                        <div id="fs-prev-${cfg.key}" style="font-size:${curVal}px; font-weight:${cfg.key === 'body' || cfg.key === 'heroBadge' || cfg.key === 'cardMeta' ? '400' : '700'}; line-height:1.4;">
+                          ${esc(cfg.sample)}
+                        </div>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          `;
         } else if (adminTab === 'site') {
           const s = state.site;
           bodyHTML = `
@@ -813,7 +987,7 @@
                 <div><label class="label">創辦人承諾金句</label><input class="input" name="quote" value="${esc(s.quote)}" /></div>
                 <div><label class="label">署名</label><input class="input" name="quoteAuthor" value="${esc(s.quoteAuthor)}" /></div>
               </div>
-              <button type="submit" class="btn btn-forest" style="align-self:flex-end;">儲存首頁設定</button>
+              <button type="submit" class="btn btn-forest" style="align-self:flex-end;">儲存首頁文案</button>
             </form>
           `;
         } else if (adminTab === 'inquiries') {
@@ -844,6 +1018,15 @@
         } else if (adminTab === 'backup') {
           bodyHTML = `
             <div class="card stack">
+              <h2 style="font-size:17px;">修改管理後台密碼</h2>
+              <p style="font-size:13px; color:var(--muted);">設定新密碼後，下次登入後台需使用新密碼。</p>
+              <form id="change-pw-form" style="display:flex; gap:10px; flex-wrap:wrap; max-width:380px;">
+                <input class="input" type="password" name="newPassword" required placeholder="請輸入新密碼" style="flex:1; min-width:180px;" />
+                <button type="submit" class="btn btn-forest btn-sm">更新密碼</button>
+              </form>
+            </div>
+
+            <div class="card stack">
               <h2 style="font-size:17px;">資料備份與還原</h2>
               <p style="font-size:13px; color:var(--muted);">所有修改都會自動儲存在目前的瀏覽器中。若要將資料搬移到其他電腦或手機，可匯出 JSON 備份檔後再匯入。</p>
               <div style="display:flex; gap:10px; flex-wrap:wrap;">
@@ -864,22 +1047,53 @@
               <div style="font-size:16px; font-weight:700;">網站內容管理後台</div>
               <div style="font-size:12px; opacity:0.85;">修改後自動即時儲存，切回前台即可看到最新畫面</div>
             </div>
-            <button class="btn btn-ivory btn-sm" data-action="toggle-admin">完成並回到前台 →</button>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <button class="btn btn-ivory btn-sm" data-action="toggle-admin">回到前台預覽</button>
+              <button class="btn btn-danger btn-sm" data-action="admin-logout">登出並鎖定</button>
+            </div>
           </div>
           <div class="admin-tabs">
             <button class="admin-tab-btn ${adminTab === 'studios' ? 'active' : ''}" data-action="admin-tab" data-tab="studios">工作室管理 (${state.studios.length})</button>
+            <button class="admin-tab-btn ${adminTab === 'fonts' ? 'active' : ''}" data-action="admin-tab" data-tab="fonts">各區塊字體設定</button>
             <button class="admin-tab-btn ${adminTab === 'site' ? 'active' : ''}" data-action="admin-tab" data-tab="site">首頁與品牌文案</button>
             <button class="admin-tab-btn ${adminTab === 'inquiries' ? 'active' : ''}" data-action="admin-tab" data-tab="inquiries">預約詢問 (${state.inquiries.length})</button>
-            <button class="admin-tab-btn ${adminTab === 'backup' ? 'active' : ''}" data-action="admin-tab" data-tab="backup">備份與還原</button>
+            <button class="admin-tab-btn ${adminTab === 'backup' ? 'active' : ''}" data-action="admin-tab" data-tab="backup">密碼與備份</button>
           </div>
           ${bodyHTML}
         `;
       }
 
       function renderAll() {
+        applyFontSettings();
         renderHeader();
         if (viewMode === 'admin') renderAdmin();
         else renderFront();
+      }
+
+      function openAdminLoginModal() {
+        const box = document.getElementById('modal-box');
+        box.classList.add('modal-box-sm');
+        box.innerHTML = `
+          <div class="modal-head">
+            <strong style="font-size:16px;">管理後台驗證</strong>
+            <button class="btn btn-ivory btn-sm" data-action="close-modal">關閉</button>
+          </div>
+          <div class="modal-body">
+            <form id="admin-login-form" class="stack" style="margin-top:0;">
+              <div>
+                <label class="label">請輸入管理員密碼</label>
+                <input class="input" type="password" name="password" id="admin-pw-input" required placeholder="請輸入密碼" autocomplete="current-password" />
+                <div class="error-text hidden" id="admin-pw-error">密碼錯誤，請重新輸入</div>
+              </div>
+              <button type="submit" class="btn btn-forest" style="width:100%;">確認進入後台</button>
+            </form>
+          </div>
+        `;
+        document.getElementById('modal-backdrop').classList.remove('hidden');
+        setTimeout(() => {
+          const inp = document.getElementById('admin-pw-input');
+          if (inp) inp.focus();
+        }, 50);
       }
 
       function openStudioModal(id) {
@@ -887,9 +1101,10 @@
         if (!s) return;
         const isSaved = state.savedIds.includes(s.id);
         const box = document.getElementById('modal-box');
+        box.classList.remove('modal-box-sm');
         box.innerHTML = `
           <div class="modal-head">
-            <strong style="font-size:16px;">${esc(s.name)}</strong>
+            <strong class="section-heading">${esc(s.name)}</strong>
             <div style="display:flex; gap:8px;">
               <button class="btn btn-sm ${isSaved ? 'btn-forest' : 'btn-ivory'}" data-action="toggle-save" data-id="${esc(s.id)}">
                 ${isSaved ? '♥ 已收藏' : '♡ 收藏'}
@@ -905,20 +1120,20 @@
                 <span class="pill pill-peach">${esc(s.style)}</span>
                 ${s.certified ? '<span class="pill pill-sage">✓ 優質認證工作室</span>' : ''}
               </div>
-              <p style="font-size:14px; font-weight:600; margin-top:6px;">${esc(s.tagline)}</p>
-              <p style="font-size:13px; color:var(--muted); margin-top:6px;">${esc(s.story)}</p>
+              <p class="body-text" style="font-weight:600; margin-top:6px;">${esc(s.tagline)}</p>
+              <p class="body-text" style="color:var(--muted); margin-top:6px;">${esc(s.story)}</p>
               <p style="font-size:12px; color:var(--muted); margin-top:8px;">📍 ${esc(s.address)}<br>🗓️ ${esc(s.bookingInfo)}</p>
             </div>
 
             <div class="card" style="padding:14px;">
-              <div style="font-weight:700; font-size:14px; margin-bottom:8px;">服務項目與價格（點擊可立即詢問預約）</div>
-              ${(s.services || []).map((srv, idx) => `
+              <div class="body-text" style="font-weight:700; margin-bottom:8px;">服務項目與價格（點擊可立即詢問預約）</div>
+              ${(s.services || []).map((srv) => `
                 <div class="admin-row" style="padding:10px 4px; cursor:pointer;" data-action="pick-service" data-id="${esc(s.id)}" data-srv="${esc(srv.name)}" data-price="${esc(srv.price)}">
                   <div>
-                    <div style="font-weight:600; font-size:13px;">${esc(srv.name)}</div>
-                    <div style="font-size:11px; color:var(--muted);">${esc(srv.duration)}</div>
+                    <div class="body-text" style="font-weight:600;">${esc(srv.name)}</div>
+                    <div style="font-size:12px; color:var(--muted);">${esc(srv.duration)}</div>
                   </div>
-                  <strong style="color:var(--forest); font-size:14px;">${esc(srv.price)} →</strong>
+                  <strong style="color:var(--forest);">${esc(srv.price)} →</strong>
                 </div>
               `).join('')}
             </div>
@@ -936,18 +1151,19 @@
 
       function openCertModal() {
         const box = document.getElementById('modal-box');
+        box.classList.remove('modal-box-sm');
         box.innerHTML = `
           <div class="modal-head">
-            <strong style="font-size:16px;">優質認證，不是買得到的</strong>
+            <strong class="section-heading">優質認證，不是買得到的</strong>
             <button class="btn btn-ivory btn-sm" data-action="close-modal">關閉</button>
           </div>
           <div class="modal-body stack">
-            <p style="font-size:13px; color:var(--muted);">由平台人工審核，與付費完全無關，確保每一位預約者安心：</p>
-            <div class="card" style="padding:14px;" >
-              <p style="font-size:13px; margin-bottom:8px;"><strong>1. 作品真實性：</strong>確認皆為工作室本人實際施作實拍，無盜圖。</p>
-              <p style="font-size:13px; margin-bottom:8px;"><strong>2. 服務資訊透明：</strong>明確列出價格、施作時間與加價標準。</p>
-              <p style="font-size:13px; margin-bottom:8px;"><strong>3. 服務品質：</strong>評估用料來源、環境衛生與接待體驗。</p>
-              <p style="font-size:13px;"><strong>4. 可信度與評價：</strong>長期追蹤真實顧客回饋，絕不販售標章。</p>
+            <p class="body-text" style="color:var(--muted);">由平台人工審核，與付費完全無關，確保每一位預約者安心：</p>
+            <div class="card" style="padding:14px;">
+              <p class="body-text" style="margin-bottom:8px;"><strong>1. 作品真實性：</strong>確認皆為工作室本人實際施作實拍，無盜圖。</p>
+              <p class="body-text" style="margin-bottom:8px;"><strong>2. 服務資訊透明：</strong>明確列出價格、施作時間與加價標準。</p>
+              <p class="body-text" style="margin-bottom:8px;"><strong>3. 服務品質：</strong>評估用料來源、環境衛生與接待體驗。</p>
+              <p class="body-text"><strong>4. 可信度與評價：</strong>長期追蹤真實顧客回饋，絕不販售標章。</p>
             </div>
             <button class="btn btn-forest" data-action="cert-apply">立即申請進駐成為創始夥伴</button>
           </div>
@@ -974,10 +1190,25 @@
           renderAll();
           window.scrollTo({ top: 0, behavior: 'smooth' });
         } else if (act === 'toggle-admin') {
-          viewMode = viewMode === 'admin' ? 'front' : 'admin';
+          if (viewMode === 'admin') {
+            viewMode = 'front';
+            editingStudioId = null;
+            renderAll();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          } else if (isAdminAuthed) {
+            viewMode = 'admin';
+            editingStudioId = null;
+            renderAll();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          } else {
+            openAdminLoginModal();
+          }
+        } else if (act === 'admin-logout') {
+          isAdminAuthed = false;
+          viewMode = 'front';
           editingStudioId = null;
           renderAll();
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          showToast('已登出並鎖定管理後台');
         } else if (act === 'open-studio') {
           openStudioModal(el.dataset.id);
         } else if (act === 'open-cert') {
@@ -1024,6 +1255,28 @@
           adminTab = el.dataset.tab;
           editingStudioId = null;
           renderAdmin();
+        } else if (act === 'step-fs') {
+          const k = el.dataset.key;
+          const step = Number(el.dataset.step);
+          const min = Number(el.dataset.min);
+          const max = Number(el.dataset.max);
+          const cur = Number(state.fontSizes?.[k]) || DEFAULT_FONT_SIZES[k];
+          const nextVal = Math.min(max, Math.max(min, cur + step));
+          state.fontSizes[k] = nextVal;
+          saveState();
+          applyFontSettings();
+          const rangeEl = document.getElementById('fs-range-' + k);
+          if (rangeEl) rangeEl.value = String(nextVal);
+          const valEl = document.getElementById('fs-val-' + k);
+          if (valEl) valEl.textContent = nextVal + ' px';
+          const prevEl = document.getElementById('fs-prev-' + k);
+          if (prevEl) prevEl.style.fontSize = nextVal + 'px';
+        } else if (act === 'reset-font-sizes') {
+          state.fontSizes = { ...DEFAULT_FONT_SIZES };
+          saveState();
+          applyFontSettings();
+          renderAdmin();
+          showToast('已恢復各區塊預設字體大小');
         } else if (act === 'admin-new-studio') {
           const newId = 'studio-' + Date.now();
           draftStudio = {
@@ -1074,14 +1327,33 @@
         } else if (act === 'reset-all-data') {
           if (confirm('確定要清除所有自訂資料，恢復為系統預設嗎？')) {
             state = JSON.parse(JSON.stringify(DEFAULT_DATA));
-            saveState(); renderAdmin(); showToast('已恢復預設資料');
+            saveState(); renderAll(); showToast('已恢復預設資料');
           }
         }
       });
 
-      // 輸入同步事件
+      // 前台整體字體大小下拉選單
+      document.getElementById('font-size-select').addEventListener('change', (e) => {
+        state.fontScale = Number(e.target.value) || 1;
+        saveState();
+        applyFontSettings();
+        showToast('已調整整體字體大小');
+      });
+
+      // 輸入同步事件（含各區塊字體滑桿即時預覽）
       document.addEventListener('input', (e) => {
         const t = e.target;
+        if (t.dataset.fsKey) {
+          const k = t.dataset.fsKey;
+          const val = Number(t.value);
+          state.fontSizes[k] = val;
+          saveState();
+          applyFontSettings();
+          const valEl = document.getElementById('fs-val-' + k);
+          if (valEl) valEl.textContent = val + ' px';
+          const prevEl = document.getElementById('fs-prev-' + k);
+          if (prevEl) prevEl.style.fontSize = val + 'px';
+        }
         if (t.dataset.filter) {
           filters[t.dataset.filter] = t.value;
           if (t.dataset.filter === 'q') renderFront();
@@ -1113,8 +1385,12 @@
             try {
               const parsed = JSON.parse(ev.target.result);
               if (parsed.site && Array.isArray(parsed.studios)) {
-                state = parsed;
-                saveState(); renderAdmin(); showToast('匯入還原成功！');
+                state = {
+                  ...DEFAULT_DATA,
+                  ...parsed,
+                  fontSizes: { ...DEFAULT_FONT_SIZES, ...(parsed.fontSizes || {}) }
+                };
+                saveState(); renderAll(); showToast('匯入還原成功！');
               } else alert('備份檔格式不正確');
             } catch { alert('讀取檔案失敗'); }
           };
@@ -1127,7 +1403,27 @@
         e.preventDefault();
         const form = e.target;
 
-        if (form.id === 'studio-edit-form' && draftStudio) {
+        if (form.id === 'admin-login-form') {
+          const pw = new FormData(form).get('password');
+          if (pw === (state.adminPassword || '1234')) {
+            isAdminAuthed = true;
+            closeModal();
+            viewMode = 'admin';
+            editingStudioId = null;
+            renderAll();
+            showToast('驗證成功，歡迎進入管理後台');
+          } else {
+            const err = document.getElementById('admin-pw-error');
+            if (err) err.classList.remove('hidden');
+          }
+        } else if (form.id === 'change-pw-form') {
+          const newPw = String(new FormData(form).get('newPassword') || '').trim();
+          if (!newPw) return;
+          state.adminPassword = newPw;
+          saveState();
+          form.reset();
+          showToast('已更新管理後台密碼！');
+        } else if (form.id === 'studio-edit-form' && draftStudio) {
           const idx = state.studios.findIndex(x => x.id === draftStudio.id);
           if (idx >= 0) state.studios[idx] = draftStudio;
           else state.studios.unshift(draftStudio);
@@ -1138,7 +1434,8 @@
         } else if (form.id === 'site-edit-form') {
           const fd = new FormData(form);
           for (const [k, v] of fd.entries()) state.site[k] = v;
-          saveState(); renderHeader();
+          saveState();
+          renderHeader();
           showToast('已儲存首頁文案設定！');
         } else if (form.id === 'apply-form') {
           const fd = new FormData(form);
