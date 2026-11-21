@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>私室選｜嚴選獨立工作室指南（含管理後台）</title>
+  <style>
+    :root {
+      --linen: #F6F2EA;
+      --ivory: #FFFEFA;
+      --sand: #EFEAE0;
+      --sage: #E6EDE3;
+      --peach: #F3E6D8;
+      --olive: #EAECE4;
+      --ink: #282623;
+      --muted: #787166;
+      --forest: #224937;
+      --hairline: #E6DFD3;
+      --gold: #C89E4C;
+      --danger: #B91C1C;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--linen);
+      color: var(--ink);
+      font-family: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 76px;
+    }
+    @media (min-width: 768px) { body { padding-bottom: 32px; } }
+
+    a, button, input, select, textarea { font: inherit; color: inherit; }
+    button { cursor: pointer; border: none; background: none; }
+    img { display: block; max-width: 100%; }
+
+    /* 頂部導覽列 */
+    .topbar {
+      position: sticky; top: 0; z-index: 30;
+      background: rgba(246, 242, 234, 0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--hairline);
+    }
+    .topbar-inner {
+      max-width: 980px; margin: 0 auto; padding: 12px 16px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; text-align: left; }
+    .brand-logo {
+      width: 44px; height: 44px; border-radius: 14px;
+      background: var(--forest); display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; box-shadow: 0 4px 10px rgba(34, 73, 55, 0.18);
+    }
+    .brand-title { font-size: 20px; font-weight: 700; letter-spacing: 0.12em; line-height: 1.1; }
+    .brand-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    .nav-links { display: none; gap: 22px; align-items: center; }
+    @media (min-width: 768px) { .nav-links { display: flex; } }
+    .nav-btn { font-size: 14px; font-weight: 500; color: var(--muted); padding: 6px 2px; }
+    .nav-btn.active { color: var(--forest); font-weight: 700; border-bottom: 2px solid var(--forest); }
+
+    .top-actions { display: flex; align-items: center; gap: 8px; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 600;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-forest { background: var(--forest); color: #fff; }
+    .btn-sage { background: var(--sage); color: var(--forest); }
+    .btn-ivory { background: var(--ivory); color: var(--ink); border: 1px solid var(--hairline); }
+    .btn-danger { background: #FEE2E2; color: var(--danger); }
+    .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+    /* 手機底部導覽 */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 30;
+      background: rgba(255, 254, 250, 0.96); backdrop-filter: blur(8px);
+      border-top: 1px solid var(--hairline);
+      display: grid; grid-template-columns: repeat(4, 1fr); height: 64px;
+    }
+    @media (min-width: 768px) { .bottom-nav { display: none; } }
+    .bottom-nav button {
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+      font-size: 11px; color: var(--muted);
+    }
+    .bottom-nav button.active { color: var(--forest); font-weight: 700; }
+
+    /* 版面容器 */
+    .container { max-width: 980px; margin: 0 auto; padding: 20px 16px; }
+    .stack > * + * { margin-top: 20px; }
+
+    /* 卡片與通用元件 */
+    .card {
+      background: var(--ivory); border: 1px solid var(--hairline);
+      border-radius: 20px; padding: 20px;
+      box-shadow: 0 2px 10px rgba(40, 38, 35, 0.03);
+    }
+    .pill {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 600;
+    }
+    .pill-sage { background: var(--sage); color: var(--forest); }
+    .pill-peach { background: var(--peach); color: #9A5B2C; }
+
+    /* 首頁主視覺拼貼 */
+    .hero {
+      position: relative; border-radius: 22px; overflow: hidden;
+      height: 240px; border: 1px solid var(--hairline); background: var(--sand);
+    }
+    @media (min-width: 768px) { .hero { height: 290px; } }
+    .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; height: 100%; }
+    .hero-right { display: grid; grid-template-rows: 1fr 1fr; gap: 2px; height: 100%; }
+    .hero img { width: 100%; height: 100%; object-fit: cover; }
+    .hero-overlay {
+      position: absolute; inset: 0; background: rgba(35, 32, 28, 0.36);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 16px; color: #fff;
+    }
+    .hero-overlay h1 { font-size: 22px; font-weight: 700; line-height: 1.4; text-shadow: 0 2px 10px rgba(0,0,0,0.4); }
+    @media (min-width: 768px) { .hero-overlay h1 { font-size: 32px; } }
+    .hero-badge {
+      margin-top: 10px; padding: 5px 14px; border-radius: 999px;
+      background: rgba(40, 38, 35, 0.68); font-size: 12px;
+    }
+
+    /* 雙欄與三欄網格 */
+    .grid-2 { display: grid; grid-template-columns: 1fr; gap: 14px; }
+    @media (min-width: 768px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
+
+    .grid-3 { display: grid; grid-template-columns: 1fr; gap: 14px; }
+    @media (min-width: 768px) { .grid-3 { grid-template-columns: repeat(3, 1fr); } }
+
+    .studio-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    @media (min-width: 768px) { .studio-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; } }
+
+    /* 工作室卡片 */
+    .studio-card {
+      background: var(--ivory); border: 1px solid var(--hairline);
+      border-radius: 18px; overflow: hidden; cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .studio-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(40,38,35,0.06); }
+    .studio-thumb { position: relative; aspect-ratio: 4 / 3; background: var(--sand); overflow: hidden; }
+    .studio-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .studio-cert-tag {
+      position: absolute; top: 8px; left: 8px;
+      background: rgba(255, 254, 250, 0.92); color: var(--forest);
+      padding: 3px 8px; border-radius: 999px; font-size: 10px; font-weight: 700;
+    }
+    .studio-body { padding: 12px; }
+    .studio-name { font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .studio-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; font-size: 12px; }
+    .studio-loc { color: var(--muted); }
+    .studio-price { color: var(--forest); font-weight: 700; }
+
+    /* 表單與篩選 */
+    .filter-bar { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+    .input, .select, .textarea {
+      width: 100%; padding: 9px 12px; border-radius: 12px;
+      border: 1px solid var(--hairline); background: var(--linen);
+      font-size: 13px; outline: none;
+    }
+    .input:focus, .select:focus, .textarea:focus { border-color: var(--forest); background: var(--ivory); }
+    .filter-bar .select, .filter-bar .input { width: auto; border-radius: 999px; background: var(--ivory); padding: 7px 14px; font-size: 12px; }
+    .label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 5px; }
+
+    /* 彈窗 Modal */
+    .modal-backdrop {
+      position: fixed; inset: 0; z-index: 50;
+      background: rgba(40, 38, 35, 0.5); backdrop-filter: blur(2px);
+      display: flex; align-items: center; justify-content: center; padding: 16px;
+    }
+    .modal-box {
+      background: var(--linen); width: 100%; max-width: 680px; max-height: 90vh;
+      border-radius: 24px; border: 1px solid var(--hairline);
+      overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+    }
+    .modal-head {
+      position: sticky; top: 0; background: var(--linen);
+      padding: 14px 18px; border-bottom: 1px solid var(--hairline);
+      display: flex; align-items: center; justify-content: space-between; z-index: 2;
+    }
+    .modal-body { padding: 18px; }
+
+    /* 後台管理專屬樣式 */
+    .admin-banner {
+      background: var(--forest); color: #fff;
+      padding: 14px 18px; border-radius: 18px;
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;
+    }
+    .admin-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+    .admin-tab-btn {
+      padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 600;
+      background: var(--ivory); border: 1px solid var(--hairline); color: var(--muted);
+    }
+    .admin-tab-btn.active { background: var(--forest); color: #fff; border-color: var(--forest); }
+    .admin-row {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 14px; border-bottom: 1px solid var(--hairline);
+    }
+    .admin-row:last-child { border-bottom: none; }
+    .service-edit-row {
+      display: grid; grid-template-columns: 2fr 1fr 2fr auto; gap: 8px; align-items: center;
+      background: var(--linen); padding: 10px; border-radius: 12px; border: 1px solid var(--hairline);
+      margin-bottom: 8px;
+    }
+    @media (max-width: 640px) { .service-edit-row { grid-template-columns: 1fr; } }
+
+    .toast {
+      position: fixed; top: 18px; left: 50%; transform: translateX(-50%);
+      background: var(--forest); color: #fff; padding: 9px 18px;
+      border-radius: 999px; font-size: 13px; font-weight: 600;
+      z-index: 99; box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+    }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <!-- 頂部導覽列 -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <button class="brand" data-action="go-tab" data-tab="home">
+        <div class="brand-logo">
+          <svg width="26" height="26" viewBox="0 0 40 40" fill="none">
+            <rect x="2.5" y="2.5" width="35" height="35" rx="10" stroke="#D8B671" stroke-opacity="0.6" stroke-width="1.2"/>
+            <path d="M11 31.5V18C11 13.03 15.03 9 20 9C24.97 9 29 13.03 29 18V31.5" stroke="#FAF7F0" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M8.5 31.5H31.5" stroke="#FAF7F0" stroke-width="2" stroke-linecap="round"/>
+            <path d="M20 11.8L20.9 14.3L23.4 15.2L20.9 16.1L20 18.6L19.1 16.1L16.6 15.2L19.1 14.3L20 11.8Z" fill="#E6C374"/>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-title" id="hdr-brand-name">私室選</div>
+          <div class="brand-sub" id="hdr-brand-sub">嚴選獨立工作室指南</div>
+        </div>
+      </button>
+
+      <nav class="nav-links" id="desktop-nav">
+        <button class="nav-btn active" data-action="go-tab" data-tab="home">首頁</button>
+        <button class="nav-btn" data-action="go-tab" data-tab="explore">探索</button>
+        <button class="nav-btn" data-action="go-tab" data-tab="saved">收藏</button>
+        <button class="nav-btn" data-action="go-tab" data-tab="profile">申請進駐</button>
+      </nav>
+
+      <div class="top-actions">
+        <button class="btn btn-sage btn-sm" data-action="open-cert">優質認證</button>
+        <button class="btn btn-forest btn-sm" id="toggle-mode-btn" data-action="toggle-admin">管理後台</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主畫面內容容器 -->
+  <main class="container stack" id="main-content"></main>
+
+  <!-- 手機底部導覽列 -->
+  <nav class="bottom-nav" id="mobile-nav">
+    <button class="active" data-action="go-tab" data-tab="home"><span>首頁</span></button>
+    <button data-action="go-tab" data-tab="explore"><span>探索</span></button>
+    <button data-action="go-tab" data-tab="saved"><span>收藏</span></button>
+    <button data-action="go-tab" data-tab="profile"><span>申請</span></button>
+  </nav>
+
+  <!-- 彈窗容器 -->
+  <div class="modal-backdrop hidden" id="modal-backdrop">
+    <div class="modal-box" id="modal-box"></div>
+  </div>
+
+  <!-- 提示訊息 -->
+  <div class="toast hidden" id="toast"></div>
+
+  <script>
+    (function () {
+      const STORAGE_KEY = 'sishixuan_unified_v1';
+
+      const DEFAULT_DATA = {
+        site: {
+          brandName: '私室選',
+          brandSub: '嚴選獨立工作室指南',
+          heroLine1: '好作品值得被看見，',
+          heroLine2: '對的工作室不該這麼難找',
+          heroBadge: '專屬於台灣獨立創作者與風格預約的安心空間',
+          heroImg1: 'https://images.unsplash.com/photo-1658390039913-4702ba28c594?auto=format&fit=crop&w=900&q=80',
+          heroImg2: 'https://images.unsplash.com/photo-1622063531136-e7efff4ece72?auto=format&fit=crop&w=900&q=80',
+          heroImg3: 'https://images.unsplash.com/photo-1685963086339-85c3b3ecafe9?auto=format&fit=crop&w=900&q=80',
+          whyTitle: '真正動人的風格，不在連鎖店，而藏在一間間個人工作室裡。',
+          whyDesc1: '台灣許多獨立創作者，隱身在巷弄老宅或公寓一隅，沒有大集團的行銷預算，卻一人撐起整間店的品質與靈魂。',
+          whyDesc2: '我們創立「私室選」，不賣榜單、不收連鎖品牌，只想替台灣每一份不願被標準化的手藝，留一個純粹被認識、被信任的地方。',
+          quote: '「我們不保證訂單，只承諾認真審核每一間工作室。」',
+          quoteAuthor: '— 創辦人夫妻'
+        },
+        studios: [
+          {
+            id: 'mist-nail',
+            name: '霧光美甲',
+            category: '美甲',
+            city: '台北',
+            location: '台北大安',
+            address: '捷運忠孝敦化站步行 4 分鐘（預約完成後提供私宅門牌）',
+            style: '法式簡約',
+            minPrice: 1200,
+            certified: true,
+            tagline: '從一支筆刷開始，我們只做讓手指安靜發光的設計。',
+            story: '主理人曾於東京進修，希望打造沒有推銷壓力、只有自然光與手沖茶的單人工作室。堅持選用日本低敏凝膠，細緻甘皮護理。',
+            coverImage: 'https://images.unsplash.com/photo-1658390039913-4702ba28c594?auto=format&fit=crop&w=900&q=80',
+            bookingInfo: '每月 20 日晚間開放下月預約｜全預約制',
+            ig: '@mist.nail.tw',
+            line: '@mistnail',
+            services: [
+              { name: '單色凝膠', price: '$1,200', duration: '90 分鐘・含前置保養' },
+              { name: '法式設計', price: '$1,600', duration: '120 分鐘・透膚暈染設計' },
+              { name: '卸甲保養', price: '$400', duration: '45 分鐘・溫和修護滋養' }
+            ]
+          },
+          {
+            id: 'chuzhi-floral',
+            name: '初枝花藝',
+            category: '花藝',
+            city: '台中',
+            location: '台中西區',
+            address: '審計新村旁靜巷老宅二樓（提供預約自取與專車配送）',
+            style: '森系自然',
+            minPrice: 800,
+            certified: true,
+            tagline: '順應四季花期，把晨露與枝葉線條綁進每一束溫柔裡。',
+            story: '不刻意追求工整對稱，而是留下花草自然舒展的呼吸感。每週精選台灣當令切花，為您的贈禮時刻設計花禮。',
+            coverImage: 'https://images.unsplash.com/photo-1683606960654-5a71f2015dec?auto=format&fit=crop&w=900&q=80',
+            bookingInfo: '每週二公休｜客製花束請提前 3 日私訊',
+            ig: '@chuzhi.floral',
+            line: '@chuzhi',
+            services: [
+              { name: '日常單品花束', price: '$800', duration: '當季花材搭配' },
+              { name: '客製紀念日手綁花', price: '$1,800', duration: '需提前 3 天預訂' }
+            ]
+          },
+          {
+            id: 'xiaosen-cake',
+            name: '小森烘焙',
+            category: '烘焙',
+            city: '高雄',
+            location: '高雄左營',
+            address: '捷運巨蛋站步行 6 分鐘（工作室自取／限定冷凍宅配）',
+            style: '韓系簡約',
+            minPrice: 1500,
+            certified: true,
+            tagline: '嚴選北海道鮮奶油與小農水果，揉出剛剛好不過甜的日常紀念。',
+            story: '堅持減糖配方、不使用植物性鮮奶油與香精。每一顆蛋糕都在接單後手工烤製抹面。',
+            coverImage: 'https://images.unsplash.com/photo-1622063531136-e7efff4ece72?auto=format&fit=crop&w=900&q=80',
+            bookingInfo: '每日限量接單 4 顆｜取貨時段 13:00 - 18:30',
+            ig: '@xiaosen.bake',
+            line: '@xiaosen',
+            services: [
+              { name: '4 吋奶油水果蛋糕', price: '$1,500', duration: '提前 7 天預訂' },
+              { name: '6 吋季節草莓戚風', price: '$2,100', duration: '提前 7-10 天預訂' }
+            ]
+          },
+          {
+            id: 'guangying-photo',
+            name: '光影日常攝影',
+            category: '攝影',
+            city: '台南',
+            location: '台南中西',
+            address: '赤崁樓周邊老屋自然光棚（提供全台戶外紀實外拍）',
+            style: '法式簡約',
+            minPrice: 3500,
+            certified: true,
+            tagline: '不刻意擺拍，只留住微風與你們相視而笑的純粹瞬間。',
+            story: '結合數位與 135 底片拍攝的獨立攝影工作室，擅長捕捉情侶日常、輕婚紗登記與個人肖像。',
+            coverImage: 'https://images.unsplash.com/photo-1774660810725-fb04e002003d?auto=format&fit=crop&w=900&q=80',
+            bookingInfo: '開放預約近三個月檔期',
+            ig: '@guangying.daily',
+            line: '@guangying',
+            services: [
+              { name: '個人自然光寫真', price: '$3,500', duration: '90 分鐘・含 10 張精修' },
+              { name: '情侶底片散步紀實', price: '$6,800', duration: '2 小時・附一捲底片' }
+            ]
+          }
+        ],
+        savedIds: ['mist-nail', 'chuzhi-floral'],
+        inquiries: []
+      };
+
+      const CATEGORIES = ['美甲', '花藝', '烘焙', '攝影', '髮型', '婚禮'];
+      const CITIES = ['台北', '台中', '高雄', '台南', '新北', '新竹'];
+      const STYLES = ['法式簡約', '森系自然', '韓系簡約', '極簡侘寂'];
+
+      // 狀態管理
+      let state = loadState();
+      let viewMode = 'front'; // 'front' | 'admin'
+      let frontTab = 'home';  // 'home' | 'explore' | 'saved' | 'profile'
+      let adminTab = 'studios'; // 'studios' | 'site' | 'inquiries' | 'backup'
+      let editingStudioId = null; // null | string
+      let draftStudio = null;
+      let filters = { q: '', city: '全部', category: '全部', style: '全部' };
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            return {
+              site: { ...DEFAULT_DATA.site, ...(parsed.site || {}) },
+              studios: Array.isArray(parsed.studios) ? parsed.studios : DEFAULT_DATA.studios,
+              savedIds: Array.isArray(parsed.savedIds) ? parsed.savedIds : DEFAULT_DATA.savedIds,
+              inquiries: Array.isArray(parsed.inquiries) ? parsed.inquiries : []
+            };
+          }
+        } catch (e) {}
+        return JSON.parse(JSON.stringify(DEFAULT_DATA));
+      }
+
+      function saveState() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {}
+      }
+
+      function esc(str) {
+        return String(str == null ? '' : str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function showToast(msg) {
+        const el = document.getElementById('toast');
+        el.textContent = msg;
+        el.classList.remove('hidden');
+        clearTimeout(el._t);
+        el._t = setTimeout(() => el.classList.add('hidden'), 2400);
+      }
+
+      function studioCardHTML(s) {
+        return `
+          <div class="studio-card" data-action="open-studio" data-id="${esc(s.id)}">
+            <div class="studio-thumb">
+              <img src="${esc(s.coverImage)}" alt="${esc(s.name)}" onerror="this.style.display='none'" />
+              ${s.certified ? '<span class="studio-cert-tag">✓ 優質認證</span>' : ''}
+            </div>
+            <div class="studio-body">
+              <div class="studio-name">${esc(s.name)}</div>
+              <div class="studio-meta">
+                <span class="studio-loc">${esc(s.location)}・${esc(s.category)}</span>
+                <span class="studio-price">$${Number(s.minPrice || 0).toLocaleString()}起</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderHeader() {
+        document.getElementById('hdr-brand-name').textContent = state.site.brandName;
+        document.getElementById('hdr-brand-sub').textContent = state.site.brandSub;
+
+        const modeBtn = document.getElementById('toggle-mode-btn');
+        const desktopNav = document.getElementById('desktop-nav');
+        const mobileNav = document.getElementById('mobile-nav');
+
+        if (viewMode === 'admin') {
+          modeBtn.textContent = '回到前台預覽';
+          desktopNav.style.visibility = 'hidden';
+          mobileNav.classList.add('hidden');
+        } else {
+          modeBtn.textContent = '管理後台';
+          desktopNav.style.visibility = 'visible';
+          mobileNav.classList.remove('hidden');
+        }
+
+        document.querySelectorAll('[data-action="go-tab"]').forEach((btn) => {
+          btn.classList.toggle('active', btn.dataset.tab === frontTab);
+        });
+      }
+
+      function renderFront() {
+        const main = document.getElementById('main-content');
+        const s = state.site;
+
+        if (frontTab === 'home') {
+          main.innerHTML = `
+            <div class="hero">
+              <div class="hero-grid">
+                <img src="${esc(s.heroImg1)}" alt="精選1" onerror="this.style.display='none'" />
+                <div class="hero-right">
+                  <img src="${esc(s.heroImg2)}" alt="精選2" onerror="this.style.display='none'" />
+                  <img src="${esc(s.heroImg3)}" alt="精選3" onerror="this.style.display='none'" />
+                </div>
+              </div>
+              <div class="hero-overlay">
+                <h1>${esc(s.heroLine1)}<br>${esc(s.heroLine2)}</h1>
+                <div class="hero-badge">${esc(s.heroBadge)}</div>
+              </div>
+            </div>
+
+            <section class="card">
+              <span class="pill pill-sage" style="margin-bottom:10px;">為什麼創立這個平台</span>
+              <h2 style="font-size:19px; margin-bottom:10px;">${esc(s.whyTitle)}</h2>
+              <p style="font-size:14px; color:var(--muted); margin-bottom:8px;">${esc(s.whyDesc1)}</p>
+              <p style="font-size:14px; font-weight:500;">${esc(s.whyDesc2)}</p>
+            </section>
+
+            <section class="grid-3">
+              <div class="card" style="background:var(--sage);">
+                <div style="font-weight:700; color:var(--forest); margin-bottom:6px;">01 只收錄獨立創作者</div>
+                <p style="font-size:13px; color:var(--ink);">不收大型連鎖門市，也不接受花錢買排名，把舞台留給真正有手藝的獨立工作室。</p>
+              </div>
+              <div class="card" style="background:var(--peach); cursor:pointer;" data-action="open-cert">
+                <div style="font-weight:700; color:#9A5B2C; margin-bottom:6px;">02 優質認證，不能用買的</div>
+                <p style="font-size:13px; color:var(--ink);">標章只看作品實拍與價格透明，由人工逐一審核。點此查看標準 →</p>
+              </div>
+              <div class="card" style="background:var(--olive);">
+                <div style="font-weight:700; color:var(--forest); margin-bottom:6px;">03 不畫大餅、踏實同行</div>
+                <p style="font-size:13px; color:var(--ink);">不承諾誇張流量，也不綁定複雜抽成，陪創作者照自己的步調長久經營。</p>
+              </div>
+            </section>
+
+            <section class="card" style="background:#F3EDE2; text-align:center;">
+              <p style="font-size:16px; font-weight:700;">${esc(s.quote)}</p>
+              <p style="font-size:12px; color:var(--muted); margin-top:6px;">${esc(s.quoteAuthor)}</p>
+              <div style="margin-top:14px; display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
+                <button class="btn btn-ivory" data-action="go-tab" data-tab="explore">探索全台工作室</button>
+                <button class="btn btn-forest" data-action="go-tab" data-tab="profile">申請成為創始夥伴</button>
+              </div>
+            </section>
+          `;
+          return;
+        }
+
+        if (frontTab === 'explore') {
+          const list = state.studios.filter((st) => {
+            if (filters.city !== '全部' && st.city !== filters.city) return false;
+            if (filters.category !== '全部' && st.category !== filters.category) return false;
+            if (filters.style !== '全部' && st.style !== filters.style) return false;
+            if (filters.q.trim()) {
+              const kw = filters.q.trim().toLowerCase();
+              const hay = `${st.name} ${st.location} ${st.category} ${st.style}`.toLowerCase();
+              if (!hay.includes(kw)) return false;
+            }
+            return true;
+          });
+
+          main.innerHTML = `
+            <div>
+              <h1 style="font-size:26px; font-weight:700;">探索工作室</h1>
+              <p style="font-size:13px; color:var(--muted);">發掘全台質感獨立創作者，尋找你的理想服務。</p>
+              <div class="filter-bar">
+                <input class="input" style="min-width:180px; flex:1;" placeholder="搜尋工作室名稱、地區..." value="${esc(filters.q)}" data-filter="q" />
+                <select class="select" data-filter="city">
+                  <option value="全部">全台地區</option>
+                  ${CITIES.map((c) => `<option value="${c}" ${filters.city === c ? 'selected' : ''}>${c}</option>`).join('')}
+                </select>
+                <select class="select" data-filter="category">
+                  <option value="全部">全部分類</option>
+                  ${CATEGORIES.map((c) => `<option value="${c}" ${filters.category === c ? 'selected' : ''}>${c}</option>`).join('')}
+                </select>
+                <select class="select" data-filter="style">
+                  <option value="全部">全部風格</option>
+                  ${STYLES.map((st) => `<option value="${st}" ${filters.style === st ? 'selected' : ''}>${st}</option>`).join('')}
+                </select>
+              </div>
+            </div>
+            ${list.length === 0
+              ? `<div class="card" style="text-align:center; padding:40px 20px;">
+                   <p style="font-weight:700; margin-bottom:10px;">找不到符合條件的工作室</p>
+                   <button class="btn btn-forest btn-sm" data-action="reset-filters">顯示全部</button>
+                 </div>`
+              : `<div class="studio-grid">${list.map(studioCardHTML).join('')}</div>`
+            }
+          `;
+          return;
+        }
+
+        if (frontTab === 'saved') {
+          const savedList = state.studios.filter((st) => state.savedIds.includes(st.id));
+          main.innerHTML = `
+            <div>
+              <h1 style="font-size:22px; font-weight:700;">我的收藏 (${savedList.length})</h1>
+              <p style="font-size:13px; color:var(--muted); margin-top:4px;">點開工作室詳情點擊「收藏」即可加入此清單</p>
+            </div>
+            ${savedList.length === 0
+              ? `<div class="card" style="text-align:center; padding:36px 20px;">
+                   <p style="color:var(--muted); margin-bottom:12px;">目前還沒有收藏任何工作室</p>
+                   <button class="btn btn-forest" data-action="go-tab" data-tab="explore">前往探索</button>
+                 </div>`
+              : `<div class="studio-grid">${savedList.map(studioCardHTML).join('')}</div>`
+            }
+          `;
+          return;
+        }
+
+        if (frontTab === 'profile') {
+          main.innerHTML = `
+            <div class="card">
+              <span class="pill pill-sage" style="margin-bottom:8px;">創始工作室招募計畫</span>
+              <h2 style="font-size:18px; margin-bottom:4px;">申請進駐「${esc(state.site.brandName)}」</h2>
+              <p style="font-size:12px; color:var(--muted); margin-bottom:14px;">送出後會立即新增至工作室清單，您可隨時在「管理後台」編輯或給予優質認證。</p>
+              <form id="apply-form" class="stack" style="margin-top:0;">
+                <div class="grid-2">
+                  <div>
+                    <label class="label">工作室名稱 *</label>
+                    <input class="input" name="name" required placeholder="例如：沐光花藝" />
+                  </div>
+                  <div>
+                    <label class="label">服務分類</label>
+                    <select class="select" name="category">
+                      ${CATEGORIES.map((c) => `<option value="${c}">${c}</option>`).join('')}
+                    </select>
+                  </div>
+                  <div>
+                    <label class="label">所在城市</label>
+                    <select class="select" name="city">
+                      ${CITIES.map((c) => `<option value="${c}">${c}</option>`).join('')}
+                    </select>
+                  </div>
+                  <div>
+                    <label class="label">區域</label>
+                    <input class="input" name="district" placeholder="例如：大安、西區" />
+                  </div>
+                  <div>
+                    <label class="label">Instagram 帳號 *</label>
+                    <input class="input" name="ig" required placeholder="@your.studio" />
+                  </div>
+                  <div>
+                    <label class="label">最低起價 (NT$)</label>
+                    <input class="input" type="number" name="minPrice" value="1200" />
+                  </div>
+                </div>
+                <div>
+                  <label class="label">一句話特色介紹</label>
+                  <textarea class="textarea" name="tagline" rows="2" placeholder="簡短介紹您的創作風格..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-forest" style="width:100%;">送出申請並加入探索頁</button>
+              </form>
+            </div>
+
+            <div class="card">
+              <h3 style="font-size:16px; margin-bottom:10px;">我的預約詢問紀錄 (${state.inquiries.length})</h3>
+              ${state.inquiries.length === 0
+                ? `<p style="font-size:13px; color:var(--muted);">尚無詢問紀錄，點進任一工作室的服務項目即可送出預約詢問。</p>`
+                : state.inquiries.map((inq) => `
+                    <div class="admin-row" style="padding:10px 0;">
+                      <div>
+                        <div style="font-weight:700; font-size:14px;">${esc(inq.studioName)} — ${esc(inq.service)}</div>
+                        <div style="font-size:12px; color:var(--muted);">${esc(inq.datePref)} ・ ${esc(inq.createdAt)}</div>
+                      </div>
+                      <span class="pill pill-sage">${esc(inq.status)}</span>
+                    </div>
+                  `).join('')
+              }
+            </div>
+          `;
+        }
+      }
+
+      function renderAdmin() {
+        const main = document.getElementById('main-content');
+        let bodyHTML = '';
+
+        if (adminTab === 'studios') {
+          if (editingStudioId && draftStudio) {
+            bodyHTML = `
+              <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid var(--hairline);">
+                  <h2 style="font-size:17px;">${state.studios.some(x => x.id === draftStudio.id) ? '編輯工作室' : '新增工作室'}</h2>
+                  <button class="btn btn-ivory btn-sm" data-action="admin-cancel-edit">返回列表</button>
+                </div>
+                <form id="studio-edit-form" class="stack">
+                  <div class="grid-2">
+                    <div>
+                      <label class="label">工作室名稱 *</label>
+                      <input class="input" data-draft="name" required value="${esc(draftStudio.name)}" />
+                    </div>
+                    <div>
+                      <label class="label">分類</label>
+                      <select class="select" data-draft="category">
+                        ${CATEGORIES.map(c => `<option value="${c}" ${draftStudio.category === c ? 'selected' : ''}>${c}</option>`).join('')}
+                      </select>
+                    </div>
+                    <div>
+                      <label class="label">城市</label>
+                      <select class="select" data-draft="city">
+                        ${CITIES.map(c => `<option value="${c}" ${draftStudio.city === c ? 'selected' : ''}>${c}</option>`).join('')}
+                      </select>
+                    </div>
+                    <div>
+                      <label class="label">顯示地區（如：台北大安）</label>
+                      <input class="input" data-draft="location" value="${esc(draftStudio.location)}" />
+                    </div>
+                    <div>
+                      <label class="label">風格標籤</label>
+                      <select class="select" data-draft="style">
+                        ${STYLES.map(s => `<option value="${s}" ${draftStudio.style === s ? 'selected' : ''}>${s}</option>`).join('')}
+                      </select>
+                    </div>
+                    <div>
+                      <label class="label">最低起價（數字 NT$）</label>
+                      <input class="input" type="number" data-draft="minPrice" value="${esc(draftStudio.minPrice)}" />
+                    </div>
+                    <div>
+                      <label class="label">Instagram 帳號</label>
+                      <input class="input" data-draft="ig" value="${esc(draftStudio.ig)}" />
+                    </div>
+                    <div>
+                      <label class="label">LINE ID</label>
+                      <input class="input" data-draft="line" value="${esc(draftStudio.line)}" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="label">封面圖片網址 (URL)</label>
+                    <input class="input" data-draft="coverImage" value="${esc(draftStudio.coverImage)}" />
+                  </div>
+                  <div>
+                    <label class="label">地點與交通說明</label>
+                    <input class="input" data-draft="address" value="${esc(draftStudio.address)}" />
+                  </div>
+                  <div>
+                    <label class="label">預約須知</label>
+                    <input class="input" data-draft="bookingInfo" value="${esc(draftStudio.bookingInfo)}" />
+                  </div>
+                  <div>
+                    <label class="label">一句話標語</label>
+                    <input class="input" data-draft="tagline" value="${esc(draftStudio.tagline)}" />
+                  </div>
+                  <div>
+                    <label class="label">品牌故事詳細介紹</label>
+                    <textarea class="textarea" rows="3" data-draft="story">${esc(draftStudio.story)}</textarea>
+                  </div>
+
+                  <label style="display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; color:var(--forest); cursor:pointer;">
+                    <input type="checkbox" data-draft-check="certified" ${draftStudio.certified ? 'checked' : ''} />
+                    <span>授予「優質認證工作室」標章</span>
+                  </label>
+
+                  <div style="border-top:1px solid var(--hairline); padding-top:14px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                      <span style="font-size:13px; font-weight:700;">服務項目與價格</span>
+                      <button type="button" class="btn btn-sage btn-sm" data-action="draft-add-service">+ 新增一項服務</button>
+                    </div>
+                    <div id="services-editor-list">
+                      ${(draftStudio.services || []).map((srv, idx) => `
+                        <div class="service-edit-row">
+                          <input class="input" placeholder="服務名稱" data-srv-idx="${idx}" data-srv-field="name" value="${esc(srv.name)}" />
+                          <input class="input" placeholder="價格 ($1,200)" data-srv-idx="${idx}" data-srv-field="price" value="${esc(srv.price)}" />
+                          <input class="input" placeholder="時間/說明" data-srv-idx="${idx}" data-srv-field="duration" value="${esc(srv.duration)}" />
+                          <button type="button" class="btn btn-danger btn-sm" data-action="draft-del-service" data-idx="${idx}">刪除</button>
+                        </div>
+                      `).join('')}
+                    </div>
+                  </div>
+
+                  <div style="display:flex; justify-content:flex-end; gap:10px; padding-top:10px;">
+                    <button type="button" class="btn btn-ivory" data-action="admin-cancel-edit">取消</button>
+                    <button type="submit" class="btn btn-forest">儲存工作室變更</button>
+                  </div>
+                </form>
+              </div>
+            `;
+          } else {
+            bodyHTML = `
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h2 style="font-size:17px;">工作室管理 (${state.studios.length})</h2>
+                <button class="btn btn-forest btn-sm" data-action="admin-new-studio">+ 新增工作室</button>
+              </div>
+              <div class="card" style="padding:0;">
+                ${state.studios.map((s) => `
+                  <div class="admin-row">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                      <img src="${esc(s.coverImage)}" alt="" style="width:52px; height:52px; border-radius:12px; object-fit:cover; background:var(--sand);" onerror="this.style.display='none'" />
+                      <div>
+                        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                          <strong style="font-size:14px;">${esc(s.name)}</strong>
+                          <span class="pill ${s.certified ? 'pill-sage' : 'pill-peach'}">${s.certified ? '✓ 已認證' : '未認證'}</span>
+                        </div>
+                        <div style="font-size:12px; color:var(--muted); margin-top:2px;">
+                          ${esc(s.location)}・${esc(s.category)}・$${Number(s.minPrice || 0).toLocaleString()}起
+                        </div>
+                      </div>
+                    </div>
+                    <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                      <button class="btn btn-ivory btn-sm" data-action="admin-toggle-cert" data-id="${esc(s.id)}">${s.certified ? '取消認證' : '給予認證'}</button>
+                      <button class="btn btn-sage btn-sm" data-action="admin-edit-studio" data-id="${esc(s.id)}">編輯</button>
+                      <button class="btn btn-danger btn-sm" data-action="admin-del-studio" data-id="${esc(s.id)}">刪除</button>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            `;
+          }
+        } else if (adminTab === 'site') {
+          const s = state.site;
+          bodyHTML = `
+            <form id="site-edit-form" class="card stack">
+              <h2 style="font-size:17px;">首頁與品牌文案設定</h2>
+              <div class="grid-2">
+                <div><label class="label">品牌名稱</label><input class="input" name="brandName" value="${esc(s.brandName)}" /></div>
+                <div><label class="label">品牌副標題</label><input class="input" name="brandSub" value="${esc(s.brandSub)}" /></div>
+                <div><label class="label">主視覺標題第一行</label><input class="input" name="heroLine1" value="${esc(s.heroLine1)}" /></div>
+                <div><label class="label">主視覺標題第二行</label><input class="input" name="heroLine2" value="${esc(s.heroLine2)}" /></div>
+              </div>
+              <div><label class="label">主視覺小膠囊文字</label><input class="input" name="heroBadge" value="${esc(s.heroBadge)}" /></div>
+              <div class="grid-3">
+                <div><label class="label">拼貼圖 1（左大圖 URL）</label><input class="input" name="heroImg1" value="${esc(s.heroImg1)}" /></div>
+                <div><label class="label">拼貼圖 2（右上 URL）</label><input class="input" name="heroImg2" value="${esc(s.heroImg2)}" /></div>
+                <div><label class="label">拼貼圖 3（右下 URL）</label><input class="input" name="heroImg3" value="${esc(s.heroImg3)}" /></div>
+              </div>
+              <div><label class="label">「為什麼創立」主標題</label><input class="input" name="whyTitle" value="${esc(s.whyTitle)}" /></div>
+              <div><label class="label">說明段落一</label><textarea class="textarea" rows="2" name="whyDesc1">${esc(s.whyDesc1)}</textarea></div>
+              <div><label class="label">說明段落二</label><textarea class="textarea" rows="2" name="whyDesc2">${esc(s.whyDesc2)}</textarea></div>
+              <div class="grid-2">
+                <div><label class="label">創辦人承諾金句</label><input class="input" name="quote" value="${esc(s.quote)}" /></div>
+                <div><label class="label">署名</label><input class="input" name="quoteAuthor" value="${esc(s.quoteAuthor)}" /></div>
+              </div>
+              <button type="submit" class="btn btn-forest" style="align-self:flex-end;">儲存首頁設定</button>
+            </form>
+          `;
+        } else if (adminTab === 'inquiries') {
+          bodyHTML = `
+            <div class="card" style="padding:0;">
+              <div style="padding:16px 18px; border-bottom:1px solid var(--hairline); font-weight:700;">預約詢問紀錄 (${state.inquiries.length})</div>
+              ${state.inquiries.length === 0
+                ? `<div style="padding:28px; text-align:center; font-size:13px; color:var(--muted);">目前尚無預約詢問紀錄。</div>`
+                : state.inquiries.map((inq) => `
+                    <div class="admin-row">
+                      <div>
+                        <div style="font-weight:700; font-size:14px;">${esc(inq.studioName)} — ${esc(inq.service)}</div>
+                        <div style="font-size:12px; color:var(--muted);">顧客：${esc(inq.customerName)} ｜ 聯絡：${esc(inq.contact)} ｜ 期望日期：${esc(inq.datePref)}</div>
+                      </div>
+                      <div style="display:flex; gap:8px; align-items:center;">
+                        <select class="select" style="width:auto;" data-inq-status="${esc(inq.id)}">
+                          <option ${inq.status === '待回覆' ? 'selected' : ''}>待回覆</option>
+                          <option ${inq.status === '已聯繫確認' ? 'selected' : ''}>已聯繫確認</option>
+                          <option ${inq.status === '已完成' ? 'selected' : ''}>已完成</option>
+                        </select>
+                        <button class="btn btn-danger btn-sm" data-action="admin-del-inq" data-id="${esc(inq.id)}">刪除</button>
+                      </div>
+                    </div>
+                  `).join('')
+              }
+            </div>
+          `;
+        } else if (adminTab === 'backup') {
+          bodyHTML = `
+            <div class="card stack">
+              <h2 style="font-size:17px;">資料備份與還原</h2>
+              <p style="font-size:13px; color:var(--muted);">所有修改都會自動儲存在目前的瀏覽器中。若要將資料搬移到其他電腦或手機，可匯出 JSON 備份檔後再匯入。</p>
+              <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <button class="btn btn-forest" data-action="export-json">匯出全部資料 (.json)</button>
+                <label class="btn btn-ivory" style="cursor:pointer;">
+                  匯入備份檔 (.json)
+                  <input type="file" accept=".json" id="import-json-input" class="hidden" />
+                </label>
+                <button class="btn btn-danger" data-action="reset-all-data">恢復原廠預設資料</button>
+              </div>
+            </div>
+          `;
+        }
+
+        main.innerHTML = `
+          <div class="admin-banner">
+            <div>
+              <div style="font-size:16px; font-weight:700;">網站內容管理後台</div>
+              <div style="font-size:12px; opacity:0.85;">修改後自動即時儲存，切回前台即可看到最新畫面</div>
+            </div>
+            <button class="btn btn-ivory btn-sm" data-action="toggle-admin">完成並回到前台 →</button>
+          </div>
+          <div class="admin-tabs">
+            <button class="admin-tab-btn ${adminTab === 'studios' ? 'active' : ''}" data-action="admin-tab" data-tab="studios">工作室管理 (${state.studios.length})</button>
+            <button class="admin-tab-btn ${adminTab === 'site' ? 'active' : ''}" data-action="admin-tab" data-tab="site">首頁與品牌文案</button>
+            <button class="admin-tab-btn ${adminTab === 'inquiries' ? 'active' : ''}" data-action="admin-tab" data-tab="inquiries">預約詢問 (${state.inquiries.length})</button>
+            <button class="admin-tab-btn ${adminTab === 'backup' ? 'active' : ''}" data-action="admin-tab" data-tab="backup">備份與還原</button>
+          </div>
+          ${bodyHTML}
+        `;
+      }
+
+      function renderAll() {
+        renderHeader();
+        if (viewMode === 'admin') renderAdmin();
+        else renderFront();
+      }
+
+      function openStudioModal(id) {
+        const s = state.studios.find((x) => x.id === id);
+        if (!s) return;
+        const isSaved = state.savedIds.includes(s.id);
+        const box = document.getElementById('modal-box');
+        box.innerHTML = `
+          <div class="modal-head">
+            <strong style="font-size:16px;">${esc(s.name)}</strong>
+            <div style="display:flex; gap:8px;">
+              <button class="btn btn-sm ${isSaved ? 'btn-forest' : 'btn-ivory'}" data-action="toggle-save" data-id="${esc(s.id)}">
+                ${isSaved ? '♥ 已收藏' : '♡ 收藏'}
+              </button>
+              <button class="btn btn-ivory btn-sm" data-action="close-modal">關閉</button>
+            </div>
+          </div>
+          <div class="modal-body stack">
+            <img src="${esc(s.coverImage)}" alt="${esc(s.name)}" style="width:100%; aspect-ratio:16/10; object-fit:cover; border-radius:16px; background:var(--sand);" onerror="this.style.display='none'" />
+            <div>
+              <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:6px;">
+                <span class="pill pill-sage">${esc(s.category)}・${esc(s.location)}</span>
+                <span class="pill pill-peach">${esc(s.style)}</span>
+                ${s.certified ? '<span class="pill pill-sage">✓ 優質認證工作室</span>' : ''}
+              </div>
+              <p style="font-size:14px; font-weight:600; margin-top:6px;">${esc(s.tagline)}</p>
+              <p style="font-size:13px; color:var(--muted); margin-top:6px;">${esc(s.story)}</p>
+              <p style="font-size:12px; color:var(--muted); margin-top:8px;">📍 ${esc(s.address)}<br>🗓️ ${esc(s.bookingInfo)}</p>
+            </div>
+
+            <div class="card" style="padding:14px;">
+              <div style="font-weight:700; font-size:14px; margin-bottom:8px;">服務項目與價格（點擊可立即詢問預約）</div>
+              ${(s.services || []).map((srv, idx) => `
+                <div class="admin-row" style="padding:10px 4px; cursor:pointer;" data-action="pick-service" data-id="${esc(s.id)}" data-srv="${esc(srv.name)}" data-price="${esc(srv.price)}">
+                  <div>
+                    <div style="font-weight:600; font-size:13px;">${esc(srv.name)}</div>
+                    <div style="font-size:11px; color:var(--muted);">${esc(srv.duration)}</div>
+                  </div>
+                  <strong style="color:var(--forest); font-size:14px;">${esc(srv.price)} →</strong>
+                </div>
+              `).join('')}
+            </div>
+
+            <div id="inquiry-box" class="hidden card" style="border-color:var(--forest);"></div>
+
+            <div class="grid-2">
+              <button class="btn btn-forest" data-action="copy-text" data-label="LINE ID" data-val="${esc(s.line)}">複製 LINE ID（${esc(s.line)}）</button>
+              <button class="btn btn-ivory" data-action="copy-text" data-label="IG 帳號" data-val="${esc(s.ig)}">複製 IG（${esc(s.ig)}）</button>
+            </div>
+          </div>
+        `;
+        document.getElementById('modal-backdrop').classList.remove('hidden');
+      }
+
+      function openCertModal() {
+        const box = document.getElementById('modal-box');
+        box.innerHTML = `
+          <div class="modal-head">
+            <strong style="font-size:16px;">優質認證，不是買得到的</strong>
+            <button class="btn btn-ivory btn-sm" data-action="close-modal">關閉</button>
+          </div>
+          <div class="modal-body stack">
+            <p style="font-size:13px; color:var(--muted);">由平台人工審核，與付費完全無關，確保每一位預約者安心：</p>
+            <div class="card" style="padding:14px;" >
+              <p style="font-size:13px; margin-bottom:8px;"><strong>1. 作品真實性：</strong>確認皆為工作室本人實際施作實拍，無盜圖。</p>
+              <p style="font-size:13px; margin-bottom:8px;"><strong>2. 服務資訊透明：</strong>明確列出價格、施作時間與加價標準。</p>
+              <p style="font-size:13px; margin-bottom:8px;"><strong>3. 服務品質：</strong>評估用料來源、環境衛生與接待體驗。</p>
+              <p style="font-size:13px;"><strong>4. 可信度與評價：</strong>長期追蹤真實顧客回饋，絕不販售標章。</p>
+            </div>
+            <button class="btn btn-forest" data-action="cert-apply">立即申請進駐成為創始夥伴</button>
+          </div>
+        `;
+        document.getElementById('modal-backdrop').classList.remove('hidden');
+      }
+
+      function closeModal() {
+        document.getElementById('modal-backdrop').classList.add('hidden');
+      }
+
+      // 統一事件委派
+      document.addEventListener('click', (e) => {
+        const el = e.target.closest('[data-action]');
+        if (!el) {
+          if (e.target.id === 'modal-backdrop') closeModal();
+          return;
+        }
+        const act = el.dataset.action;
+
+        if (act === 'go-tab') {
+          viewMode = 'front';
+          frontTab = el.dataset.tab;
+          renderAll();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else if (act === 'toggle-admin') {
+          viewMode = viewMode === 'admin' ? 'front' : 'admin';
+          editingStudioId = null;
+          renderAll();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else if (act === 'open-studio') {
+          openStudioModal(el.dataset.id);
+        } else if (act === 'open-cert') {
+          openCertModal();
+        } else if (act === 'close-modal') {
+          closeModal();
+        } else if (act === 'cert-apply') {
+          closeModal();
+          viewMode = 'front';
+          frontTab = 'profile';
+          renderAll();
+        } else if (act === 'toggle-save') {
+          const id = el.dataset.id;
+          if (state.savedIds.includes(id)) state.savedIds = state.savedIds.filter(x => x !== id);
+          else state.savedIds.push(id);
+          saveState();
+          openStudioModal(id);
+          if (frontTab === 'saved') renderFront();
+          showToast(state.savedIds.includes(id) ? '已加入收藏' : '已取消收藏');
+        } else if (act === 'copy-text') {
+          const val = el.dataset.val;
+          if (navigator.clipboard) navigator.clipboard.writeText(val).catch(() => {});
+          showToast(`已複製 ${el.dataset.label}：${val}`);
+        } else if (act === 'pick-service') {
+          const box = document.getElementById('inquiry-box');
+          box.classList.remove('hidden');
+          box.innerHTML = `
+            <div style="font-weight:700; font-size:13px; color:var(--forest); margin-bottom:8px;">
+              預約詢問：${esc(el.dataset.srv)}（${esc(el.dataset.price)}）
+            </div>
+            <form id="inquiry-form" class="stack" style="margin-top:0;" data-studio-id="${esc(el.dataset.id)}" data-service="${esc(el.dataset.srv)}">
+              <div class="grid-2">
+                <input class="input" name="customerName" required placeholder="您的稱呼 *" />
+                <input class="input" name="contact" required placeholder="LINE ID 或手機 *" />
+              </div>
+              <input class="input" name="datePref" placeholder="期望日期或備註（選填）" />
+              <button type="submit" class="btn btn-forest btn-sm">送出預約詢問</button>
+            </form>
+          `;
+        } else if (act === 'reset-filters') {
+          filters = { q: '', city: '全部', category: '全部', style: '全部' };
+          renderFront();
+        } else if (act === 'admin-tab') {
+          adminTab = el.dataset.tab;
+          editingStudioId = null;
+          renderAdmin();
+        } else if (act === 'admin-new-studio') {
+          const newId = 'studio-' + Date.now();
+          draftStudio = {
+            id: newId, name: '新個人工作室', category: '美甲', city: '台北', location: '台北大安',
+            address: '全預約制工作室（預約後提供詳細地址）', style: '法式簡約', minPrice: 1200,
+            certified: false, tagline: '請輸入一句話介紹...', story: '請輸入品牌故事...',
+            coverImage: 'https://images.unsplash.com/photo-1685963086339-85c3b3ecafe9?auto=format&fit=crop&w=900&q=80',
+            bookingInfo: '採預約制', ig: '@your.studio', line: '@yourstudio',
+            services: [{ name: '基礎預約項目', price: '$1,200', duration: '90 分鐘' }]
+          };
+          editingStudioId = newId;
+          renderAdmin();
+        } else if (act === 'admin-edit-studio') {
+          const found = state.studios.find(x => x.id === el.dataset.id);
+          if (found) {
+            draftStudio = JSON.parse(JSON.stringify(found));
+            editingStudioId = found.id;
+            renderAdmin();
+          }
+        } else if (act === 'admin-cancel-edit') {
+          editingStudioId = null; draftStudio = null; renderAdmin();
+        } else if (act === 'admin-toggle-cert') {
+          state.studios = state.studios.map(s => s.id === el.dataset.id ? { ...s, certified: !s.certified } : s);
+          saveState(); renderAdmin(); showToast('已更新認證狀態');
+        } else if (act === 'admin-del-studio') {
+          if (confirm('確定要刪除這間工作室嗎？')) {
+            state.studios = state.studios.filter(s => s.id !== el.dataset.id);
+            saveState(); renderAdmin(); showToast('已刪除工作室');
+          }
+        } else if (act === 'draft-add-service' && draftStudio) {
+          draftStudio.services.push({ name: '新服務項目', price: '$1,000', duration: '60 分鐘' });
+          renderAdmin();
+        } else if (act === 'draft-del-service' && draftStudio) {
+          draftStudio.services.splice(Number(el.dataset.idx), 1);
+          renderAdmin();
+        } else if (act === 'admin-del-inq') {
+          state.inquiries = state.inquiries.filter(i => i.id !== el.dataset.id);
+          saveState(); renderAdmin();
+        } else if (act === 'export-json') {
+          const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `私室選備份_${new Date().toISOString().slice(0, 10)}.json`;
+          a.click();
+          URL.revokeObjectURL(url);
+          showToast('已下載備份檔案');
+        } else if (act === 'reset-all-data') {
+          if (confirm('確定要清除所有自訂資料，恢復為系統預設嗎？')) {
+            state = JSON.parse(JSON.stringify(DEFAULT_DATA));
+            saveState(); renderAdmin(); showToast('已恢復預設資料');
+          }
+        }
+      });
+
+      // 輸入同步事件
+      document.addEventListener('input', (e) => {
+        const t = e.target;
+        if (t.dataset.filter) {
+          filters[t.dataset.filter] = t.value;
+          if (t.dataset.filter === 'q') renderFront();
+        }
+        if (draftStudio && t.dataset.draft) {
+          draftStudio[t.dataset.draft] = t.dataset.draft === 'minPrice' ? Number(t.value) || 0 : t.value;
+        }
+        if (draftStudio && t.dataset.srvIdx !== undefined) {
+          draftStudio.services[Number(t.dataset.srvIdx)][t.dataset.srvField] = t.value;
+        }
+      });
+
+      document.addEventListener('change', (e) => {
+        const t = e.target;
+        if (t.dataset.filter && t.dataset.filter !== 'q') {
+          filters[t.dataset.filter] = t.value;
+          renderFront();
+        }
+        if (draftStudio && t.dataset.draftCheck) {
+          draftStudio[t.dataset.draftCheck] = t.checked;
+        }
+        if (t.dataset.inqStatus) {
+          state.inquiries = state.inquiries.map(i => i.id === t.dataset.inqStatus ? { ...i, status: t.value } : i);
+          saveState(); showToast('已更新詢問狀態');
+        }
+        if (t.id === 'import-json-input' && t.files?.[0]) {
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            try {
+              const parsed = JSON.parse(ev.target.result);
+              if (parsed.site && Array.isArray(parsed.studios)) {
+                state = parsed;
+                saveState(); renderAdmin(); showToast('匯入還原成功！');
+              } else alert('備份檔格式不正確');
+            } catch { alert('讀取檔案失敗'); }
+          };
+          reader.readAsText(t.files[0]);
+        }
+      });
+
+      // 表單送出事件
+      document.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const form = e.target;
+
+        if (form.id === 'studio-edit-form' && draftStudio) {
+          const idx = state.studios.findIndex(x => x.id === draftStudio.id);
+          if (idx >= 0) state.studios[idx] = draftStudio;
+          else state.studios.unshift(draftStudio);
+          saveState();
+          editingStudioId = null; draftStudio = null;
+          renderAdmin();
+          showToast('已儲存工作室資料！');
+        } else if (form.id === 'site-edit-form') {
+          const fd = new FormData(form);
+          for (const [k, v] of fd.entries()) state.site[k] = v;
+          saveState(); renderHeader();
+          showToast('已儲存首頁文案設定！');
+        } else if (form.id === 'apply-form') {
+          const fd = new FormData(form);
+          const city = fd.get('city');
+          const district = fd.get('district') || '';
+          const newStudio = {
+            id: 'studio-' + Date.now(),
+            name: fd.get('name'),
+            category: fd.get('category'),
+            city: city,
+            location: city + district,
+            address: '新進駐審核中（全預約制）',
+            style: '法式簡約',
+            minPrice: Number(fd.get('minPrice')) || 1200,
+            certified: false,
+            tagline: fd.get('tagline') || '新申請加入之獨立創作者。',
+            story: fd.get('tagline') || '歡迎預約體驗。',
+            coverImage: 'https://images.unsplash.com/photo-1685963086339-85c3b3ecafe9?auto=format&fit=crop&w=900&q=80',
+            bookingInfo: '採預約制',
+            ig: fd.get('ig'),
+            line: '@studio',
+            services: [{ name: '基礎體驗項目', price: `$${Number(fd.get('minPrice') || 1200).toLocaleString()}`, duration: '90 分鐘' }]
+          };
+          state.studios.unshift(newStudio);
+          saveState();
+          frontTab = 'explore';
+          renderAll();
+          showToast(`已新增「${newStudio.name}」至探索頁！`);
+        } else if (form.id === 'inquiry-form') {
+          const fd = new FormData(form);
+          const st = state.studios.find(x => x.id === form.dataset.studioId);
+          state.inquiries.unshift({
+            id: 'inq-' + Date.now(),
+            studioName: st ? st.name : '',
+            service: form.dataset.service,
+            customerName: fd.get('customerName'),
+            contact: fd.get('contact'),
+            datePref: fd.get('datePref') || '待確認時段',
+            createdAt: new Date().toLocaleDateString('zh-TW'),
+            status: '待回覆'
+          });
+          saveState();
+          document.getElementById('inquiry-box').innerHTML = `<div style="color:var(--forest); font-weight:700; font-size:13px; text-align:center;">✓ 已送出預約詢問！可於「申請進駐 / 紀錄」或「管理後台」查看。</div>`;
+          showToast('預約詢問已送出');
+        }
+      });
+
+      // 啟動渲染
+      renderAll();
+    })();
+  </script>
+</body>
+</html>
