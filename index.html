@@ -320,7 +320,7 @@
 </head>
 <body>
 
-  <!-- 頂部導覽列 -->
+  <!-- 頂部導覽列（已隱藏管理後台按鈕，客戶完全看不見） -->
   <header class="topbar">
     <div class="topbar-inner">
       <button class="brand" data-action="go-tab" data-tab="home">
@@ -353,7 +353,7 @@
           <option value="1.3">字體：特大</option>
         </select>
         <button class="btn btn-sage btn-sm" data-action="open-cert">優質認證</button>
-        <button class="btn btn-forest btn-sm" id="toggle-mode-btn" data-action="toggle-admin">管理後台</button>
+        <button class="btn btn-forest btn-sm hidden" id="toggle-mode-btn" data-action="toggle-admin">回到前台</button>
       </div>
     </div>
   </header>
@@ -536,6 +536,7 @@
       let draftStudio = null;
       let filters = { q: '', city: '全部', category: '全部', style: '全部' };
       let lastHandledHash = '';
+      let pendingAdminPrompt = false;
 
       function getSessionAuth() {
         try { return sessionStorage.getItem(SESSION_AUTH_KEY) === '1'; }
@@ -583,6 +584,7 @@
       }
 
       function applyHashRoute() {
+        pendingAdminPrompt = false;
         const raw = (window.location.hash || '').replace(/^#/, '');
         if (!raw) {
           viewMode = 'front';
@@ -598,6 +600,7 @@
             viewMode = 'front';
             frontTab = 'home';
             currentStudioId = null;
+            pendingAdminPrompt = true;
           }
           return;
         }
@@ -689,11 +692,13 @@
         const mobileNav = document.getElementById('mobile-nav');
 
         if (viewMode === 'admin') {
+          modeBtn.classList.remove('hidden');
           modeBtn.textContent = '回到前台';
           desktopNav.style.visibility = 'hidden';
           mobileNav.classList.add('hidden');
         } else {
-          modeBtn.textContent = '管理後台';
+          // 在前台畫面永遠隱藏「管理後台」按鈕，讓客戶完全看不見
+          modeBtn.classList.add('hidden');
           desktopNav.style.visibility = 'visible';
           mobileNav.classList.remove('hidden');
         }
@@ -824,7 +829,7 @@
             <div class="card">
               <span class="pill pill-sage" style="margin-bottom:8px;">創始工作室招募計畫</span>
               <h2 class="section-heading" style="margin-bottom:4px;">申請進駐「${esc(state.site.brandName)}」</h2>
-              <p class="body-text" style="color:var(--muted); margin-bottom:14px;">送出後會立即新增至工作室清單，經管理員審核後即可授予優質認證。</p>
+              <p class="body-text" style="color:var(--muted); margin-bottom:14px;">送出後會立即新增至工作室清單，經審核後即可授予優質認證。</p>
               <form id="apply-form" class="stack" style="margin-top:0;">
                 <div class="grid-2">
                   <div>
@@ -1137,7 +1142,7 @@
           <div class="admin-banner">
             <div>
               <div style="font-size:16px; font-weight:700;">網站內容管理後台</div>
-              <div style="font-size:12px; opacity:0.85;">修改後自動即時儲存，切回前台即可看到最新畫面</div>
+              <div style="font-size:12px; opacity:0.85;">專屬暗門網址：網址後方加 #admin（修改後自動儲存）</div>
             </div>
             <div style="display:flex; gap:8px; flex-wrap:wrap;">
               <button class="btn btn-ivory btn-sm" data-action="toggle-admin">回到前台預覽</button>
@@ -1167,7 +1172,7 @@
         box.classList.add('modal-box-sm');
         box.innerHTML = `
           <div class="modal-head">
-            <strong style="font-size:16px;">管理後台驗證</strong>
+            <strong style="font-size:16px;">管理員驗證</strong>
             <button class="btn btn-ivory btn-sm" data-action="close-modal">關閉</button>
           </div>
           <div class="modal-body">
@@ -1275,17 +1280,25 @@
           if (shouldSyncHash && viewMode === 'front') {
             syncHash('#' + frontTab);
           }
+        } else if (shouldSyncHash && viewMode === 'front' && window.location.hash === '#admin') {
+          syncHash('#' + frontTab);
         }
       }
 
-      // 瀏覽器上一頁 / 下一頁或網址改變時自動同步畫面
+      // 瀏覽器上一頁 / 下一頁或網址改變（包含輸入 #admin）時自動觸發
       window.addEventListener('hashchange', () => {
         if (window.location.hash === lastHandledHash) return;
         lastHandledHash = window.location.hash;
         applyHashRoute();
         renderAll();
-        if (currentStudioId) openStudioModal(currentStudioId, false);
-        else closeModal(false);
+        if (pendingAdminPrompt) {
+          pendingAdminPrompt = false;
+          openAdminLoginModal();
+        } else if (currentStudioId) {
+          openStudioModal(currentStudioId, false);
+        } else {
+          closeModal(false);
+        }
       });
 
       // 統一事件委派
@@ -1609,7 +1622,12 @@
       lastHandledHash = window.location.hash;
       applyHashRoute();
       renderAll();
-      if (currentStudioId) openStudioModal(currentStudioId, false);
+      if (pendingAdminPrompt) {
+        pendingAdminPrompt = false;
+        openAdminLoginModal();
+      } else if (currentStudioId) {
+        openStudioModal(currentStudioId, false);
+      }
     })();
   </script>
 </body>
