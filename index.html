@@ -28,6 +28,9 @@
       --fs-body: 14px;
       --fs-pill: 12px;
       --fs-sub: 12px;
+      --fs-help-card-title: 16px;
+      --fs-help-item-title: 15px;
+      --fs-help-item-desc: 13px;
       --fs-principle: 13px;
       --fs-quote: 16px;
       --fs-card-title: 15px;
@@ -133,6 +136,18 @@
       font-size: calc(var(--fs-sub) * var(--font-scale));
       line-height: 1.6;
     }
+    .help-card-title-text {
+      font-size: calc(var(--fs-help-card-title) * var(--font-scale));
+      font-weight: 700; line-height: 1.4;
+    }
+    .help-item-title-text {
+      font-size: calc(var(--fs-help-item-title) * var(--font-scale));
+      font-weight: 700; line-height: 1.4;
+    }
+    .help-item-desc-text {
+      font-size: calc(var(--fs-help-item-desc) * var(--font-scale));
+      line-height: 1.6;
+    }
     .principle-text {
       font-size: calc(var(--fs-principle) * var(--font-scale));
       line-height: 1.6;
@@ -186,6 +201,46 @@
       margin-top: 10px; padding: 5px 14px; border-radius: 999px;
       background: rgba(40, 38, 35, 0.7);
       font-size: calc(var(--fs-hero-badge) * var(--font-scale));
+    }
+
+    /* 幫助客戶 & 幫助工作室對照區 */
+    .help-toggle-bar {
+      display: inline-flex; background: var(--sand); padding: 4px; border-radius: 999px;
+      border: 1px solid var(--hairline); margin-top: 10px;
+    }
+    @media (min-width: 768px) { .help-toggle-bar { display: none; } }
+    .help-toggle-btn {
+      padding: 7px 14px; border-radius: 999px; font-size: 13px; font-weight: 600; color: var(--muted);
+    }
+    .help-toggle-btn.active { background: var(--forest); color: #fff; }
+    @media (max-width: 767px) { .help-mobile-hidden { display: none; } }
+
+    .help-card {
+      background: var(--ivory); border: 1px solid var(--hairline);
+      border-radius: 20px; overflow: hidden;
+      box-shadow: 0 2px 10px rgba(40, 38, 35, 0.03);
+      display: flex; flex-direction: column;
+    }
+    .help-card-head {
+      background: #F4EEE3; padding: 16px 20px; border-bottom: 1px solid var(--hairline);
+    }
+    .help-card-title {
+      display: flex; align-items: center; gap: 8px;
+      color: var(--forest); margin-bottom: 4px;
+    }
+    .help-dot {
+      width: 6px; height: 18px; border-radius: 999px; background: var(--forest); display: inline-block; flex-shrink: 0;
+    }
+    .help-item {
+      padding: 14px 20px; border-bottom: 1px solid #EFE9DF;
+      display: flex; align-items: flex-start; gap: 12px;
+    }
+    .help-item:last-child { border-bottom: none; }
+    .help-num {
+      width: 26px; height: 26px; border-radius: 8px;
+      background: var(--sage); color: var(--forest);
+      font-size: 12px; font-weight: 700; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; margin-top: 2px;
     }
 
     /* 網格 */
@@ -320,7 +375,7 @@
 </head>
 <body>
 
-  <!-- 頂部導覽列（已隱藏管理後台按鈕，客戶完全看不見） -->
+  <!-- 頂部導覽列 -->
   <header class="topbar">
     <div class="topbar-inner">
       <button class="brand" data-action="go-tab" data-tab="home">
@@ -390,6 +445,9 @@
         body: 14,
         pill: 12,
         subText: 12,
+        helpCardTitle: 16,
+        helpItemTitle: 15,
+        helpItemDesc: 13,
         principle: 13,
         quote: 16,
         cardTitle: 15,
@@ -405,6 +463,9 @@
         { key: 'body', label: '內文與品牌故事說明文字', min: 12, max: 24, cssVar: '--fs-body', sample: '台灣許多獨立創作者，隱身在巷弄老宅或公寓一隅⋯⋯' },
         { key: 'pill', label: '標籤膠囊文字（地區・風格・優質認證）', min: 10, max: 22, cssVar: '--fs-pill', sample: '美甲・台北大安　法式簡約　✓ 優質認證工作室' },
         { key: 'subText', label: '補充小字（交通位置・預約須知・服務時長）', min: 10, max: 20, cssVar: '--fs-sub', sample: '📍 捷運忠孝敦化站步行 4 分鐘｜90 分鐘・含前置保養' },
+        { key: 'helpCardTitle', label: '幫助區塊・卡片標題（幫助了客戶／工作室）', min: 13, max: 26, cssVar: '--fs-help-card-title', sample: '幫助了「想找好工作室的你」' },
+        { key: 'helpItemTitle', label: '幫助區塊・重點標題（第 1～4 點）', min: 12, max: 24, cssVar: '--fs-help-item-title', sample: '價格與地區先看懂，不需反覆私訊試探' },
+        { key: 'helpItemDesc', label: '幫助區塊・痛點與詳細說明文字', min: 11, max: 20, cssVar: '--fs-help-item-desc', sample: '先確認預算範圍、所在地區與預約規則，確定適合自己再放心聯繫。' },
         { key: 'principle', label: '三大堅持卡片文字', min: 11, max: 22, cssVar: '--fs-principle', sample: '01 只收錄獨立創作者：不收大型連鎖門市' },
         { key: 'quote', label: '創辦人承諾金句', min: 13, max: 28, cssVar: '--fs-quote', sample: '「我們不保證訂單，只承諾認真審核每一間工作室。」' },
         { key: 'cardTitle', label: '探索頁・工作室卡片名稱', min: 13, max: 26, cssVar: '--fs-card-title', sample: '霧光美甲' },
@@ -428,6 +489,26 @@
           whyTitle: '真正動人的風格，不在連鎖店，而藏在一間間個人工作室裡。',
           whyDesc1: '台灣許多獨立創作者，隱身在巷弄老宅或公寓一隅，沒有大集團的行銷預算，卻一人撐起整間店的品質與靈魂。',
           whyDesc2: '我們創立「私室選」，不賣榜單、不收連鎖品牌，只想替台灣每一份不願被標準化的手藝，留一個純粹被認識、被信任的地方。',
+
+          helpSectionTitle: '這個 App 幫你解決了什麼問題？',
+          helpSectionSub: '不論你是正在尋找好手藝的客人，還是默默耕耘的獨立工作室',
+          helpCustomerTitle: '幫助了「想找好工作室的你」',
+          helpCustomerBefore: '以前在社群找店：滑遍限動、截圖比對，還得一間間私訊問價錢跟在哪裡⋯⋯',
+          helpCustomerItems: [
+            { title: '價格與地區先看懂，不需反覆私訊試探', desc: '先確認預算範圍、所在地區與預約規則，確定適合自己再放心聯繫。' },
+            { title: '作品實拍有人把關，大幅降低踩雷風險', desc: '人工審核作品真實性與標價透明度，避免修圖過度或現場臨時加價。' },
+            { title: '遇見演算法以外的寶藏手藝人', desc: '避開大品牌廣告洗版，依照喜歡的風格與色系，找到隱身巷弄的一人工作室。' },
+            { title: '一鍵收藏比較，預約不再手忙腳亂', desc: '把喜歡的店家存進收藏夾，有興趣直接送出預約詢問或複製 LINE / IG。' }
+          ],
+          helpStudioTitle: '幫助了「用心創作的工作室」',
+          helpStudioBefore: '以前接案日常：白天忙完客人，晚上還要一直回「多少錢、在哪裡」，不買廣告就很難被看見⋯⋯',
+          helpStudioItems: [
+            { title: '把寶貴時間還給創作本身', desc: '品牌頁先幫你說清楚服務項目與價格，自動過濾掉只比價、方向不合的私訊。' },
+            { title: '不靠低價促銷，也能吸引懂你的客人', desc: '讓消費者先喜歡上你的作品與理念才來詢問，不再被價格戰綁架。' },
+            { title: '不收高額抽成、不賣假榜單', desc: '不用和大型連鎖門市競價買關鍵字，把辛苦累積的口碑與收入留給自己。' },
+            { title: '無痛延續原本的 IG 與 LINE 接單', desc: '不需要重新學複雜的系統，這裡只是替你的好作品多開一扇被信任的窗。' }
+          ],
+
           quote: '「我們不保證訂單，只承諾認真審核每一間工作室。」',
           quoteAuthor: '— 創辦人夫妻'
         },
@@ -530,6 +611,7 @@
       let isAdminAuthed = getSessionAuth();
       let viewMode = 'front';
       let frontTab = 'home';
+      let homeHelpRole = 'customer';
       let adminTab = 'studios';
       let currentStudioId = null;
       let editingStudioId = null;
@@ -560,7 +642,16 @@
               adminPassword: parsed.adminPassword || DEFAULT_DATA.adminPassword,
               fontScale: Number(parsed.fontScale) || 1,
               fontSizes: { ...DEFAULT_FONT_SIZES, ...(parsed.fontSizes || {}) },
-              site: { ...DEFAULT_DATA.site, ...(parsed.site || {}) },
+              site: {
+                ...DEFAULT_DATA.site,
+                ...(parsed.site || {}),
+                helpCustomerItems: Array.isArray(parsed.site?.helpCustomerItems)
+                  ? parsed.site.helpCustomerItems
+                  : DEFAULT_DATA.site.helpCustomerItems,
+                helpStudioItems: Array.isArray(parsed.site?.helpStudioItems)
+                  ? parsed.site.helpStudioItems
+                  : DEFAULT_DATA.site.helpStudioItems
+              },
               studios: Array.isArray(parsed.studios) ? parsed.studios : DEFAULT_DATA.studios,
               savedIds: Array.isArray(parsed.savedIds) ? parsed.savedIds : DEFAULT_DATA.savedIds,
               inquiries: Array.isArray(parsed.inquiries) ? parsed.inquiries : []
@@ -683,6 +774,31 @@
         `;
       }
 
+      function helpCardHTML(title, beforeText, items, isHiddenMobile) {
+        return `
+          <div class="help-card ${isHiddenMobile ? 'help-mobile-hidden' : ''}">
+            <div class="help-card-head">
+              <div class="help-card-title help-card-title-text">
+                <span class="help-dot"></span>
+                <span>${esc(title)}</span>
+              </div>
+              <p class="help-item-desc-text" style="color:var(--muted);">${esc(beforeText)}</p>
+            </div>
+            <div>
+              ${(items || []).map((it, idx) => `
+                <div class="help-item">
+                  <div class="help-num">${idx + 1}</div>
+                  <div>
+                    <div class="help-item-title-text">${esc(it.title)}</div>
+                    <div class="help-item-desc-text" style="color:var(--muted); margin-top:3px;">${esc(it.desc)}</div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
       function renderHeader() {
         document.getElementById('hdr-brand-name').textContent = state.site.brandName;
         document.getElementById('hdr-brand-sub').textContent = state.site.brandSub;
@@ -697,7 +813,6 @@
           desktopNav.style.visibility = 'hidden';
           mobileNav.classList.add('hidden');
         } else {
-          // 在前台畫面永遠隱藏「管理後台」按鈕，讓客戶完全看不見
           modeBtn.classList.add('hidden');
           desktopNav.style.visibility = 'visible';
           mobileNav.classList.remove('hidden');
@@ -733,6 +848,22 @@
               <h2 class="section-heading" style="margin-bottom:10px;">${esc(s.whyTitle)}</h2>
               <p class="body-text" style="color:var(--muted); margin-bottom:8px;">${esc(s.whyDesc1)}</p>
               <p class="body-text" style="font-weight:500;">${esc(s.whyDesc2)}</p>
+            </section>
+
+            <!-- 這個 App 幫助了客戶＆工作室什麼 -->
+            <section class="stack" style="margin-top:20px;">
+              <div>
+                <h2 class="section-heading">${esc(s.helpSectionTitle)}</h2>
+                <p class="sub-text" style="color:var(--muted); margin-top:4px;">${esc(s.helpSectionSub)}</p>
+                <div class="help-toggle-bar">
+                  <button type="button" class="help-toggle-btn ${homeHelpRole === 'customer' ? 'active' : ''}" data-action="switch-help-role" data-role="customer">幫助了客戶什麼</button>
+                  <button type="button" class="help-toggle-btn ${homeHelpRole === 'studio' ? 'active' : ''}" data-action="switch-help-role" data-role="studio">幫助了工作室什麼</button>
+                </div>
+              </div>
+              <div class="grid-2" style="margin-top:14px;">
+                ${helpCardHTML(s.helpCustomerTitle, s.helpCustomerBefore, s.helpCustomerItems, homeHelpRole !== 'customer')}
+                ${helpCardHTML(s.helpStudioTitle, s.helpStudioBefore, s.helpStudioItems, homeHelpRole !== 'studio')}
+              </div>
             </section>
 
             <section class="grid-3">
@@ -1037,6 +1168,7 @@
               <div class="grid-2">
                 ${FONT_SECTION_CONFIG.map((cfg) => {
                   const curVal = Number(state.fontSizes?.[cfg.key]) || DEFAULT_FONT_SIZES[cfg.key];
+                  const isNormalWeight = ['body', 'subText', 'helpItemDesc', 'heroBadge', 'cardMeta'].includes(cfg.key);
                   return `
                     <div class="fs-control-card">
                       <div class="fs-control-top">
@@ -1050,7 +1182,7 @@
                       </div>
                       <div class="fs-preview-box">
                         <div style="font-size:11px; color:var(--muted); margin-bottom:2px;">預覽效果：</div>
-                        <div id="fs-prev-${cfg.key}" style="font-size:${curVal}px; font-weight:${cfg.key === 'body' || cfg.key === 'subText' || cfg.key === 'heroBadge' || cfg.key === 'cardMeta' ? '400' : '700'}; line-height:1.4;">
+                        <div id="fs-prev-${cfg.key}" style="font-size:${curVal}px; font-weight:${isNormalWeight ? '400' : '700'}; line-height:1.4;">
                           ${esc(cfg.sample)}
                         </div>
                       </div>
@@ -1080,6 +1212,42 @@
               <div><label class="label">「為什麼創立」主標題</label><input class="input" name="whyTitle" value="${esc(s.whyTitle)}" /></div>
               <div><label class="label">說明段落一</label><textarea class="textarea" rows="2" name="whyDesc1">${esc(s.whyDesc1)}</textarea></div>
               <div><label class="label">說明段落二</label><textarea class="textarea" rows="2" name="whyDesc2">${esc(s.whyDesc2)}</textarea></div>
+
+              <!-- 幫助客戶與工作室文案編輯區 -->
+              <div style="border-top:1px solid var(--hairline); padding-top:14px;" class="stack">
+                <h3 style="font-size:15px; color:var(--forest);">「幫助客戶＆工作室什麼」區塊文案</h3>
+                <div class="grid-2">
+                  <div><label class="label">區塊大標題</label><input class="input" name="helpSectionTitle" value="${esc(s.helpSectionTitle)}" /></div>
+                  <div><label class="label">區塊副標題</label><input class="input" name="helpSectionSub" value="${esc(s.helpSectionSub)}" /></div>
+                </div>
+
+                <div class="grid-2">
+                  <div class="fs-control-card">
+                    <strong style="font-size:13px; color:var(--forest);">幫助「客戶」卡片</strong>
+                    <input class="input" name="helpCustomerTitle" value="${esc(s.helpCustomerTitle)}" placeholder="卡片標題" />
+                    <textarea class="textarea" rows="2" name="helpCustomerBefore" placeholder="以前痛點描述">${esc(s.helpCustomerBefore)}</textarea>
+                    ${(s.helpCustomerItems || []).map((it, idx) => `
+                      <div style="background:var(--ivory); padding:8px; border-radius:10px; border:1px solid var(--hairline); display:flex; flex-direction:column; gap:6px;">
+                        <input class="input" name="c_title_${idx}" value="${esc(it.title)}" placeholder="重點標題 ${idx + 1}" />
+                        <textarea class="textarea" rows="2" name="c_desc_${idx}" placeholder="詳細說明 ${idx + 1}">${esc(it.desc)}</textarea>
+                      </div>
+                    `).join('')}
+                  </div>
+
+                  <div class="fs-control-card">
+                    <strong style="font-size:13px; color:var(--forest);">幫助「工作室」卡片</strong>
+                    <input class="input" name="helpStudioTitle" value="${esc(s.helpStudioTitle)}" placeholder="卡片標題" />
+                    <textarea class="textarea" rows="2" name="helpStudioBefore" placeholder="以前痛點描述">${esc(s.helpStudioBefore)}</textarea>
+                    ${(s.helpStudioItems || []).map((it, idx) => `
+                      <div style="background:var(--ivory); padding:8px; border-radius:10px; border:1px solid var(--hairline); display:flex; flex-direction:column; gap:6px;">
+                        <input class="input" name="s_title_${idx}" value="${esc(it.title)}" placeholder="重點標題 ${idx + 1}" />
+                        <textarea class="textarea" rows="2" name="s_desc_${idx}" placeholder="詳細說明 ${idx + 1}">${esc(it.desc)}</textarea>
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+              </div>
+
               <div class="grid-2">
                 <div><label class="label">創辦人承諾金句</label><input class="input" name="quote" value="${esc(s.quote)}" /></div>
                 <div><label class="label">署名</label><input class="input" name="quoteAuthor" value="${esc(s.quoteAuthor)}" /></div>
@@ -1285,7 +1453,6 @@
         }
       }
 
-      // 瀏覽器上一頁 / 下一頁或網址改變（包含輸入 #admin）時自動觸發
       window.addEventListener('hashchange', () => {
         if (window.location.hash === lastHandledHash) return;
         lastHandledHash = window.location.hash;
@@ -1301,7 +1468,6 @@
         }
       });
 
-      // 統一事件委派
       document.addEventListener('click', (e) => {
         const el = e.target.closest('[data-action]');
         if (!el) {
@@ -1318,6 +1484,9 @@
           syncHash('#' + frontTab);
           renderAll();
           window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else if (act === 'switch-help-role') {
+          homeHelpRole = el.dataset.role;
+          renderFront();
         } else if (act === 'toggle-admin') {
           if (viewMode === 'admin') {
             viewMode = 'front';
@@ -1466,7 +1635,6 @@
         }
       });
 
-      // 輸入同步事件（含各區塊字體滑桿即時預覽）
       document.addEventListener('input', (e) => {
         const t = e.target;
         if (t.dataset.fsKey) {
@@ -1531,7 +1699,6 @@
         }
       });
 
-      // 表單送出事件
       document.addEventListener('submit', (e) => {
         e.preventDefault();
         const form = e.target;
@@ -1567,7 +1734,23 @@
           showToast('已儲存工作室資料！');
         } else if (form.id === 'site-edit-form') {
           const fd = new FormData(form);
-          for (const [k, v] of fd.entries()) state.site[k] = v;
+          const simpleKeys = [
+            'brandName', 'brandSub', 'heroLine1', 'heroLine2', 'heroBadge',
+            'heroImg1', 'heroImg2', 'heroImg3', 'whyTitle', 'whyDesc1', 'whyDesc2',
+            'helpSectionTitle', 'helpSectionSub', 'helpCustomerTitle', 'helpCustomerBefore',
+            'helpStudioTitle', 'helpStudioBefore', 'quote', 'quoteAuthor'
+          ];
+          simpleKeys.forEach((k) => {
+            if (fd.has(k)) state.site[k] = fd.get(k);
+          });
+          state.site.helpCustomerItems = (state.site.helpCustomerItems || []).map((it, idx) => ({
+            title: fd.get('c_title_' + idx) ?? it.title,
+            desc: fd.get('c_desc_' + idx) ?? it.desc
+          }));
+          state.site.helpStudioItems = (state.site.helpStudioItems || []).map((it, idx) => ({
+            title: fd.get('s_title_' + idx) ?? it.title,
+            desc: fd.get('s_desc_' + idx) ?? it.desc
+          }));
           saveState();
           renderHeader();
           showToast('已儲存首頁文案設定！');
@@ -1618,7 +1801,7 @@
         }
       });
 
-      // 啟動初始化：先讀取當前網址錨點再渲染
+      // 啟動初始化
       lastHandledHash = window.location.hash;
       applyHashRoute();
       renderAll();
