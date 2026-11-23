@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="zh-Hant-TW">
 <head>
@@ -17,6 +18,7 @@
       --forest: #224937;
       --hairline: #E6DFD3;
       --gold: #C89E4C;
+      --bronze: #9A5B2C;
       --danger: #B91C1C;
 
       /* 全站閱讀縮放倍率 + 各區塊獨立字體大小 */
@@ -123,7 +125,7 @@
     .container { max-width: 980px; margin: 0 auto; padding: 20px 16px; }
     .stack > * + * { margin-top: 20px; }
 
-    /* 各區塊文字類別（受後台個別字體大小控制） */
+    /* 各區塊文字類別 */
     .section-heading {
       font-size: calc(var(--fs-heading) * var(--font-scale));
       font-weight: 700; line-height: 1.35;
@@ -169,12 +171,66 @@
       font-size: calc(var(--fs-pill) * var(--font-scale)); font-weight: 600;
     }
     .pill-sage { background: var(--sage); color: var(--forest); }
-    .pill-peach { background: var(--peach); color: #9A5B2C; }
+    .pill-peach { background: var(--peach); color: var(--bronze); }
 
     .admin-badge {
       display: inline-flex; align-items: center; gap: 4px;
       padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600;
       background: var(--sage); color: var(--forest);
+    }
+
+    /* 服務項目與平台優惠排版 */
+    .service-head-bar {
+      display: flex; align-items: center; justify-content: flex-start;
+      flex-wrap: wrap; gap: 10px; margin-bottom: 10px;
+    }
+    .service-action-hint {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 11px; border-radius: 999px;
+      background: var(--sage); color: var(--forest);
+      border: 1px solid rgba(34, 73, 55, 0.22);
+      font-size: calc(var(--fs-sub) * var(--font-scale));
+      font-weight: 700; line-height: 1.4;
+    }
+    .service-promo-banner {
+      background: #FAF0E2; border: 1px solid #EAD3B3;
+      color: #854B1E; border-radius: 12px;
+      padding: 9px 12px; margin-bottom: 10px;
+      display: flex; align-items: center; gap: 8px;
+      font-size: calc(var(--fs-sub) * var(--font-scale));
+      font-weight: 600; line-height: 1.45;
+    }
+    .service-item-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 12px 8px; border-bottom: 1px solid var(--hairline);
+      cursor: pointer; transition: background 0.15s; border-radius: 10px;
+    }
+    .service-item-row:last-child { border-bottom: none; }
+    .service-item-row:hover { background: #F7F2E8; }
+    .service-price-col {
+      text-align: right; flex-shrink: 0;
+    }
+    .price-orig {
+      display: block;
+      font-size: calc(11px * var(--font-scale));
+      color: #9A9286; text-decoration: line-through; line-height: 1.2;
+    }
+    .price-deal-row {
+      display: inline-flex; align-items: center; gap: 5px; margin-top: 2px;
+    }
+    .promo-tag {
+      background: var(--peach); color: var(--bronze);
+      border: 1px solid #E5C7A6;
+      font-size: calc(10px * var(--font-scale));
+      font-weight: 700; padding: 1px 6px; border-radius: 6px; line-height: 1.3;
+    }
+    .price-deal {
+      font-size: calc(var(--fs-body) * var(--font-scale));
+      font-weight: 700; color: var(--bronze);
+    }
+    .price-regular {
+      font-size: calc(var(--fs-body) * var(--font-scale));
+      font-weight: 700; color: var(--forest);
     }
 
     /* 首頁主視覺拼貼 */
@@ -337,11 +393,11 @@
     }
     @media (max-width: 640px) { .service-edit-row { grid-template-columns: 1fr; } }
 
-    /* 字體設定列 */
+    /* 字體設定列（左調右看） */
     .fs-control-card {
       background: var(--linen); border: 1px solid var(--hairline);
-      border-radius: 14px; padding: 14px;
-      display: flex; flex-direction: column; gap: 10px;
+      border-radius: 14px; padding: 12px 14px;
+      display: flex; flex-direction: column; gap: 8px;
     }
     .fs-control-top {
       display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px;
@@ -358,9 +414,14 @@
       font-weight: 700; font-size: 15px; display: inline-flex; align-items: center; justify-content: center;
     }
     .fs-step-btn:hover { border-color: var(--forest); color: var(--forest); }
-    .fs-preview-box {
-      background: var(--ivory); border: 1px dashed var(--hairline);
-      border-radius: 10px; padding: 8px 12px; color: var(--ink);
+    .fs-tag-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 2px 7px; border-radius: 6px; font-size: 11px; font-weight: 700;
+      background: var(--forest); color: #fff; margin-right: 4px;
+    }
+    .preview-pane-label {
+      font-size: 11px; font-weight: 700; color: var(--forest);
+      margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
     }
 
     .error-text { color: var(--danger); font-size: 13px; font-weight: 600; margin-top: 6px; }
@@ -414,7 +475,12 @@
   </header>
 
   <!-- 主畫面內容容器 -->
-  <main class="container stack" id="main-content"></main>
+  <main class="container stack" id="main-content">
+    <div class="card" style="text-align:center; padding:32px;">
+      <p style="font-weight:700;">正在載入「私室選」畫面...</p>
+      <p id="boot-error-msg" style="font-size:13px; color:#787166; margin-top:8px;">若未出現畫面，請確認程式碼複製完整且編碼為 UTF-8。</p>
+    </div>
+  </main>
 
   <!-- 手機底部導覽列 -->
   <nav class="bottom-nav" id="mobile-nav">
@@ -433,9 +499,39 @@
   <div class="toast hidden" id="toast"></div>
 
   <script>
+    window.onerror = function (msg) {
+      var el = document.getElementById('boot-error-msg');
+      if (el) {
+        el.style.color = '#B91C1C';
+        el.textContent = '程式發生錯誤：' + msg;
+      }
+    };
+
     (function () {
       const STORAGE_KEY = 'sishixuan_unified_v3';
       const SESSION_AUTH_KEY = 'sishixuan_admin_authed';
+
+      const DISCOUNT_OPTIONS = [
+        { rate: 1, label: '原價（不打折）', short: '' },
+        { rate: 0.95, label: '9.5 折', short: '9.5折' },
+        { rate: 0.9, label: '9 折', short: '9折' },
+        { rate: 0.85, label: '8.5 折', short: '8.5折' },
+        { rate: 0.8, label: '8 折', short: '8折' },
+        { rate: 0.75, label: '7.5 折', short: '7.5折' },
+        { rate: 0.7, label: '7 折', short: '7折' },
+        { rate: 0.65, label: '6.5 折', short: '6.5折' },
+        { rate: 0.6, label: '6 折', short: '6折' },
+        { rate: 0.55, label: '5.5 折', short: '5.5折' },
+        { rate: 0.5, label: '5 折', short: '5折' },
+        { rate: 0.45, label: '4.5 折', short: '4.5折' },
+        { rate: 0.4, label: '4 折', short: '4折' },
+        { rate: 0.35, label: '3.5 折', short: '3.5折' },
+        { rate: 0.3, label: '3 折', short: '3折' },
+        { rate: 0.25, label: '2.5 折', short: '2.5折' },
+        { rate: 0.2, label: '2 折', short: '2折' },
+        { rate: 0.15, label: '1.5 折', short: '1.5折' },
+        { rate: 0.1, label: '1 折', short: '1折' }
+      ];
 
       const DEFAULT_FONT_SIZES = {
         brand: 20,
@@ -455,23 +551,25 @@
         btn: 13
       };
 
-      const FONT_SECTION_CONFIG = [
-        { key: 'brand', label: '頂部品牌名稱（私室選）', min: 14, max: 32, cssVar: '--fs-brand', sample: '私室選' },
-        { key: 'hero', label: '首頁主視覺大標題', min: 18, max: 46, cssVar: '--fs-hero', sample: '好作品值得被看見，對的工作室不該這麼難找' },
-        { key: 'heroBadge', label: '首頁主視覺副標（膠囊文字）', min: 10, max: 22, cssVar: '--fs-hero-badge', sample: '專屬於台灣獨立創作者與風格預約的安心空間' },
-        { key: 'heading', label: '各區塊與頁面標題', min: 16, max: 34, cssVar: '--fs-heading', sample: '真正動人的風格，不在連鎖店' },
-        { key: 'body', label: '內文與品牌故事說明文字', min: 12, max: 24, cssVar: '--fs-body', sample: '台灣許多獨立創作者，隱身在巷弄老宅或公寓一隅⋯⋯' },
-        { key: 'pill', label: '標籤膠囊文字（地區・風格・優質認證）', min: 10, max: 22, cssVar: '--fs-pill', sample: '美甲・台北大安　法式簡約　✓ 優質認證工作室' },
-        { key: 'subText', label: '補充小字（交通位置・預約須知・服務時長）', min: 10, max: 20, cssVar: '--fs-sub', sample: '📍 捷運忠孝敦化站步行 4 分鐘｜90 分鐘・含前置保養' },
-        { key: 'helpCardTitle', label: '幫助區塊・卡片標題（幫助了客戶／工作室）', min: 13, max: 26, cssVar: '--fs-help-card-title', sample: '幫助了「想找好工作室的你」' },
-        { key: 'helpItemTitle', label: '幫助區塊・重點標題（第 1～4 點）', min: 12, max: 24, cssVar: '--fs-help-item-title', sample: '價格與地區先看懂，不需反覆私訊試探' },
-        { key: 'helpItemDesc', label: '幫助區塊・痛點與詳細說明文字', min: 11, max: 20, cssVar: '--fs-help-item-desc', sample: '先確認預算範圍、所在地區與預約規則，確定適合自己再放心聯繫。' },
-        { key: 'principle', label: '三大堅持卡片文字', min: 11, max: 22, cssVar: '--fs-principle', sample: '01 只收錄獨立創作者：不收大型連鎖門市' },
-        { key: 'quote', label: '創辦人承諾金句', min: 13, max: 28, cssVar: '--fs-quote', sample: '「我們不保證訂單，只承諾認真審核每一間工作室。」' },
-        { key: 'cardTitle', label: '探索頁・工作室卡片名稱', min: 13, max: 26, cssVar: '--fs-card-title', sample: '霧光美甲' },
-        { key: 'cardMeta', label: '探索頁・卡片地區與價格文字', min: 10, max: 20, cssVar: '--fs-card-meta', sample: '台北大安・美甲　$1,200起' },
-        { key: 'btn', label: '按鈕文字大小', min: 11, max: 20, cssVar: '--fs-btn', sample: '探索全台工作室' }
-      ];
+      const FONT_CONFIG_MAP = {
+        brand: { key: 'brand', tag: 'A', label: '頂部品牌名稱（私室選）', hint: '最左上角 LOGO 旁的品牌大字', min: 14, max: 32, cssVar: '--fs-brand' },
+        hero: { key: 'hero', tag: 'B', label: '首頁主視覺大標題', hint: '「好作品值得被看見…」照片上的白色大字', min: 18, max: 46, cssVar: '--fs-hero' },
+        heroBadge: { key: 'heroBadge', tag: 'C', label: '首頁主視覺副標', hint: '白色大標題下方的深色膠囊小字', min: 10, max: 22, cssVar: '--fs-hero-badge' },
+        heading: { key: 'heading', tag: 'D', label: '各區塊與頁面大標題', hint: '如「這個 App 幫你解決了什麼問題？」「探索工作室」', min: 16, max: 34, cssVar: '--fs-heading' },
+        body: { key: 'body', tag: 'E', label: '一般內文與故事文字', hint: '如「為什麼創立這個平台」段落與工作室品牌故事', min: 12, max: 24, cssVar: '--fs-body' },
+        principle: { key: 'principle', tag: 'F', label: '三大堅持卡片文字', hint: '01 只收錄獨立創作者／02 優質認證／03 不畫大餅', min: 11, max: 22, cssVar: '--fs-principle' },
+        quote: { key: 'quote', tag: 'G', label: '創辦人承諾金句', hint: '「我們不保證訂單，只承諾認真審核每一間工作室。」', min: 13, max: 28, cssVar: '--fs-quote' },
+
+        helpCardTitle: { key: 'helpCardTitle', tag: '①', label: '上方色塊標題（幫助了誰）', hint: '卡片最上方淺米色框裡的綠色粗體字', min: 13, max: 26, cssVar: '--fs-help-card-title' },
+        helpItemTitle: { key: 'helpItemTitle', tag: '②', label: '第 1～4 點粗體小標題', hint: '如「價格與地區先看懂，不需反覆私訊試探」', min: 12, max: 24, cssVar: '--fs-help-item-title' },
+        helpItemDesc: { key: 'helpItemDesc', tag: '③', label: '痛點引言與第 1～4 點說明', hint: '「以前在社群找店…」及每點下方的灰色說明文字', min: 11, max: 20, cssVar: '--fs-help-item-desc' },
+
+        cardTitle: { key: 'cardTitle', tag: '1', label: '工作室卡片店名', hint: '探索頁卡片上的粗體店名（如：霧光美甲）', min: 13, max: 26, cssVar: '--fs-card-title' },
+        cardMeta: { key: 'cardMeta', tag: '2', label: '卡片地區與起價', hint: '店名下方的地區、分類與價格數字', min: 10, max: 20, cssVar: '--fs-card-meta' },
+        pill: { key: 'pill', tag: '3', label: '膠囊標籤文字', hint: '如「美甲・台北大安」「法式簡約」「✓ 優質認證工作室」', min: 10, max: 22, cssVar: '--fs-pill' },
+        subText: { key: 'subText', tag: '4', label: '補充小字（地址・時長・優惠條）', hint: '詳情頁的交通位置、預約須知、服務時間與優惠橫條', min: 10, max: 20, cssVar: '--fs-sub' },
+        btn: { key: 'btn', tag: '5', label: '按鈕文字大小', hint: '全站按鈕文字（如：探索全台工作室、LINE 預約）', min: 11, max: 20, cssVar: '--fs-btn' }
+      };
 
       const DEFAULT_DATA = {
         adminPassword: '1234',
@@ -480,6 +578,8 @@
         site: {
           brandName: '私室選',
           brandSub: '嚴選獨立工作室指南',
+          defaultDiscountRate: 0.9,
+          promoBannerText: '透過「私室選」完成預約並消費，結帳即享 9 折專屬優惠',
           heroLine1: '好作品值得被看見，',
           heroLine2: '對的工作室不該這麼難找',
           heroBadge: '專屬於台灣獨立創作者與風格預約的安心空間',
@@ -523,6 +623,7 @@
             style: '法式簡約',
             minPrice: 1200,
             certified: true,
+            discountRate: 'default',
             tagline: '從一支筆刷開始，我們只做讓手指安靜發光的設計。',
             story: '主理人曾於東京進修，希望打造沒有推銷壓力、只有自然光與手沖茶的單人工作室。堅持選用日本低敏凝膠，細緻甘皮護理。',
             coverImage: 'https://images.unsplash.com/photo-1658390039913-4702ba28c594?auto=format&fit=crop&w=900&q=80',
@@ -545,6 +646,7 @@
             style: '森系自然',
             minPrice: 800,
             certified: true,
+            discountRate: 'default',
             tagline: '順應四季花期，把晨露與枝葉線條綁進每一束溫柔裡。',
             story: '不刻意追求工整對稱，而是留下花草自然舒展的呼吸感。每週精選台灣當令切花，為您的贈禮時刻設計花禮。',
             coverImage: 'https://images.unsplash.com/photo-1683606960654-5a71f2015dec?auto=format&fit=crop&w=900&q=80',
@@ -566,6 +668,7 @@
             style: '韓系簡約',
             minPrice: 1500,
             certified: true,
+            discountRate: 'default',
             tagline: '嚴選北海道鮮奶油與小農水果，揉出剛剛好不過甜的日常紀念。',
             story: '堅持減糖配方、不使用植物性鮮奶油與香精。每一顆蛋糕都在接單後手工烤製抹面。',
             coverImage: 'https://images.unsplash.com/photo-1622063531136-e7efff4ece72?auto=format&fit=crop&w=900&q=80',
@@ -587,6 +690,7 @@
             style: '法式簡約',
             minPrice: 3500,
             certified: true,
+            discountRate: 'default',
             tagline: '不刻意擺拍，只留住微風與你們相視而笑的純粹瞬間。',
             story: '結合數位與 135 底片拍攝的獨立攝影工作室，擅長捕捉情侶日常、輕婚紗登記與個人肖像。',
             coverImage: 'https://images.unsplash.com/photo-1774660810725-fb04e002003d?auto=format&fit=crop&w=900&q=80',
@@ -622,7 +726,7 @@
 
       function getSessionAuth() {
         try { return sessionStorage.getItem(SESSION_AUTH_KEY) === '1'; }
-        catch { return false; }
+        catch (e) { return false; }
       }
 
       function setSessionAuth(flag) {
@@ -630,7 +734,7 @@
         try {
           if (flag) sessionStorage.setItem(SESSION_AUTH_KEY, '1');
           else sessionStorage.removeItem(SESSION_AUTH_KEY);
-        } catch {}
+        } catch (e) {}
       }
 
       function loadState() {
@@ -638,18 +742,25 @@
           const raw = localStorage.getItem(STORAGE_KEY);
           if (raw) {
             const parsed = JSON.parse(raw);
+            const ps = parsed.site || {};
             return {
               adminPassword: parsed.adminPassword || DEFAULT_DATA.adminPassword,
               fontScale: Number(parsed.fontScale) || 1,
               fontSizes: { ...DEFAULT_FONT_SIZES, ...(parsed.fontSizes || {}) },
               site: {
                 ...DEFAULT_DATA.site,
-                ...(parsed.site || {}),
-                helpCustomerItems: Array.isArray(parsed.site?.helpCustomerItems)
-                  ? parsed.site.helpCustomerItems
+                ...ps,
+                defaultDiscountRate: ps.defaultDiscountRate !== undefined
+                  ? Number(ps.defaultDiscountRate)
+                  : DEFAULT_DATA.site.defaultDiscountRate,
+                promoBannerText: ps.promoBannerText !== undefined
+                  ? ps.promoBannerText
+                  : DEFAULT_DATA.site.promoBannerText,
+                helpCustomerItems: Array.isArray(ps.helpCustomerItems)
+                  ? ps.helpCustomerItems
                   : DEFAULT_DATA.site.helpCustomerItems,
-                helpStudioItems: Array.isArray(parsed.site?.helpStudioItems)
-                  ? parsed.site.helpStudioItems
+                helpStudioItems: Array.isArray(ps.helpStudioItems)
+                  ? ps.helpStudioItems
                   : DEFAULT_DATA.site.helpStudioItems
               },
               studios: Array.isArray(parsed.studios) ? parsed.studios : DEFAULT_DATA.studios,
@@ -714,9 +825,9 @@
         const scale = Number(state.fontScale) || 1;
         rootStyle.setProperty('--font-scale', String(scale));
 
-        FONT_SECTION_CONFIG.forEach((cfg) => {
-          const px = Number(state.fontSizes?.[cfg.key]) || DEFAULT_FONT_SIZES[cfg.key];
-          rootStyle.setProperty(cfg.cssVar, px + 'px');
+        Object.values(FONT_CONFIG_MAP).forEach((cfg) => {
+          const val = state.fontSizes && state.fontSizes[cfg.key] ? Number(state.fontSizes[cfg.key]) : DEFAULT_FONT_SIZES[cfg.key];
+          rootStyle.setProperty(cfg.cssVar, val + 'px');
         });
 
         document.querySelectorAll('[data-font-scale-select]').forEach((sel) => {
@@ -724,7 +835,7 @@
         });
       }
 
-      function fontSelectHTML(extraId = '') {
+      function fontSelectHTML(extraId) {
         const cur = Number(state.fontScale) || 1;
         const opts = [
           { v: '0.9', t: '字體：較小' },
@@ -737,6 +848,41 @@
             ${opts.map((o) => `<option value="${o.v}" ${String(cur) === o.v ? 'selected' : ''}>${o.t}</option>`).join('')}
           </select>
         `;
+      }
+
+      function getDiscountOption(rate) {
+        const num = Number(rate);
+        return DISCOUNT_OPTIONS.find(o => Math.abs(o.rate - num) < 0.001) || DISCOUNT_OPTIONS[2];
+      }
+
+      function getStudioDiscountRate(studio) {
+        if (studio && studio.discountRate !== undefined && studio.discountRate !== null && studio.discountRate !== 'default' && studio.discountRate !== '') {
+          return Number(studio.discountRate);
+        }
+        return state.site.defaultDiscountRate !== undefined ? Number(state.site.defaultDiscountRate) : 0.9;
+      }
+
+      function calcDiscountPrice(priceStr, rate) {
+        if (Number(rate) >= 0.999) return null;
+        const str = String(priceStr || '').trim();
+        const match = str.match(/[\d,]+/);
+        if (!match) return null;
+        const num = parseInt(match[0].replace(/,/g, ''), 10);
+        if (isNaN(num) || num <= 0) return null;
+        const discounted = Math.round(num * Number(rate));
+        const suffix = str.indexOf('起') !== -1 ? '起' : '';
+        return '$' + discounted.toLocaleString() + suffix;
+      }
+
+      function getStudioPromoBannerText(studio, rate) {
+        if (rate >= 0.999) return '';
+        const opt = getDiscountOption(rate);
+        const globalRate = state.site.defaultDiscountRate !== undefined ? Number(state.site.defaultDiscountRate) : 0.9;
+        const isOverridden = studio.discountRate && studio.discountRate !== 'default' && Math.abs(Number(studio.discountRate) - globalRate) > 0.001;
+        if (isOverridden) {
+          return `透過「${state.site.brandName}」完成預約並消費，本工作室結帳即享 ${opt.label} 專屬優惠`;
+        }
+        return state.site.promoBannerText || `透過「${state.site.brandName}」完成預約並消費，結帳即享 ${opt.label} 專屬優惠`;
       }
 
       function esc(str) {
@@ -799,6 +945,28 @@
         `;
       }
 
+      function sliderRowHTML(key) {
+        const cfg = FONT_CONFIG_MAP[key];
+        const curVal = (state.fontSizes && state.fontSizes[key]) ? Number(state.fontSizes[key]) : DEFAULT_FONT_SIZES[key];
+        return `
+          <div class="fs-control-card">
+            <div class="fs-control-top">
+              <div>
+                <span class="fs-tag-badge">${esc(cfg.tag)}</span>
+                <strong style="font-size:13px;">${esc(cfg.label)}</strong>
+                <div style="font-size:11px; color:var(--muted); margin-top:2px;">${esc(cfg.hint)}</div>
+              </div>
+              <span class="admin-badge" id="fs-val-${key}">${curVal} px</span>
+            </div>
+            <div class="fs-slider-row">
+              <button type="button" class="fs-step-btn" data-action="step-fs" data-key="${key}" data-step="-1" data-min="${cfg.min}" data-max="${cfg.max}">－</button>
+              <input type="range" class="fs-range" id="fs-range-${key}" min="${cfg.min}" max="${cfg.max}" step="1" value="${curVal}" data-fs-key="${key}" />
+              <button type="button" class="fs-step-btn" data-action="step-fs" data-key="${key}" data-step="1" data-min="${cfg.min}" data-max="${cfg.max}">＋</button>
+            </div>
+          </div>
+        `;
+      }
+
       function renderHeader() {
         document.getElementById('hdr-brand-name').textContent = state.site.brandName;
         document.getElementById('hdr-brand-sub').textContent = state.site.brandSub;
@@ -850,7 +1018,6 @@
               <p class="body-text" style="font-weight:500;">${esc(s.whyDesc2)}</p>
             </section>
 
-            <!-- 這個 App 幫助了客戶＆工作室什麼 -->
             <section class="stack" style="margin-top:20px;">
               <div>
                 <h2 class="section-heading">${esc(s.helpSectionTitle)}</h2>
@@ -901,7 +1068,7 @@
             if (filters.q.trim()) {
               const kw = filters.q.trim().toLowerCase();
               const hay = `${st.name} ${st.location} ${st.category} ${st.style}`.toLowerCase();
-              if (!hay.includes(kw)) return false;
+              if (hay.indexOf(kw) === -1) return false;
             }
             return true;
           });
@@ -938,7 +1105,7 @@
         }
 
         if (frontTab === 'saved') {
-          const savedList = state.studios.filter((st) => state.savedIds.includes(st.id));
+          const savedList = state.studios.filter((st) => state.savedIds.indexOf(st.id) !== -1);
           main.innerHTML = `
             <div>
               <h1 class="section-heading">我的收藏 (${savedList.length})</h1>
@@ -1025,6 +1192,9 @@
 
         if (adminTab === 'studios') {
           if (editingStudioId && draftStudio) {
+            const globalRateVal = state.site.defaultDiscountRate !== undefined ? state.site.defaultDiscountRate : 0.9;
+            const globalOpt = getDiscountOption(globalRateVal);
+            const curDraftRate = draftStudio.discountRate !== undefined ? draftStudio.discountRate : 'default';
             bodyHTML = `
               <div class="card">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid var(--hairline);">
@@ -1074,6 +1244,14 @@
                   </div>
 
                   <div>
+                    <label class="label">本工作室價格折扣設定</label>
+                    <select class="select" data-draft="discountRate">
+                      <option value="default" ${curDraftRate === 'default' ? 'selected' : ''}>跟隨全站預設（目前：${esc(globalOpt.label)}）</option>
+                      ${DISCOUNT_OPTIONS.map(o => `<option value="${o.rate}" ${curDraftRate !== 'default' && Math.abs(Number(curDraftRate) - o.rate) < 0.001 ? 'selected' : ''}>${esc(o.label)}</option>`).join('')}
+                    </select>
+                  </div>
+
+                  <div>
                     <label class="label">封面圖片網址 (URL)</label>
                     <input class="input" data-draft="coverImage" value="${esc(draftStudio.coverImage)}" />
                   </div>
@@ -1101,14 +1279,14 @@
 
                   <div style="border-top:1px solid var(--hairline); padding-top:14px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                      <span style="font-size:13px; font-weight:700;">服務項目與價格</span>
+                      <span style="font-size:13px; font-weight:700;">服務項目與原價（會依上方設定自動換算折扣）</span>
                       <button type="button" class="btn btn-sage btn-sm" data-action="draft-add-service">+ 新增一項服務</button>
                     </div>
                     <div id="services-editor-list">
                       ${(draftStudio.services || []).map((srv, idx) => `
                         <div class="service-edit-row">
                           <input class="input" placeholder="服務名稱" data-srv-idx="${idx}" data-srv-field="name" value="${esc(srv.name)}" />
-                          <input class="input" placeholder="價格 ($1,200)" data-srv-idx="${idx}" data-srv-field="price" value="${esc(srv.price)}" />
+                          <input class="input" placeholder="原價 ($1,200)" data-srv-idx="${idx}" data-srv-field="price" value="${esc(srv.price)}" />
                           <input class="input" placeholder="時間/說明" data-srv-idx="${idx}" data-srv-field="duration" value="${esc(srv.duration)}" />
                           <button type="button" class="btn btn-danger btn-sm" data-action="draft-del-service" data-idx="${idx}">刪除</button>
                         </div>
@@ -1130,7 +1308,10 @@
                 <button class="btn btn-forest btn-sm" data-action="admin-new-studio">+ 新增工作室</button>
               </div>
               <div class="card" style="padding:0;">
-                ${state.studios.map((s) => `
+                ${state.studios.map((s) => {
+                  const effRate = getStudioDiscountRate(s);
+                  const effOpt = getDiscountOption(effRate);
+                  return `
                   <div class="admin-row">
                     <div style="display:flex; align-items:center; gap:12px;">
                       <img src="${esc(s.coverImage)}" alt="" style="width:52px; height:52px; border-radius:12px; object-fit:cover; background:var(--sand);" onerror="this.style.display='none'" />
@@ -1138,6 +1319,7 @@
                         <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
                           <strong style="font-size:14px;">${esc(s.name)}</strong>
                           <span class="admin-badge" style="${s.certified ? '' : 'background:var(--peach);color:#9A5B2C;'}">${s.certified ? '✓ 已認證' : '未認證'}</span>
+                          <span class="admin-badge" style="background:#FAF0E2;color:#854B1E;">${effRate >= 0.999 ? '原價' : esc(effOpt.label)}</span>
                         </div>
                         <div style="font-size:12px; color:var(--muted); margin-top:2px;">
                           ${esc(s.location)}・${esc(s.category)}・$${Number(s.minPrice || 0).toLocaleString()}起
@@ -1150,53 +1332,169 @@
                       <button class="btn btn-danger btn-sm" data-action="admin-del-studio" data-id="${esc(s.id)}">刪除</button>
                     </div>
                   </div>
-                `).join('')}
+                `; }).join('')}
               </div>
             `;
           }
         } else if (adminTab === 'fonts') {
+          const firstCustomerItem = (state.site.helpCustomerItems && state.site.helpCustomerItems[0]) ? state.site.helpCustomerItems[0] : { title: '價格與地區先看懂', desc: '先確認預算範圍與距離再聯繫。' };
+          const firstStudioImg = (state.studios && state.studios[0]) ? state.studios[0].coverImage : '';
           bodyHTML = `
-            <div class="card stack">
-              <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px;">
+            <div class="stack">
+              <div class="card" style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; padding:16px 20px;">
                 <div>
-                  <h2 style="font-size:17px;">各區塊獨立字體大小設定</h2>
-                  <p style="font-size:12px; color:var(--muted); margin-top:2px;">拖動滑桿或點擊 － / ＋，即可單獨調整網站每個部分的字體大小（即時儲存）</p>
+                  <h2 style="font-size:17px;">各區塊字體大小調整（左調右看即時預覽）</h2>
+                  <p style="font-size:12px; color:var(--muted); margin-top:2px;">對照右方真實卡片預覽直接微調，比例清楚直覺，所有調整自動儲存</p>
                 </div>
-                <button class="btn btn-ivory btn-sm" data-action="reset-font-sizes">恢復各區塊預設大小</button>
+                <button class="btn btn-ivory btn-sm" data-action="reset-font-sizes">全部恢復預設大小</button>
               </div>
 
-              <div class="grid-2">
-                ${FONT_SECTION_CONFIG.map((cfg) => {
-                  const curVal = Number(state.fontSizes?.[cfg.key]) || DEFAULT_FONT_SIZES[cfg.key];
-                  const isNormalWeight = ['body', 'subText', 'helpItemDesc', 'heroBadge', 'cardMeta'].includes(cfg.key);
-                  return `
-                    <div class="fs-control-card">
-                      <div class="fs-control-top">
-                        <strong style="font-size:13px;">${esc(cfg.label)}</strong>
-                        <span class="admin-badge" id="fs-val-${cfg.key}">${curVal} px</span>
+              <div class="card stack">
+                <div style="border-bottom:1px solid var(--hairline); padding-bottom:10px;">
+                  <strong style="font-size:15px; color:var(--forest);">一、首頁「幫助了客戶／工作室」對照卡片</strong>
+                </div>
+                <div class="grid-2" style="align-items:start;">
+                  <div class="stack" style="margin-top:0; gap:10px;">
+                    ${sliderRowHTML('helpCardTitle')}
+                    ${sliderRowHTML('helpItemTitle')}
+                    ${sliderRowHTML('helpItemDesc')}
+                  </div>
+                  <div>
+                    <div class="preview-pane-label">👁️ 即時卡片預覽（拖動左邊滑桿會同步變化）</div>
+                    <div class="help-card">
+                      <div class="help-card-head">
+                        <div class="help-card-title help-card-title-text">
+                          <span class="help-dot"></span>
+                          <span><span class="fs-tag-badge">①</span>${esc(state.site.helpCustomerTitle)}</span>
+                        </div>
+                        <p class="help-item-desc-text" style="color:var(--muted);">
+                          <span class="fs-tag-badge">③</span>${esc(state.site.helpCustomerBefore)}
+                        </p>
                       </div>
-                      <div class="fs-slider-row">
-                        <button type="button" class="fs-step-btn" data-action="step-fs" data-key="${cfg.key}" data-step="-1" data-min="${cfg.min}" data-max="${cfg.max}">－</button>
-                        <input type="range" class="fs-range" id="fs-range-${cfg.key}" min="${cfg.min}" max="${cfg.max}" step="1" value="${curVal}" data-fs-key="${cfg.key}" />
-                        <button type="button" class="fs-step-btn" data-action="step-fs" data-key="${cfg.key}" data-step="1" data-min="${cfg.min}" data-max="${cfg.max}">＋</button>
-                      </div>
-                      <div class="fs-preview-box">
-                        <div style="font-size:11px; color:var(--muted); margin-bottom:2px;">預覽效果：</div>
-                        <div id="fs-prev-${cfg.key}" style="font-size:${curVal}px; font-weight:${isNormalWeight ? '400' : '700'}; line-height:1.4;">
-                          ${esc(cfg.sample)}
+                      <div class="help-item">
+                        <div class="help-num">1</div>
+                        <div>
+                          <div class="help-item-title-text">
+                            <span class="fs-tag-badge">②</span>${esc(firstCustomerItem.title)}
+                          </div>
+                          <div class="help-item-desc-text" style="color:var(--muted); margin-top:4px;">
+                            <span class="fs-tag-badge">③</span>${esc(firstCustomerItem.desc)}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  `;
-                }).join('')}
+                  </div>
+                </div>
+              </div>
+
+              <div class="card stack">
+                <div style="border-bottom:1px solid var(--hairline); padding-bottom:10px;">
+                  <strong style="font-size:15px; color:var(--forest);">二、探索頁卡片、詳情標籤與按鈕</strong>
+                </div>
+                <div class="grid-2" style="align-items:start;">
+                  <div class="stack" style="margin-top:0; gap:10px;">
+                    ${sliderRowHTML('cardTitle')}
+                    ${sliderRowHTML('cardMeta')}
+                    ${sliderRowHTML('pill')}
+                    ${sliderRowHTML('subText')}
+                    ${sliderRowHTML('btn')}
+                  </div>
+                  <div class="stack" style="margin-top:0; gap:12px;">
+                    <div class="preview-pane-label">👁️ 即時卡片與詳情標籤預覽</div>
+                    <div class="studio-card" style="max-width:280px; cursor:default;">
+                      <div class="studio-thumb">
+                        <img src="${esc(firstStudioImg)}" alt="" onerror="this.style.display='none'" />
+                        <span class="studio-cert-tag">✓ 優質認證</span>
+                      </div>
+                      <div class="studio-body">
+                        <div class="studio-name"><span class="fs-tag-badge">1</span>霧光美甲</div>
+                        <div class="studio-meta">
+                          <span class="studio-loc"><span class="fs-tag-badge">2</span>台北大安・美甲</span>
+                          <span class="studio-price">$1,200起</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="card" style="padding:14px; background:var(--linen);">
+                      <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px;">
+                        <span class="pill pill-sage"><span class="fs-tag-badge">3</span>美甲・台北大安</span>
+                        <span class="pill pill-peach">法式簡約</span>
+                        <span class="pill pill-sage">✓ 優質認證工作室</span>
+                      </div>
+                      <p class="sub-text" style="color:var(--muted); margin-bottom:10px;">
+                        <span class="fs-tag-badge">4</span>📍 捷運忠孝敦化站步行 4 分鐘｜90 分鐘・含前置保養
+                      </p>
+                      <button type="button" class="btn btn-forest"><span class="fs-tag-badge" style="background:rgba(255,255,255,0.25);">5</span>探索全台工作室</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card stack">
+                <div style="border-bottom:1px solid var(--hairline); padding-bottom:10px;">
+                  <strong style="font-size:15px; color:var(--forest);">三、首頁主視覺、各區大標題、一般內文與金句</strong>
+                </div>
+                <div class="grid-2" style="align-items:start;">
+                  <div class="stack" style="margin-top:0; gap:10px;">
+                    ${sliderRowHTML('brand')}
+                    ${sliderRowHTML('hero')}
+                    ${sliderRowHTML('heroBadge')}
+                    ${sliderRowHTML('heading')}
+                    ${sliderRowHTML('body')}
+                    ${sliderRowHTML('principle')}
+                    ${sliderRowHTML('quote')}
+                  </div>
+                  <div class="stack" style="margin-top:0; gap:12px;">
+                    <div class="preview-pane-label">👁️ 即時文字比例預覽</div>
+                    <div class="card" style="padding:14px; background:var(--linen);">
+                      <div class="brand-title"><span class="fs-tag-badge">A</span>${esc(state.site.brandName)}</div>
+                    </div>
+                    <div style="border-radius:16px; overflow:hidden; background:rgba(35,32,28,0.78); color:#fff; padding:18px; text-align:center;">
+                      <div style="font-size:calc(var(--fs-hero) * var(--font-scale)); font-weight:700; line-height:1.35;">
+                        <span class="fs-tag-badge">B</span>${esc(state.site.heroLine1)}
+                      </div>
+                      <div class="hero-badge" style="display:inline-block; margin-top:8px;">
+                        <span class="fs-tag-badge">C</span>${esc(state.site.heroBadge)}
+                      </div>
+                    </div>
+                    <div class="card" style="padding:14px; background:var(--ivory);">
+                      <div class="section-heading" style="margin-bottom:6px;"><span class="fs-tag-badge">D</span>${esc(state.site.whyTitle)}</div>
+                      <p class="body-text" style="color:var(--muted);"><span class="fs-tag-badge">E</span>${esc(state.site.whyDesc1)}</p>
+                    </div>
+                    <div class="card" style="padding:14px; background:var(--sage);">
+                      <div class="principle-text" style="font-weight:700; color:var(--forest);"><span class="fs-tag-badge">F</span>01 只收錄獨立創作者：把舞台留給真正有手藝的獨立工作室。</div>
+                    </div>
+                    <div class="card" style="padding:14px; background:#F3EDE2; text-align:center;">
+                      <div class="quote-text"><span class="fs-tag-badge">G</span>${esc(state.site.quote)}</div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           `;
         } else if (adminTab === 'site') {
           const s = state.site;
+          const curDefaultRate = s.defaultDiscountRate !== undefined ? Number(s.defaultDiscountRate) : 0.9;
           bodyHTML = `
             <form id="site-edit-form" class="card stack">
-              <h2 style="font-size:17px;">首頁與品牌文案設定</h2>
+              <h2 style="font-size:17px;">首頁、品牌文案與平台優惠設定</h2>
+
+              <div class="fs-control-card" style="background:#FAF5EB; border-color:#EAD3B3;">
+                <strong style="font-size:14px; color:#854B1E;">🎁 平台預約優惠與價格折扣設定</strong>
+                <div class="grid-2" style="margin-top:4px;">
+                  <div>
+                    <label class="label">全站預設折扣（1～9.5 折或原價）</label>
+                    <select class="select" name="defaultDiscountRate" id="global-discount-select">
+                      ${DISCOUNT_OPTIONS.map(o => `<option value="${o.rate}" ${Math.abs(curDefaultRate - o.rate) < 0.001 ? 'selected' : ''}>${esc(o.label)}</option>`).join('')}
+                    </select>
+                  </div>
+                  <div>
+                    <label class="label">優惠橫條顯示內容（選「原價」時前台會自動隱藏橫條）</label>
+                    <input class="input" name="promoBannerText" id="global-promo-input" value="${esc(s.promoBannerText)}" placeholder="例如：透過「私室選」完成預約並消費，結帳即享 9 折專屬優惠" />
+                  </div>
+                </div>
+                <p style="font-size:11px; color:var(--muted);">提示：若特定單間工作室想用不同折數，可到「工作室管理 → 編輯」單獨設定。</p>
+              </div>
+
               <div class="grid-2">
                 <div><label class="label">品牌名稱</label><input class="input" name="brandName" value="${esc(s.brandName)}" /></div>
                 <div><label class="label">品牌副標題</label><input class="input" name="brandSub" value="${esc(s.brandSub)}" /></div>
@@ -1213,7 +1511,6 @@
               <div><label class="label">說明段落一</label><textarea class="textarea" rows="2" name="whyDesc1">${esc(s.whyDesc1)}</textarea></div>
               <div><label class="label">說明段落二</label><textarea class="textarea" rows="2" name="whyDesc2">${esc(s.whyDesc2)}</textarea></div>
 
-              <!-- 幫助客戶與工作室文案編輯區 -->
               <div style="border-top:1px solid var(--hairline); padding-top:14px;" class="stack">
                 <h3 style="font-size:15px; color:var(--forest);">「幫助客戶＆工作室什麼」區塊文案</h3>
                 <div class="grid-2">
@@ -1252,7 +1549,7 @@
                 <div><label class="label">創辦人承諾金句</label><input class="input" name="quote" value="${esc(s.quote)}" /></div>
                 <div><label class="label">署名</label><input class="input" name="quoteAuthor" value="${esc(s.quoteAuthor)}" /></div>
               </div>
-              <button type="submit" class="btn btn-forest" style="align-self:flex-end;">儲存首頁文案</button>
+              <button type="submit" class="btn btn-forest" style="align-self:flex-end;">儲存首頁與優惠設定</button>
             </form>
           `;
         } else if (adminTab === 'inquiries') {
@@ -1320,7 +1617,7 @@
           <div class="admin-tabs">
             <button class="admin-tab-btn ${adminTab === 'studios' ? 'active' : ''}" data-action="admin-tab" data-tab="studios">工作室管理 (${state.studios.length})</button>
             <button class="admin-tab-btn ${adminTab === 'fonts' ? 'active' : ''}" data-action="admin-tab" data-tab="fonts">各區塊字體設定</button>
-            <button class="admin-tab-btn ${adminTab === 'site' ? 'active' : ''}" data-action="admin-tab" data-tab="site">首頁與品牌文案</button>
+            <button class="admin-tab-btn ${adminTab === 'site' ? 'active' : ''}" data-action="admin-tab" data-tab="site">首頁文案與優惠</button>
             <button class="admin-tab-btn ${adminTab === 'inquiries' ? 'active' : ''}" data-action="admin-tab" data-tab="inquiries">預約詢問 (${state.inquiries.length})</button>
             <button class="admin-tab-btn ${adminTab === 'backup' ? 'active' : ''}" data-action="admin-tab" data-tab="backup">密碼與備份</button>
           </div>
@@ -1361,14 +1658,19 @@
         }, 50);
       }
 
-      function openStudioModal(id, shouldSyncHash = true) {
+      function openStudioModal(id, shouldSyncHash) {
+        if (shouldSyncHash === undefined) shouldSyncHash = true;
         const s = state.studios.find((x) => x.id === id);
         if (!s) return;
         currentStudioId = s.id;
         if (shouldSyncHash) {
           syncHash('#' + frontTab + '/' + encodeURIComponent(s.id));
         }
-        const isSaved = state.savedIds.includes(s.id);
+        const isSaved = state.savedIds.indexOf(s.id) !== -1;
+        const rate = getStudioDiscountRate(s);
+        const discOpt = getDiscountOption(rate);
+        const bannerText = getStudioPromoBannerText(s, rate);
+
         const box = document.getElementById('modal-box');
         box.classList.remove('modal-box-sm');
         box.innerHTML = `
@@ -1395,17 +1697,51 @@
               <p class="sub-text" style="color:var(--muted); margin-top:8px;">📍 ${esc(s.address)}<br>🗓️ ${esc(s.bookingInfo)}</p>
             </div>
 
-            <div class="card" style="padding:14px;">
-              <div class="body-text" style="font-weight:700; margin-bottom:8px;">服務項目與價格（點擊可立即詢問預約）</div>
-              ${(s.services || []).map((srv) => `
-                <div class="admin-row" style="padding:10px 4px; cursor:pointer;" data-action="pick-service" data-id="${esc(s.id)}" data-srv="${esc(srv.name)}" data-price="${esc(srv.price)}">
-                  <div>
-                    <div class="body-text" style="font-weight:600;">${esc(srv.name)}</div>
-                    <div class="sub-text" style="color:var(--muted);">${esc(srv.duration)}</div>
-                  </div>
-                  <strong class="body-text" style="color:var(--forest);">${esc(srv.price)} →</strong>
-                </div>
-              `).join('')}
+            <div class="card" style="padding:16px;">
+              <div class="service-head-bar">
+                <span class="body-text" style="font-weight:700;">服務項目與價格</span>
+                <span class="service-action-hint">👇 點擊項目即可詢問預約</span>
+              </div>
+              ${bannerText
+                ? `<div class="service-promo-banner">
+                     <span>🎁</span>
+                     <span>${esc(bannerText)}</span>
+                   </div>`
+                : ''
+              }
+              <div>
+                ${(s.services || []).map((srv) => {
+                  const dealPrice = calcDiscountPrice(srv.price, rate);
+                  return `
+                    <div class="service-item-row" data-action="pick-service" data-id="${esc(s.id)}" data-srv="${esc(srv.name)}" data-price="${esc(srv.price)}" data-deal="${esc(dealPrice || '')}" data-rate-label="${esc(discOpt.short)}">
+                      <div>
+                        <div class="body-text" style="font-weight:600;">${esc(srv.name)}</div>
+                        <div class="sub-text" style="color:var(--muted);">${esc(srv.duration)}</div>
+                      </div>
+                      <div class="service-price-col">
+                        ${rate >= 0.999
+                          ? `<div class="price-deal-row">
+                               <strong class="price-regular">${esc(srv.price)}</strong>
+                               <span style="color:var(--muted);">→</span>
+                             </div>`
+                          : dealPrice
+                            ? `<span class="price-orig">原價 ${esc(srv.price)}</span>
+                               <div class="price-deal-row">
+                                 <span class="promo-tag">${esc(discOpt.short)}</span>
+                                 <strong class="price-deal">${esc(dealPrice)}</strong>
+                                 <span style="color:var(--muted);">→</span>
+                               </div>`
+                            : `<div class="price-deal-row">
+                                 <span class="promo-tag">${esc(discOpt.short)}</span>
+                                 <strong class="price-deal">${esc(srv.price)}</strong>
+                                 <span style="color:var(--muted);">→</span>
+                               </div>`
+                        }
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
             </div>
 
             <div id="inquiry-box" class="hidden card" style="border-color:var(--forest);"></div>
@@ -1441,7 +1777,8 @@
         document.getElementById('modal-backdrop').classList.remove('hidden');
       }
 
-      function closeModal(shouldSyncHash = true) {
+      function closeModal(shouldSyncHash) {
+        if (shouldSyncHash === undefined) shouldSyncHash = true;
         document.getElementById('modal-backdrop').classList.add('hidden');
         if (currentStudioId) {
           currentStudioId = null;
@@ -1525,12 +1862,12 @@
           renderAll();
         } else if (act === 'toggle-save') {
           const id = el.dataset.id;
-          if (state.savedIds.includes(id)) state.savedIds = state.savedIds.filter(x => x !== id);
+          if (state.savedIds.indexOf(id) !== -1) state.savedIds = state.savedIds.filter(x => x !== id);
           else state.savedIds.push(id);
           saveState();
           openStudioModal(id, false);
           if (frontTab === 'saved') renderFront();
-          showToast(state.savedIds.includes(id) ? '已加入收藏' : '已取消收藏');
+          showToast(state.savedIds.indexOf(id) !== -1 ? '已加入收藏' : '已取消收藏');
         } else if (act === 'copy-text') {
           const val = el.dataset.val;
           if (navigator.clipboard) navigator.clipboard.writeText(val).catch(() => {});
@@ -1538,11 +1875,21 @@
         } else if (act === 'pick-service') {
           const box = document.getElementById('inquiry-box');
           box.classList.remove('hidden');
+          const rateLabel = el.dataset.rateLabel || '';
+          const hasDiscount = Boolean(rateLabel);
+          const dealTxt = !hasDiscount
+            ? esc(el.dataset.price)
+            : el.dataset.deal
+              ? `原價 ${esc(el.dataset.price)}｜完成預約享 ${esc(rateLabel)} ${esc(el.dataset.deal)}`
+              : `${esc(el.dataset.price)}（完成預約享 ${esc(rateLabel)}）`;
+          const savedServiceLabel = !hasDiscount
+            ? `${el.dataset.srv}（${el.dataset.price}）`
+            : `${el.dataset.srv}（完成預約${rateLabel}：${el.dataset.deal || el.dataset.price}）`;
           box.innerHTML = `
             <div class="body-text" style="font-weight:700; color:var(--forest); margin-bottom:8px;">
-              預約詢問：${esc(el.dataset.srv)}（${esc(el.dataset.price)}）
+              預約詢問：${esc(el.dataset.srv)}（${dealTxt}）
             </div>
-            <form id="inquiry-form" class="stack" style="margin-top:0;" data-studio-id="${esc(el.dataset.id)}" data-service="${esc(el.dataset.srv)}">
+            <form id="inquiry-form" class="stack" style="margin-top:0;" data-studio-id="${esc(el.dataset.id)}" data-service="${esc(savedServiceLabel)}" data-rate-label="${esc(rateLabel)}">
               <div class="grid-2">
                 <input class="input" name="customerName" required placeholder="您的稱呼 *" />
                 <input class="input" name="contact" required placeholder="LINE ID 或手機 *" />
@@ -1563,7 +1910,7 @@
           const step = Number(el.dataset.step);
           const min = Number(el.dataset.min);
           const max = Number(el.dataset.max);
-          const cur = Number(state.fontSizes?.[k]) || DEFAULT_FONT_SIZES[k];
+          const cur = (state.fontSizes && state.fontSizes[k]) ? Number(state.fontSizes[k]) : DEFAULT_FONT_SIZES[k];
           const nextVal = Math.min(max, Math.max(min, cur + step));
           state.fontSizes[k] = nextVal;
           saveState();
@@ -1572,8 +1919,6 @@
           if (rangeEl) rangeEl.value = String(nextVal);
           const valEl = document.getElementById('fs-val-' + k);
           if (valEl) valEl.textContent = nextVal + ' px';
-          const prevEl = document.getElementById('fs-prev-' + k);
-          if (prevEl) prevEl.style.fontSize = nextVal + 'px';
         } else if (act === 'reset-font-sizes') {
           state.fontSizes = { ...DEFAULT_FONT_SIZES };
           saveState();
@@ -1585,7 +1930,8 @@
           draftStudio = {
             id: newId, name: '新個人工作室', category: '美甲', city: '台北', location: '台北大安',
             address: '全預約制工作室（預約後提供詳細地址）', style: '法式簡約', minPrice: 1200,
-            certified: false, tagline: '請輸入一句話介紹...', story: '請輸入品牌故事...',
+            certified: false, discountRate: 'default',
+            tagline: '請輸入一句話介紹...', story: '請輸入品牌故事...',
             coverImage: 'https://images.unsplash.com/photo-1685963086339-85c3b3ecafe9?auto=format&fit=crop&w=900&q=80',
             bookingInfo: '採預約制', ig: '@your.studio', line: '@yourstudio',
             services: [{ name: '基礎預約項目', price: '$1,200', duration: '90 分鐘' }]
@@ -1596,6 +1942,7 @@
           const found = state.studios.find(x => x.id === el.dataset.id);
           if (found) {
             draftStudio = JSON.parse(JSON.stringify(found));
+            if (draftStudio.discountRate === undefined) draftStudio.discountRate = 'default';
             editingStudioId = found.id;
             renderAdmin();
           }
@@ -1645,8 +1992,6 @@
           applyFontSettings();
           const valEl = document.getElementById('fs-val-' + k);
           if (valEl) valEl.textContent = val + ' px';
-          const prevEl = document.getElementById('fs-prev-' + k);
-          if (prevEl) prevEl.style.fontSize = val + 'px';
         }
         if (t.dataset.filter) {
           filters[t.dataset.filter] = t.value;
@@ -1669,9 +2014,25 @@
           showToast('已調整整體字體大小');
           return;
         }
+        if (t.id === 'global-discount-select') {
+          const rate = Number(t.value);
+          const opt = getDiscountOption(rate);
+          const promoInp = document.getElementById('global-promo-input');
+          if (promoInp && rate < 0.999) {
+            if (/[\d.]+\s*折/.test(promoInp.value)) {
+              promoInp.value = promoInp.value.replace(/[\d.]+\s*折/, opt.label);
+            } else if (!promoInp.value.trim()) {
+              promoInp.value = `透過「${state.site.brandName}」完成預約並消費，結帳即享 ${opt.label} 專屬優惠`;
+            }
+          }
+          return;
+        }
         if (t.dataset.filter && t.dataset.filter !== 'q') {
           filters[t.dataset.filter] = t.value;
           renderFront();
+        }
+        if (draftStudio && t.dataset.draft) {
+          draftStudio[t.dataset.draft] = t.dataset.draft === 'minPrice' ? Number(t.value) || 0 : t.value;
         }
         if (draftStudio && t.dataset.draftCheck) {
           draftStudio[t.dataset.draftCheck] = t.checked;
@@ -1680,7 +2041,7 @@
           state.inquiries = state.inquiries.map(i => i.id === t.dataset.inqStatus ? { ...i, status: t.value } : i);
           saveState(); showToast('已更新詢問狀態');
         }
-        if (t.id === 'import-json-input' && t.files?.[0]) {
+        if (t.id === 'import-json-input' && t.files && t.files[0]) {
           const reader = new FileReader();
           reader.onload = (ev) => {
             try {
@@ -1689,11 +2050,12 @@
                 state = {
                   ...DEFAULT_DATA,
                   ...parsed,
-                  fontSizes: { ...DEFAULT_FONT_SIZES, ...(parsed.fontSizes || {}) }
+                  fontSizes: { ...DEFAULT_FONT_SIZES, ...(parsed.fontSizes || {}) },
+                  site: { ...DEFAULT_DATA.site, ...(parsed.site || {}) }
                 };
                 saveState(); renderAll(); showToast('匯入還原成功！');
               } else alert('備份檔格式不正確');
-            } catch { alert('讀取檔案失敗'); }
+            } catch (err) { alert('讀取檔案失敗'); }
           };
           reader.readAsText(t.files[0]);
         }
@@ -1735,7 +2097,7 @@
         } else if (form.id === 'site-edit-form') {
           const fd = new FormData(form);
           const simpleKeys = [
-            'brandName', 'brandSub', 'heroLine1', 'heroLine2', 'heroBadge',
+            'brandName', 'brandSub', 'promoBannerText', 'heroLine1', 'heroLine2', 'heroBadge',
             'heroImg1', 'heroImg2', 'heroImg3', 'whyTitle', 'whyDesc1', 'whyDesc2',
             'helpSectionTitle', 'helpSectionSub', 'helpCustomerTitle', 'helpCustomerBefore',
             'helpStudioTitle', 'helpStudioBefore', 'quote', 'quoteAuthor'
@@ -1743,17 +2105,20 @@
           simpleKeys.forEach((k) => {
             if (fd.has(k)) state.site[k] = fd.get(k);
           });
+          if (fd.has('defaultDiscountRate')) {
+            state.site.defaultDiscountRate = Number(fd.get('defaultDiscountRate'));
+          }
           state.site.helpCustomerItems = (state.site.helpCustomerItems || []).map((it, idx) => ({
-            title: fd.get('c_title_' + idx) ?? it.title,
-            desc: fd.get('c_desc_' + idx) ?? it.desc
+            title: fd.has('c_title_' + idx) ? fd.get('c_title_' + idx) : it.title,
+            desc: fd.has('c_desc_' + idx) ? fd.get('c_desc_' + idx) : it.desc
           }));
           state.site.helpStudioItems = (state.site.helpStudioItems || []).map((it, idx) => ({
-            title: fd.get('s_title_' + idx) ?? it.title,
-            desc: fd.get('s_desc_' + idx) ?? it.desc
+            title: fd.has('s_title_' + idx) ? fd.get('s_title_' + idx) : it.title,
+            desc: fd.has('s_desc_' + idx) ? fd.get('s_desc_' + idx) : it.desc
           }));
           saveState();
           renderHeader();
-          showToast('已儲存首頁文案設定！');
+          showToast('已儲存首頁文案與優惠設定！');
         } else if (form.id === 'apply-form') {
           const fd = new FormData(form);
           const city = fd.get('city');
@@ -1768,13 +2133,14 @@
             style: '法式簡約',
             minPrice: Number(fd.get('minPrice')) || 1200,
             certified: false,
+            discountRate: 'default',
             tagline: fd.get('tagline') || '新申請加入之獨立創作者。',
             story: fd.get('tagline') || '歡迎預約體驗。',
             coverImage: 'https://images.unsplash.com/photo-1685963086339-85c3b3ecafe9?auto=format&fit=crop&w=900&q=80',
             bookingInfo: '採預約制',
             ig: fd.get('ig'),
             line: '@studio',
-            services: [{ name: '基礎體驗項目', price: `$${Number(fd.get('minPrice') || 1200).toLocaleString()}`, duration: '90 分鐘' }]
+            services: [{ name: '基礎體驗項目', price: '$' + Number(fd.get('minPrice') || 1200).toLocaleString(), duration: '90 分鐘' }]
           };
           state.studios.unshift(newStudio);
           saveState();
@@ -1785,6 +2151,7 @@
         } else if (form.id === 'inquiry-form') {
           const fd = new FormData(form);
           const st = state.studios.find(x => x.id === form.dataset.studioId);
+          const rateLabel = form.dataset.rateLabel || '';
           state.inquiries.unshift({
             id: 'inq-' + Date.now(),
             studioName: st ? st.name : '',
@@ -1796,7 +2163,10 @@
             status: '待回覆'
           });
           saveState();
-          document.getElementById('inquiry-box').innerHTML = `<div class="body-text" style="color:var(--forest); font-weight:700; text-align:center;">✓ 已送出預約詢問！可於「申請進駐 / 紀錄」或「管理後台」查看。</div>`;
+          const confirmMsg = rateLabel
+            ? `✓ 已送出預約詢問！待工作室確認檔期並完成預約後，結帳即可享有平台 ${esc(rateLabel)} 優惠（可於「申請 / 紀錄」查看）。`
+            : `✓ 已送出預約詢問！待工作室確認檔期後將盡快與您聯繫（可於「申請 / 紀錄」查看）。`;
+          document.getElementById('inquiry-box').innerHTML = `<div class="body-text" style="color:var(--forest); font-weight:700; text-align:center;">${confirmMsg}</div>`;
           showToast('預約詢問已送出');
         }
       });
