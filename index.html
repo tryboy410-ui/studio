@@ -26,6 +26,8 @@
       --fs-hero-badge: 12px;
       --fs-heading: 20px;
       --fs-body: 14px;
+      --fs-pill: 12px;
+      --fs-sub: 12px;
       --fs-principle: 13px;
       --fs-quote: 16px;
       --fs-card-title: 15px;
@@ -128,7 +130,7 @@
       line-height: 1.65;
     }
     .sub-text {
-      font-size: calc(12px * var(--font-scale));
+      font-size: calc(var(--fs-sub) * var(--font-scale));
       line-height: 1.6;
     }
     .principle-text {
@@ -149,10 +151,16 @@
     .pill {
       display: inline-flex; align-items: center; gap: 4px;
       padding: 4px 10px; border-radius: 999px;
-      font-size: calc(12px * var(--font-scale)); font-weight: 600;
+      font-size: calc(var(--fs-pill) * var(--font-scale)); font-weight: 600;
     }
     .pill-sage { background: var(--sage); color: var(--forest); }
     .pill-peach { background: var(--peach); color: #9A5B2C; }
+
+    .admin-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600;
+      background: var(--sage); color: var(--forest);
+    }
 
     /* 首頁主視覺拼貼 */
     .hero {
@@ -372,6 +380,7 @@
   <script>
     (function () {
       const STORAGE_KEY = 'sishixuan_unified_v3';
+      const SESSION_AUTH_KEY = 'sishixuan_admin_authed';
 
       const DEFAULT_FONT_SIZES = {
         brand: 20,
@@ -379,6 +388,8 @@
         heroBadge: 12,
         heading: 20,
         body: 14,
+        pill: 12,
+        subText: 12,
         principle: 13,
         quote: 16,
         cardTitle: 15,
@@ -392,6 +403,8 @@
         { key: 'heroBadge', label: '首頁主視覺副標（膠囊文字）', min: 10, max: 22, cssVar: '--fs-hero-badge', sample: '專屬於台灣獨立創作者與風格預約的安心空間' },
         { key: 'heading', label: '各區塊與頁面標題', min: 16, max: 34, cssVar: '--fs-heading', sample: '真正動人的風格，不在連鎖店' },
         { key: 'body', label: '內文與品牌故事說明文字', min: 12, max: 24, cssVar: '--fs-body', sample: '台灣許多獨立創作者，隱身在巷弄老宅或公寓一隅⋯⋯' },
+        { key: 'pill', label: '標籤膠囊文字（地區・風格・優質認證）', min: 10, max: 22, cssVar: '--fs-pill', sample: '美甲・台北大安　法式簡約　✓ 優質認證工作室' },
+        { key: 'subText', label: '補充小字（交通位置・預約須知・服務時長）', min: 10, max: 20, cssVar: '--fs-sub', sample: '📍 捷運忠孝敦化站步行 4 分鐘｜90 分鐘・含前置保養' },
         { key: 'principle', label: '三大堅持卡片文字', min: 11, max: 22, cssVar: '--fs-principle', sample: '01 只收錄獨立創作者：不收大型連鎖門市' },
         { key: 'quote', label: '創辦人承諾金句', min: 13, max: 28, cssVar: '--fs-quote', sample: '「我們不保證訂單，只承諾認真審核每一間工作室。」' },
         { key: 'cardTitle', label: '探索頁・工作室卡片名稱', min: 13, max: 26, cssVar: '--fs-card-title', sample: '霧光美甲' },
@@ -514,13 +527,28 @@
       const STYLES = ['法式簡約', '森系自然', '韓系簡約', '極簡侘寂'];
 
       let state = loadState();
-      let isAdminAuthed = false;
+      let isAdminAuthed = getSessionAuth();
       let viewMode = 'front';
       let frontTab = 'home';
       let adminTab = 'studios';
+      let currentStudioId = null;
       let editingStudioId = null;
       let draftStudio = null;
       let filters = { q: '', city: '全部', category: '全部', style: '全部' };
+      let lastHandledHash = '';
+
+      function getSessionAuth() {
+        try { return sessionStorage.getItem(SESSION_AUTH_KEY) === '1'; }
+        catch { return false; }
+      }
+
+      function setSessionAuth(flag) {
+        isAdminAuthed = flag;
+        try {
+          if (flag) sessionStorage.setItem(SESSION_AUTH_KEY, '1');
+          else sessionStorage.removeItem(SESSION_AUTH_KEY);
+        } catch {}
+      }
 
       function loadState() {
         try {
@@ -545,6 +573,46 @@
         try {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
         } catch (e) {}
+      }
+
+      function syncHash(target) {
+        lastHandledHash = target;
+        if (window.location.hash !== target) {
+          window.location.hash = target;
+        }
+      }
+
+      function applyHashRoute() {
+        const raw = (window.location.hash || '').replace(/^#/, '');
+        if (!raw) {
+          viewMode = 'front';
+          frontTab = 'home';
+          currentStudioId = null;
+          return;
+        }
+        if (raw === 'admin') {
+          if (isAdminAuthed) {
+            viewMode = 'admin';
+            currentStudioId = null;
+          } else {
+            viewMode = 'front';
+            frontTab = 'home';
+            currentStudioId = null;
+          }
+          return;
+        }
+        const parts = raw.split('/');
+        const tab = parts[0];
+        const studioId = parts[1] ? decodeURIComponent(parts[1]) : null;
+        if (['home', 'explore', 'saved', 'profile'].includes(tab)) {
+          viewMode = 'front';
+          frontTab = tab;
+          currentStudioId = studioId && state.studios.some(s => s.id === studioId) ? studioId : null;
+        } else {
+          viewMode = 'front';
+          frontTab = 'home';
+          currentStudioId = null;
+        }
       }
 
       function applyFontSettings() {
@@ -933,7 +1001,7 @@
                       <div>
                         <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
                           <strong style="font-size:14px;">${esc(s.name)}</strong>
-                          <span class="pill ${s.certified ? 'pill-sage' : 'pill-peach'}">${s.certified ? '✓ 已認證' : '未認證'}</span>
+                          <span class="admin-badge" style="${s.certified ? '' : 'background:var(--peach);color:#9A5B2C;'}">${s.certified ? '✓ 已認證' : '未認證'}</span>
                         </div>
                         <div style="font-size:12px; color:var(--muted); margin-top:2px;">
                           ${esc(s.location)}・${esc(s.category)}・$${Number(s.minPrice || 0).toLocaleString()}起
@@ -968,7 +1036,7 @@
                     <div class="fs-control-card">
                       <div class="fs-control-top">
                         <strong style="font-size:13px;">${esc(cfg.label)}</strong>
-                        <span class="pill pill-sage" id="fs-val-${cfg.key}">${curVal} px</span>
+                        <span class="admin-badge" id="fs-val-${cfg.key}">${curVal} px</span>
                       </div>
                       <div class="fs-slider-row">
                         <button type="button" class="fs-step-btn" data-action="step-fs" data-key="${cfg.key}" data-step="-1" data-min="${cfg.min}" data-max="${cfg.max}">－</button>
@@ -977,7 +1045,7 @@
                       </div>
                       <div class="fs-preview-box">
                         <div style="font-size:11px; color:var(--muted); margin-bottom:2px;">預覽效果：</div>
-                        <div id="fs-prev-${cfg.key}" style="font-size:${curVal}px; font-weight:${cfg.key === 'body' || cfg.key === 'heroBadge' || cfg.key === 'cardMeta' ? '400' : '700'}; line-height:1.4;">
+                        <div id="fs-prev-${cfg.key}" style="font-size:${curVal}px; font-weight:${cfg.key === 'body' || cfg.key === 'subText' || cfg.key === 'heroBadge' || cfg.key === 'cardMeta' ? '400' : '700'}; line-height:1.4;">
                           ${esc(cfg.sample)}
                         </div>
                       </div>
@@ -1120,9 +1188,13 @@
         }, 50);
       }
 
-      function openStudioModal(id) {
+      function openStudioModal(id, shouldSyncHash = true) {
         const s = state.studios.find((x) => x.id === id);
         if (!s) return;
+        currentStudioId = s.id;
+        if (shouldSyncHash) {
+          syncHash('#' + frontTab + '/' + encodeURIComponent(s.id));
+        }
         const isSaved = state.savedIds.includes(s.id);
         const box = document.getElementById('modal-box');
         box.classList.remove('modal-box-sm');
@@ -1196,15 +1268,31 @@
         document.getElementById('modal-backdrop').classList.remove('hidden');
       }
 
-      function closeModal() {
+      function closeModal(shouldSyncHash = true) {
         document.getElementById('modal-backdrop').classList.add('hidden');
+        if (currentStudioId) {
+          currentStudioId = null;
+          if (shouldSyncHash && viewMode === 'front') {
+            syncHash('#' + frontTab);
+          }
+        }
       }
+
+      // 瀏覽器上一頁 / 下一頁或網址改變時自動同步畫面
+      window.addEventListener('hashchange', () => {
+        if (window.location.hash === lastHandledHash) return;
+        lastHandledHash = window.location.hash;
+        applyHashRoute();
+        renderAll();
+        if (currentStudioId) openStudioModal(currentStudioId, false);
+        else closeModal(false);
+      });
 
       // 統一事件委派
       document.addEventListener('click', (e) => {
         const el = e.target.closest('[data-action]');
         if (!el) {
-          if (e.target.id === 'modal-backdrop') closeModal();
+          if (e.target.id === 'modal-backdrop') closeModal(true);
           return;
         }
         const act = el.dataset.action;
@@ -1212,45 +1300,53 @@
         if (act === 'go-tab') {
           viewMode = 'front';
           frontTab = el.dataset.tab;
+          currentStudioId = null;
+          closeModal(false);
+          syncHash('#' + frontTab);
           renderAll();
           window.scrollTo({ top: 0, behavior: 'smooth' });
         } else if (act === 'toggle-admin') {
           if (viewMode === 'admin') {
             viewMode = 'front';
             editingStudioId = null;
+            syncHash('#' + frontTab);
             renderAll();
             window.scrollTo({ top: 0, behavior: 'smooth' });
           } else if (isAdminAuthed) {
             viewMode = 'admin';
             editingStudioId = null;
+            currentStudioId = null;
+            syncHash('#admin');
             renderAll();
             window.scrollTo({ top: 0, behavior: 'smooth' });
           } else {
             openAdminLoginModal();
           }
         } else if (act === 'admin-logout') {
-          isAdminAuthed = false;
+          setSessionAuth(false);
           viewMode = 'front';
           editingStudioId = null;
+          syncHash('#' + frontTab);
           renderAll();
           showToast('已登出並鎖定管理後台');
         } else if (act === 'open-studio') {
-          openStudioModal(el.dataset.id);
+          openStudioModal(el.dataset.id, true);
         } else if (act === 'open-cert') {
           openCertModal();
         } else if (act === 'close-modal') {
-          closeModal();
+          closeModal(true);
         } else if (act === 'cert-apply') {
-          closeModal();
+          closeModal(false);
           viewMode = 'front';
           frontTab = 'profile';
+          syncHash('#profile');
           renderAll();
         } else if (act === 'toggle-save') {
           const id = el.dataset.id;
           if (state.savedIds.includes(id)) state.savedIds = state.savedIds.filter(x => x !== id);
           else state.savedIds.push(id);
           saveState();
-          openStudioModal(id);
+          openStudioModal(id, false);
           if (frontTab === 'saved') renderFront();
           showToast(state.savedIds.includes(id) ? '已加入收藏' : '已取消收藏');
         } else if (act === 'copy-text') {
@@ -1385,7 +1481,6 @@
 
       document.addEventListener('change', (e) => {
         const t = e.target;
-        // 頂部與工作室彈窗內的「字體大小」同步切換
         if (t.hasAttribute('data-font-scale-select')) {
           state.fontScale = Number(t.value) || 1;
           saveState();
@@ -1431,10 +1526,11 @@
         if (form.id === 'admin-login-form') {
           const pw = new FormData(form).get('password');
           if (pw === (state.adminPassword || '1234')) {
-            isAdminAuthed = true;
-            closeModal();
+            setSessionAuth(true);
+            closeModal(false);
             viewMode = 'admin';
             editingStudioId = null;
+            syncHash('#admin');
             renderAll();
             showToast('驗證成功，歡迎進入管理後台');
           } else {
@@ -1487,6 +1583,7 @@
           state.studios.unshift(newStudio);
           saveState();
           frontTab = 'explore';
+          syncHash('#explore');
           renderAll();
           showToast(`已新增「${newStudio.name}」至探索頁！`);
         } else if (form.id === 'inquiry-form') {
@@ -1508,8 +1605,11 @@
         }
       });
 
-      // 啟動渲染
+      // 啟動初始化：先讀取當前網址錨點再渲染
+      lastHandledHash = window.location.hash;
+      applyHashRoute();
       renderAll();
+      if (currentStudioId) openStudioModal(currentStudioId, false);
     })();
   </script>
 </body>
