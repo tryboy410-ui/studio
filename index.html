@@ -238,9 +238,15 @@
       min-height: 240px; border: 1px solid var(--hairline); background: var(--sand);
     }
     @media (min-width: 768px) { .hero { min-height: 290px; } }
-    .hero-grid { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 2px; height: 100%; }
-    .hero-right { display: grid; grid-template-rows: 1fr 1fr; gap: 2px; height: 100%; }
-    .hero img { width: 100%; height: 100%; object-fit: cover; }
+    .hero-grid {
+      position: absolute; inset: 0; display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2px; height: 100%;
+    }
+    .hero-right {
+      display: grid; grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 2px; height: 100%; min-height: 0;
+    }
+    .hero img { width: 100%; height: 100%; min-height: 0; object-fit: cover; }
     .hero-overlay {
       position: relative; z-index: 2; min-height: 240px;
       background: rgba(35, 32, 28, 0.38);
@@ -796,6 +802,7 @@
         if (raw === 'admin') {
           if (isAdminAuthed) {
             viewMode = 'admin';
+            editingStudioId = null;
             currentStudioId = null;
           } else {
             viewMode = 'front';
@@ -807,7 +814,14 @@
         }
         const parts = raw.split('/');
         const tab = parts[0];
-        const studioId = parts[1] ? decodeURIComponent(parts[1]) : null;
+        let studioId = null;
+        if (parts[1]) {
+          try {
+            studioId = decodeURIComponent(parts[1]);
+          } catch (e) {
+            studioId = null;
+          }
+        }
         if (['home', 'explore', 'saved', 'profile'].includes(tab)) {
           viewMode = 'front';
           frontTab = tab;
@@ -917,6 +931,38 @@
             </div>
           </div>
         `;
+      }
+
+      function getFilteredStudios() {
+        return state.studios.filter((st) => {
+          if (filters.city !== '全部' && st.city !== filters.city) return false;
+          if (filters.category !== '全部' && st.category !== filters.category) return false;
+          if (filters.style !== '全部' && st.style !== filters.style) return false;
+          if (filters.q.trim()) {
+            const kw = filters.q.trim().toLowerCase();
+            const hay = `${st.name} ${st.location} ${st.category} ${st.style}`.toLowerCase();
+            if (hay.indexOf(kw) === -1) return false;
+          }
+          return true;
+        });
+      }
+
+      function exploreResultsHTML(list) {
+        if (list.length === 0) {
+          return `
+            <div class="card" style="text-align:center; padding:40px 20px;">
+              <p class="body-text" style="font-weight:700; margin-bottom:10px;">找不到符合條件的工作室</p>
+              <button class="btn btn-forest btn-sm" data-action="reset-filters">顯示全部</button>
+            </div>
+          `;
+        }
+        return `<div class="studio-grid">${list.map(studioCardHTML).join('')}</div>`;
+      }
+
+      function renderExploreResults() {
+        const container = document.getElementById('explore-results');
+        if (!container) return;
+        container.innerHTML = exploreResultsHTML(getFilteredStudios());
       }
 
       function helpCardHTML(title, beforeText, items, isHiddenMobile) {
@@ -1060,17 +1106,7 @@
         }
 
         if (frontTab === 'explore') {
-          const list = state.studios.filter((st) => {
-            if (filters.city !== '全部' && st.city !== filters.city) return false;
-            if (filters.category !== '全部' && st.category !== filters.category) return false;
-            if (filters.style !== '全部' && st.style !== filters.style) return false;
-            if (filters.q.trim()) {
-              const kw = filters.q.trim().toLowerCase();
-              const hay = `${st.name} ${st.location} ${st.category} ${st.style}`.toLowerCase();
-              if (hay.indexOf(kw) === -1) return false;
-            }
-            return true;
-          });
+          const list = getFilteredStudios();
 
           main.innerHTML = `
             <div>
@@ -1092,13 +1128,7 @@
                 </select>
               </div>
             </div>
-            ${list.length === 0
-              ? `<div class="card" style="text-align:center; padding:40px 20px;">
-                   <p class="body-text" style="font-weight:700; margin-bottom:10px;">找不到符合條件的工作室</p>
-                   <button class="btn btn-forest btn-sm" data-action="reset-filters">顯示全部</button>
-                 </div>`
-              : `<div class="studio-grid">${list.map(studioCardHTML).join('')}</div>`
-            }
+            <div id="explore-results">${exploreResultsHTML(list)}</div>
           `;
           return;
         }
@@ -1804,6 +1834,15 @@
         }
       });
 
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          const backdrop = document.getElementById('modal-backdrop');
+          if (backdrop && !backdrop.classList.contains('hidden')) {
+            closeModal(true);
+          }
+        }
+      });
+
       document.addEventListener('click', (e) => {
         const el = e.target.closest('[data-action]');
         if (!el) {
@@ -1897,6 +1936,7 @@
               <button type="submit" class="btn btn-forest btn-sm">送出預約詢問</button>
             </form>
           `;
+          box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         } else if (act === 'reset-filters') {
           filters = { q: '', city: '全部', category: '全部', style: '全部' };
           renderFront();
@@ -1942,6 +1982,7 @@
           if (found) {
             draftStudio = JSON.parse(JSON.stringify(found));
             if (draftStudio.discountRate === undefined) draftStudio.discountRate = 'default';
+            if (!Array.isArray(draftStudio.services)) draftStudio.services = [];
             editingStudioId = found.id;
             renderAdmin();
           }
@@ -1952,14 +1993,19 @@
           saveState(); renderAdmin(); showToast('已更新認證狀態');
         } else if (act === 'admin-del-studio') {
           if (confirm('確定要刪除這間工作室嗎？')) {
-            state.studios = state.studios.filter(s => s.id !== el.dataset.id);
+            const delId = el.dataset.id;
+            state.studios = state.studios.filter(s => s.id !== delId);
+            state.savedIds = state.savedIds.filter(id => id !== delId);
             saveState(); renderAdmin(); showToast('已刪除工作室');
           }
         } else if (act === 'draft-add-service' && draftStudio) {
+          if (!Array.isArray(draftStudio.services)) draftStudio.services = [];
           draftStudio.services.push({ name: '新服務項目', price: '$1,000', duration: '60 分鐘' });
           renderAdmin();
         } else if (act === 'draft-del-service' && draftStudio) {
-          draftStudio.services.splice(Number(el.dataset.idx), 1);
+          if (Array.isArray(draftStudio.services)) {
+            draftStudio.services.splice(Number(el.dataset.idx), 1);
+          }
           renderAdmin();
         } else if (act === 'admin-del-inq') {
           state.inquiries = state.inquiries.filter(i => i.id !== el.dataset.id);
@@ -1994,7 +2040,7 @@
         }
         if (t.dataset.filter) {
           filters[t.dataset.filter] = t.value;
-          if (t.dataset.filter === 'q') renderFront();
+          if (t.dataset.filter === 'q') renderExploreResults();
         }
         if (draftStudio && t.dataset.draft) {
           draftStudio[t.dataset.draft] = t.dataset.draft === 'minPrice' ? Number(t.value) || 0 : t.value;
@@ -2028,7 +2074,7 @@
         }
         if (t.dataset.filter && t.dataset.filter !== 'q') {
           filters[t.dataset.filter] = t.value;
-          renderFront();
+          renderExploreResults();
         }
         if (draftStudio && t.dataset.draft) {
           draftStudio[t.dataset.draft] = t.dataset.draft === 'minPrice' ? Number(t.value) || 0 : t.value;
@@ -2055,6 +2101,7 @@
                 saveState(); renderAll(); showToast('匯入還原成功！');
               } else alert('備份檔格式不正確');
             } catch (err) { alert('讀取檔案失敗'); }
+            t.value = '';
           };
           reader.readAsText(t.files[0]);
         }
