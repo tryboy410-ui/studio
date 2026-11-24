@@ -341,6 +341,13 @@
     }
     .studio-loc { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .studio-price { color: var(--forest); font-weight: 700; flex-shrink: 0; }
+    .studio-saved-row {
+      display: flex; align-items: center; gap: 4px; margin-top: 7px;
+      padding-top: 6px; border-top: 1px solid #EFE9DF;
+      font-size: calc(11px * var(--font-scale));
+      color: var(--muted); font-weight: 600;
+    }
+    .studio-saved-row.is-saved { color: var(--bronze); }
 
     /* 表單與篩選 */
     .filter-bar { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
@@ -518,8 +525,8 @@
     };
 
     (function () {
-      const STORAGE_KEY = 'sishixuan_unified_v4';
-      const PREV_STORAGE_KEY = 'sishixuan_unified_v3';
+      const STORAGE_KEY = 'sishixuan_unified_v5';
+      const LEGACY_KEYS = ['sishixuan_unified_v4', 'sishixuan_unified_v3'];
       const SESSION_AUTH_KEY = 'sishixuan_admin_authed';
 
       function makeCoverSvg(bg1, bg2, accent, title, sub) {
@@ -597,7 +604,10 @@
         '追星周邊',
         '寵物用品',
         '插畫與文創',
-        '手作皮件與布藝'
+        '手作皮件與布藝',
+        '婚禮布置',
+        '新娘秘書',
+        '攝影'
       ];
       const CITIES = ['台北', '台中', '高雄', '台南', '新北', '新竹'];
       const STYLES = ['法式簡約', '森系自然', '韓系簡約', '極簡侘寂'];
@@ -653,6 +663,7 @@
             address: '捷運忠孝復興站步行 5 分鐘（提供禮盒選品諮詢與全台宅配）',
             style: '法式簡約',
             minPrice: 980,
+            baseSavedCount: 141,
             certified: true,
             discountRate: 'default',
             tagline: '替每個重要日子，打包只屬於收禮人的姓名溫度與儀式感。',
@@ -675,6 +686,7 @@
             address: '審計新村旁靜巷老宅二樓（提供預約自取與專車配送）',
             style: '森系自然',
             minPrice: 800,
+            baseSavedCount: 185,
             certified: true,
             discountRate: 'default',
             tagline: '順應四季花期，把晨露與枝葉線條綁進每一束溫柔裡。',
@@ -697,6 +709,7 @@
             address: '捷運雙連站步行 4 分鐘（預約制調香體驗＆擴香訂製）',
             style: '極簡侘寂',
             minPrice: 1280,
+            baseSavedCount: 96,
             certified: true,
             discountRate: 'default',
             tagline: '把雨後森林與茶木氣息裝進玻璃瓶，陪你安靜呼吸。',
@@ -719,6 +732,7 @@
             address: '神農街周邊老屋二樓工作室（提供客製刻字與終身免費清潔）',
             style: '法式簡約',
             minPrice: 1100,
+            baseSavedCount: 114,
             certified: true,
             discountRate: 'default',
             tagline: '每一道細微錘紋，都是手工敲進日常的溫潤光芒。',
@@ -741,6 +755,7 @@
             address: '竹北高鐵特區親子友善工作室（提供純棉刺繡姓名訂製）',
             style: '森系自然',
             minPrice: 750,
+            baseSavedCount: 73,
             certified: true,
             discountRate: 'default',
             tagline: '給寶貝的第一份貼身禮物，柔軟透氣又有專屬名字記號。',
@@ -763,6 +778,7 @@
             address: '捷運巨蛋站步行 6 分鐘（工作室自取／限定冷凍宅配）',
             style: '韓系簡約',
             minPrice: 1500,
+            baseSavedCount: 208,
             certified: true,
             discountRate: 'default',
             tagline: '嚴選北海道鮮奶油與小農水果，揉出剛剛好不過甜的日常紀念。',
@@ -785,6 +801,7 @@
             address: '捷運市政府站步行 6 分鐘（提供演唱會應援物／痛包配件客製）',
             style: '韓系簡約',
             minPrice: 450,
+            baseSavedCount: 164,
             certified: true,
             discountRate: 'default',
             tagline: '把喜歡化作隨身的小巧閃耀，陪你安心赴約每一場演出。',
@@ -807,6 +824,7 @@
             address: '捷運江子翠站步行 5 分鐘（寵物友善試穿空間）',
             style: '森系自然',
             minPrice: 680,
+            baseSavedCount: 89,
             certified: true,
             discountRate: 'default',
             tagline: '讓毛孩穿得自在、戴得安全，每一針線都替牠們想多一點。',
@@ -829,6 +847,7 @@
             address: '逢甲靜巷文創工作室（提供人像似顏繪與品牌聯名包裝插畫）',
             style: '極簡侘寂',
             minPrice: 580,
+            baseSavedCount: 127,
             certified: true,
             discountRate: 'default',
             tagline: '用細膩水彩與鉛筆筆觸，替平凡日子留下溫柔紀念。',
@@ -851,6 +870,7 @@
             address: '安平運河旁老屋工作坊（預約制皮件訂製與雙人體驗課）',
             style: '極簡侘寂',
             minPrice: 1380,
+            baseSavedCount: 105,
             certified: true,
             discountRate: 'default',
             tagline: '一針一線手縫義大利植鞣革，陪你養出獨一無二的歲月色澤。',
@@ -862,6 +882,75 @@
             services: [
               { name: '植鞣革手縫名片／證件夾', price: '$1,380', duration: '免費英文縮寫鋼印敲字' },
               { name: '雙拼帆布植鞣革托特包', price: '$2,680', duration: '可選 4 款帆布與皮革配色' }
+            ]
+          },
+          {
+            id: 'xuqu-wedding',
+            name: '序曲婚禮設計',
+            category: '婚禮布置',
+            city: '台北',
+            location: '台北士林',
+            address: '捷運士林站步行 6 分鐘（預約制婚禮場佈諮詢空間）',
+            style: '法式簡約',
+            minPrice: 12000,
+            baseSavedCount: 152,
+            certified: true,
+            discountRate: 'default',
+            tagline: '用流動的布幔與花草光影，寫下屬於你們婚禮的第一章序曲。',
+            story: '專注於戶外證婚、家宴微婚禮與室內迎賓區客製布置，依場地動線與色系打造不落俗套的婚禮氛圍。',
+            coverImage: makeCoverSvg('#F6F2EA', '#F3E6D8', '#9A5B2C', '序曲婚禮設計', '婚禮布置 ・ 台北士林'),
+            bookingInfo: '建議於婚期前 3-6 個月預約檔期諮詢',
+            ig: '@xuqu.wedding',
+            line: '@xuquwed',
+            services: [
+              { name: '家宴迎賓送客區客製布置', price: '$12,000起', duration: '含設計提案・專人撤場' },
+              { name: '戶外證婚拱門花藝全案', price: '$26,000起', duration: '含主視覺花藝＋椅子紗幔' }
+            ]
+          },
+          {
+            id: 'rouguang-bridal',
+            name: '柔光新秘造型',
+            category: '新娘秘書',
+            city: '台中',
+            location: '台中北屯',
+            address: '捷運文心崇德站步行 5 分鐘（工作室預約試妝／全台到府服務）',
+            style: '韓系簡約',
+            minPrice: 8800,
+            baseSavedCount: 176,
+            certified: true,
+            discountRate: 'default',
+            tagline: '保留妳原本最動人的神韻，畫出清透耐看、不厚重的婚禮妝容。',
+            story: '擅長韓系清透底妝與自然空氣感盤髮，貼心搭配手工乾燥花與鮮花髮飾，讓新娘從早迎賓到晚宴都自在發光。',
+            coverImage: makeCoverSvg('#F3E6D8', '#EFEAE0', '#9A5B2C', '柔光新秘造型', '新娘秘書 ・ 台中北屯'),
+            bookingInfo: '開放預約未來一年婚禮檔期｜提供付費試妝',
+            ig: '@rouguang.bridal',
+            line: '@rouguang',
+            services: [
+              { name: '單妝／登記證婚造型', price: '$8,800', duration: '贈早鳥乾燥花頭飾搭配' },
+              { name: '婚宴三造型新娘秘書', price: '$18,800', duration: '含新郎妝髮＋媽媽妝髮一位' }
+            ]
+          },
+          {
+            id: 'guangying-photo',
+            name: '光影日常攝影',
+            category: '攝影',
+            city: '台南',
+            location: '台南中西',
+            address: '赤崁樓周邊老屋自然光棚（提供全台戶外紀實外拍）',
+            style: '法式簡約',
+            minPrice: 3500,
+            baseSavedCount: 193,
+            certified: true,
+            discountRate: 'default',
+            tagline: '不刻意擺拍，只留住微風與你們相視而笑的純粹瞬間。',
+            story: '結合數位與 135 底片拍攝的獨立攝影工作室，擅長捕捉情侶日常、輕婚紗登記與個人肖像。',
+            coverImage: 'https://images.unsplash.com/photo-1774660810725-fb04e002003d?auto=format&fit=crop&w=900&q=80',
+            bookingInfo: '開放預約近三個月檔期',
+            ig: '@guangying.daily',
+            line: '@guangying',
+            services: [
+              { name: '個人自然光寫真', price: '$3,500', duration: '90 分鐘・含 10 張精修' },
+              { name: '情侶底片散步紀實', price: '$6,800', duration: '2 小時・附一捲底片' }
             ]
           }
         ],
@@ -890,6 +979,13 @@
         return `${y}-${m}-${day}`;
       }
 
+      function getStudioSaveCount(s) {
+        if (!s) return 0;
+        const base = Number(s.baseSavedCount || 0);
+        const isSavedByMe = state.savedIds.indexOf(s.id) !== -1 ? 1 : 0;
+        return base + isSavedByMe;
+      }
+
       function getSessionAuth() {
         try { return sessionStorage.getItem(SESSION_AUTH_KEY) === '1'; }
         catch (e) { return false; }
@@ -903,65 +999,76 @@
         } catch (e) {}
       }
 
+      function buildSiteState(ps) {
+        ps = ps || {};
+        return {
+          ...DEFAULT_DATA.site,
+          ...ps,
+          defaultDiscountRate: ps.defaultDiscountRate !== undefined
+            ? Number(ps.defaultDiscountRate)
+            : DEFAULT_DATA.site.defaultDiscountRate,
+          promoBannerText: ps.promoBannerText !== undefined
+            ? ps.promoBannerText
+            : DEFAULT_DATA.site.promoBannerText,
+          helpCustomerItems: Array.isArray(ps.helpCustomerItems)
+            ? ps.helpCustomerItems
+            : DEFAULT_DATA.site.helpCustomerItems,
+          helpStudioItems: Array.isArray(ps.helpStudioItems)
+            ? ps.helpStudioItems
+            : DEFAULT_DATA.site.helpStudioItems
+        };
+      }
+
       function loadState() {
         try {
           const raw = localStorage.getItem(STORAGE_KEY);
           if (raw) {
             const parsed = JSON.parse(raw);
-            const ps = parsed.site || {};
             return {
               adminPassword: parsed.adminPassword || DEFAULT_DATA.adminPassword,
               fontScale: Number(parsed.fontScale) || 1,
               fontSizes: { ...DEFAULT_FONT_SIZES, ...(parsed.fontSizes || {}) },
-              site: {
-                ...DEFAULT_DATA.site,
-                ...ps,
-                defaultDiscountRate: ps.defaultDiscountRate !== undefined
-                  ? Number(ps.defaultDiscountRate)
-                  : DEFAULT_DATA.site.defaultDiscountRate,
-                promoBannerText: ps.promoBannerText !== undefined
-                  ? ps.promoBannerText
-                  : DEFAULT_DATA.site.promoBannerText,
-                helpCustomerItems: Array.isArray(ps.helpCustomerItems)
-                  ? ps.helpCustomerItems
-                  : DEFAULT_DATA.site.helpCustomerItems,
-                helpStudioItems: Array.isArray(ps.helpStudioItems)
-                  ? ps.helpStudioItems
-                  : DEFAULT_DATA.site.helpStudioItems
-              },
+              site: buildSiteState(parsed.site),
               studios: Array.isArray(parsed.studios) ? parsed.studios : DEFAULT_DATA.studios,
               savedIds: Array.isArray(parsed.savedIds) ? parsed.savedIds : DEFAULT_DATA.savedIds,
               inquiries: Array.isArray(parsed.inquiries) ? parsed.inquiries : []
             };
           }
 
-          // 若從舊版 v3 升級，保留使用者先前的設定與預約紀錄，並更新為新版 10 項工作室
-          const prevRaw = localStorage.getItem(PREV_STORAGE_KEY);
-          if (prevRaw) {
-            const prev = JSON.parse(prevRaw);
-            const ps = prev.site || {};
+          for (let i = 0; i < LEGACY_KEYS.length; i++) {
+            const legacyRaw = localStorage.getItem(LEGACY_KEYS[i]);
+            if (!legacyRaw) continue;
+            const prev = JSON.parse(legacyRaw);
+            const defaultById = {};
+            DEFAULT_DATA.studios.forEach(s => { defaultById[s.id] = s; });
+
+            let mergedStudios;
+            let mergedSaved;
+            if (LEGACY_KEYS[i] === 'sishixuan_unified_v4' && Array.isArray(prev.studios)) {
+              const existingIds = new Set();
+              mergedStudios = prev.studios.map((st) => {
+                existingIds.add(st.id);
+                if (st.baseSavedCount === undefined && defaultById[st.id]) {
+                  return { ...st, baseSavedCount: defaultById[st.id].baseSavedCount };
+                }
+                return st;
+              });
+              DEFAULT_DATA.studios.forEach((ds) => {
+                if (!existingIds.has(ds.id)) mergedStudios.push(JSON.parse(JSON.stringify(ds)));
+              });
+              mergedSaved = Array.isArray(prev.savedIds) ? prev.savedIds : [...DEFAULT_DATA.savedIds];
+            } else {
+              mergedStudios = JSON.parse(JSON.stringify(DEFAULT_DATA.studios));
+              mergedSaved = [...DEFAULT_DATA.savedIds];
+            }
+
             const migrated = {
               adminPassword: prev.adminPassword || DEFAULT_DATA.adminPassword,
               fontScale: Number(prev.fontScale) || 1,
               fontSizes: { ...DEFAULT_FONT_SIZES, ...(prev.fontSizes || {}) },
-              site: {
-                ...DEFAULT_DATA.site,
-                ...ps,
-                defaultDiscountRate: ps.defaultDiscountRate !== undefined
-                  ? Number(ps.defaultDiscountRate)
-                  : DEFAULT_DATA.site.defaultDiscountRate,
-                promoBannerText: ps.promoBannerText !== undefined
-                  ? ps.promoBannerText
-                  : DEFAULT_DATA.site.promoBannerText,
-                helpCustomerItems: Array.isArray(ps.helpCustomerItems)
-                  ? ps.helpCustomerItems
-                  : DEFAULT_DATA.site.helpCustomerItems,
-                helpStudioItems: Array.isArray(ps.helpStudioItems)
-                  ? ps.helpStudioItems
-                  : DEFAULT_DATA.site.helpStudioItems
-              },
-              studios: JSON.parse(JSON.stringify(DEFAULT_DATA.studios)),
-              savedIds: [...DEFAULT_DATA.savedIds],
+              site: buildSiteState(prev.site),
+              studios: mergedStudios,
+              savedIds: mergedSaved,
               inquiries: Array.isArray(prev.inquiries) ? prev.inquiries : []
             };
             localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
@@ -1110,6 +1217,8 @@
       }
 
       function studioCardHTML(s) {
+        const isSaved = state.savedIds.indexOf(s.id) !== -1;
+        const saveCount = getStudioSaveCount(s);
         return `
           <div class="studio-card" data-action="open-studio" data-id="${esc(s.id)}">
             <div class="studio-thumb">
@@ -1121,6 +1230,10 @@
               <div class="studio-meta">
                 <span class="studio-loc">${esc(s.location)}・${esc(s.category)}</span>
                 <span class="studio-price">$${Number(s.minPrice || 0).toLocaleString()}起</span>
+              </div>
+              <div class="studio-saved-row ${isSaved ? 'is-saved' : ''}">
+                <span>${isSaved ? '♥' : '♡'}</span>
+                <span>${saveCount.toLocaleString()} 人收藏</span>
               </div>
             </div>
           </div>
@@ -1546,7 +1659,7 @@
                           <span class="admin-badge" style="background:#FAF0E2;color:#854B1E;">${effRate >= 0.999 ? '原價' : esc(effOpt.label)}</span>
                         </div>
                         <div style="font-size:12px; color:var(--muted); margin-top:2px;">
-                          ${esc(s.location)}・${esc(s.category)}・$${Number(s.minPrice || 0).toLocaleString()}起
+                          ${esc(s.location)}・${esc(s.category)}・$${Number(s.minPrice || 0).toLocaleString()}起・${getStudioSaveCount(s).toLocaleString()} 人收藏
                         </div>
                       </div>
                     </div>
@@ -1635,6 +1748,10 @@
                         <div class="studio-meta">
                           <span class="studio-loc"><span class="fs-tag-badge">2</span>${esc(previewStudio.location)}・${esc(previewStudio.category)}</span>
                           <span class="studio-price">$${Number(previewStudio.minPrice || 0).toLocaleString()}起</span>
+                        </div>
+                        <div class="studio-saved-row is-saved">
+                          <span>♥</span>
+                          <span>${getStudioSaveCount(previewStudio).toLocaleString()} 人收藏</span>
                         </div>
                       </div>
                     </div>
@@ -1892,6 +2009,7 @@
           syncHash('#' + frontTab + '/' + encodeURIComponent(s.id));
         }
         const isSaved = state.savedIds.indexOf(s.id) !== -1;
+        const saveCount = getStudioSaveCount(s);
         const rate = getStudioDiscountRate(s);
         const discOpt = getDiscountOption(rate);
         const bannerText = getStudioPromoBannerText(s, rate);
@@ -1904,7 +2022,7 @@
             <div class="modal-head-actions">
               ${fontSelectHTML('modal-font-size-select')}
               <button class="btn btn-sm ${isSaved ? 'btn-forest' : 'btn-ivory'}" data-action="toggle-save" data-id="${esc(s.id)}">
-                ${isSaved ? '♥ 已收藏' : '♡ 收藏'}
+                ${isSaved ? '♥ 已收藏' : '♡ 收藏'} (${saveCount.toLocaleString()})
               </button>
               <button class="btn btn-ivory btn-sm" data-action="close-modal">關閉</button>
             </div>
@@ -2115,6 +2233,7 @@
           saveState();
           openStudioModal(id, false);
           if (frontTab === 'saved') renderFront();
+          else if (frontTab === 'explore') renderExploreResults();
           showToast(state.savedIds.indexOf(id) !== -1 ? '已加入收藏' : '已取消收藏');
         } else if (act === 'copy-text') {
           const val = el.dataset.val;
@@ -2192,7 +2311,7 @@
           draftStudio = {
             id: newId, name: '新個人工作室', category: CATEGORIES[0], city: '台北', location: '台北大安',
             address: '全預約制工作室（預約後提供詳細地址）', style: '法式簡約', minPrice: 1200,
-            certified: false, discountRate: 'default',
+            baseSavedCount: 0, certified: false, discountRate: 'default',
             tagline: '請輸入一句話介紹...', story: '請輸入品牌故事...',
             coverImage: 'https://images.unsplash.com/photo-1685963086339-85c3b3ecafe9?auto=format&fit=crop&w=900&q=80',
             bookingInfo: '採預約制', ig: '@your.studio', line: '@yourstudio',
@@ -2401,6 +2520,7 @@
             address: '新進駐審核中（全預約制）',
             style: '法式簡約',
             minPrice: Number(fd.get('minPrice')) || 1200,
+            baseSavedCount: 0,
             certified: false,
             discountRate: 'default',
             tagline: fd.get('tagline') || '新申請加入之獨立創作者。',
