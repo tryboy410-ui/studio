@@ -40,6 +40,7 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { max-width: 100%; overflow-x: hidden; }
     body {
       background: var(--linen);
       color: var(--ink);
@@ -161,7 +162,7 @@
     /* 卡片與通用元件 */
     .card {
       background: var(--ivory); border: 1px solid var(--hairline);
-      border-radius: 20px; padding: 20px;
+      border-radius: 20px; padding: 20px; min-width: 0; max-width: 100%;
       box-shadow: 0 2px 10px rgba(40, 38, 35, 0.03);
     }
     .pill {
@@ -272,9 +273,9 @@
     @media (min-width: 768px) { .help-toggle-bar { display: none; } }
     .help-toggle-btn {
       padding: 7px 14px; border-radius: 999px; font-size: 13px; font-weight: 600; color: var(--muted);
+      transition: background 0.15s, color 0.15s;
     }
     .help-toggle-btn.active { background: var(--forest); color: #fff; }
-    @media (max-width: 767px) { .help-mobile-hidden { display: none; } }
 
     .help-card {
       background: var(--ivory); border: 1px solid var(--hairline);
@@ -282,6 +283,7 @@
       box-shadow: 0 2px 10px rgba(40, 38, 35, 0.03);
       display: flex; flex-direction: column;
     }
+    @media (max-width: 767px) { .help-card.help-mobile-hidden { display: none; } }
     .help-card-head {
       background: #F4EEE3; padding: 16px 20px; border-bottom: 1px solid var(--hairline);
     }
@@ -305,14 +307,14 @@
     }
 
     /* 網格 */
-    .grid-2 { display: grid; grid-template-columns: 1fr; gap: 14px; }
-    @media (min-width: 768px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
+    .grid-2 { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+    @media (min-width: 768px) { .grid-2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
 
-    .grid-3 { display: grid; grid-template-columns: 1fr; gap: 14px; }
-    @media (min-width: 768px) { .grid-3 { grid-template-columns: repeat(3, 1fr); } }
+    .grid-3 { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+    @media (min-width: 768px) { .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 
-    .studio-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-    @media (min-width: 768px) { .studio-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; } }
+    .studio-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    @media (min-width: 768px) { .studio-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; } }
 
     /* 工作室卡片 */
     .studio-card {
@@ -343,11 +345,13 @@
     /* 表單與篩選 */
     .filter-bar { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
     .input, .select, .textarea {
-      width: 100%; padding: 9px 12px; border-radius: 12px;
+      width: 100%; max-width: 100%; min-width: 0;
+      padding: 9px 12px; border-radius: 12px;
       border: 1px solid var(--hairline); background: var(--linen);
       font-size: 14px; outline: none;
     }
-    input[type="date"] { cursor: pointer; min-height: 40px; }
+    .textarea { resize: none; }
+    input[type="date"] { cursor: pointer; min-height: 40px; display: block; }
     .input:focus, .select:focus, .textarea:focus { border-color: var(--forest); background: var(--ivory); }
     .filter-bar .select, .filter-bar .input { width: auto; border-radius: 999px; background: var(--ivory); padding: 7px 14px; font-size: 13px; }
     .label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 5px; }
@@ -361,7 +365,7 @@
     .modal-box {
       background: var(--linen); width: 100%; max-width: 680px; max-height: 90vh;
       border-radius: 24px; border: 1px solid var(--hairline);
-      overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+      overflow-y: auto; overflow-x: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.2);
     }
     .modal-box-sm { max-width: 380px; }
     .modal-head {
@@ -397,7 +401,7 @@
       background: var(--linen); padding: 10px; border-radius: 12px; border: 1px solid var(--hairline);
       margin-bottom: 8px;
     }
-    @media (max-width: 640px) { .service-edit-row { grid-template-columns: 1fr; } }
+    @media (max-width: 640px) { .service-edit-row { grid-template-columns: minmax(0, 1fr); } }
 
     /* 字體設定列（左調右看） */
     .fs-control-card {
@@ -974,9 +978,9 @@
         container.innerHTML = exploreResultsHTML(getFilteredStudios());
       }
 
-      function helpCardHTML(title, beforeText, items, isHiddenMobile) {
+      function helpCardHTML(title, beforeText, items, isHiddenMobile, role) {
         return `
-          <div class="help-card ${isHiddenMobile ? 'help-mobile-hidden' : ''}">
+          <div class="help-card ${isHiddenMobile ? 'help-mobile-hidden' : ''}" ${role ? `data-help-card="${esc(role)}"` : ''}>
             <div class="help-card-head">
               <div class="help-card-title help-card-title-text">
                 <span class="help-dot"></span>
@@ -1072,7 +1076,7 @@
               <p class="body-text" style="font-weight:500;">${esc(s.whyDesc2)}</p>
             </section>
 
-            <section class="stack" style="margin-top:20px;">
+            <section class="stack" style="margin-top:20px;" id="help-compare-section">
               <div>
                 <h2 class="section-heading">${esc(s.helpSectionTitle)}</h2>
                 <p class="sub-text" style="color:var(--muted); margin-top:4px;">${esc(s.helpSectionSub)}</p>
@@ -1082,8 +1086,8 @@
                 </div>
               </div>
               <div class="grid-2" style="margin-top:14px;">
-                ${helpCardHTML(s.helpCustomerTitle, s.helpCustomerBefore, s.helpCustomerItems, homeHelpRole !== 'customer')}
-                ${helpCardHTML(s.helpStudioTitle, s.helpStudioBefore, s.helpStudioItems, homeHelpRole !== 'studio')}
+                ${helpCardHTML(s.helpCustomerTitle, s.helpCustomerBefore, s.helpCustomerItems, homeHelpRole !== 'customer', 'customer')}
+                ${helpCardHTML(s.helpStudioTitle, s.helpStudioBefore, s.helpStudioItems, homeHelpRole !== 'studio', 'studio')}
               </div>
             </section>
 
@@ -1601,7 +1605,7 @@
                     <div class="admin-row">
                       <div>
                         <div style="font-weight:700; font-size:14px;">${esc(inq.studioName)} — ${esc(inq.service)}</div>
-                        <div style="font-size:12px; color:var(--muted);">顧客：${esc(inq.customerName)} ｜ 聯絡：${esc(inq.contact)} ｜ 期望日期：${esc(inq.datePref || '未指定日期')}</div>
+                        <div style="font-size:12px; color:var(--muted);">顧客：${esc(inq.customerName)} ｜ 手機：${esc(inq.contact)} ｜ 期望日期：${esc(inq.datePref || '未指定日期')}</div>
                         ${inq.note ? `<div style="font-size:12px; color:var(--ink); margin-top:2px;">備註：${esc(inq.note)}</div>` : ''}
                       </div>
                       <div style="display:flex; gap:8px; align-items:center;">
@@ -1876,7 +1880,17 @@
           window.scrollTo({ top: 0, behavior: 'smooth' });
         } else if (act === 'switch-help-role') {
           homeHelpRole = el.dataset.role;
-          renderFront();
+          const sec = document.getElementById('help-compare-section');
+          if (sec) {
+            sec.querySelectorAll('[data-action="switch-help-role"]').forEach((btn) => {
+              btn.classList.toggle('active', btn.dataset.role === homeHelpRole);
+            });
+            sec.querySelectorAll('[data-help-card]').forEach((card) => {
+              card.classList.toggle('help-mobile-hidden', card.dataset.helpCard !== homeHelpRole);
+            });
+          } else {
+            renderFront();
+          }
         } else if (act === 'toggle-admin') {
           if (viewMode === 'admin') {
             viewMode = 'front';
@@ -1949,8 +1963,8 @@
                   <input class="input" name="customerName" required placeholder="例如：林小姐" />
                 </div>
                 <div>
-                  <label class="label">LINE ID 或手機 *</label>
-                  <input class="input" name="contact" required placeholder="方便工作室聯繫您" />
+                  <label class="label" for="inquiry-contact-input">手機號碼 *</label>
+                  <input class="input" type="tel" id="inquiry-contact-input" name="contact" required placeholder="請輸入手機號碼（例如：0912345678）" inputmode="tel" />
                 </div>
               </div>
               <div>
