@@ -518,8 +518,14 @@
     };
 
     (function () {
-      const STORAGE_KEY = 'sishixuan_unified_v3';
+      const STORAGE_KEY = 'sishixuan_unified_v4';
+      const PREV_STORAGE_KEY = 'sishixuan_unified_v3';
       const SESSION_AUTH_KEY = 'sishixuan_admin_authed';
+
+      function makeCoverSvg(bg1, bg2, accent, title, sub) {
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="${bg1}"/><stop offset="100%" stop-color="${bg2}"/></linearGradient></defs><rect width="800" height="600" fill="url(#g)"/><circle cx="640" cy="140" r="130" fill="${accent}" fill-opacity="0.16"/><circle cx="170" cy="470" r="160" fill="${accent}" fill-opacity="0.12"/><rect x="70" y="70" width="660" height="460" rx="28" fill="none" stroke="${accent}" stroke-opacity="0.28" stroke-width="2"/><text x="400" y="285" text-anchor="middle" font-family="Noto Sans TC, PingFang TC, Microsoft JhengHei, sans-serif" font-size="44" font-weight="700" fill="#282623">${title}</text><text x="400" y="340" text-anchor="middle" font-family="Noto Sans TC, PingFang TC, Microsoft JhengHei, sans-serif" font-size="22" fill="${accent}">${sub}</text></svg>`;
+        return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+      }
 
       const DISCOUNT_OPTIONS = [
         { rate: 1, label: '原價（不打折）', short: '' },
@@ -574,12 +580,27 @@
         helpItemTitle: { key: 'helpItemTitle', tag: '②', label: '第 1～4 點粗體小標題', hint: '如「價格與地區先看懂，不需反覆私訊試探」', min: 12, max: 24, cssVar: '--fs-help-item-title' },
         helpItemDesc: { key: 'helpItemDesc', tag: '③', label: '痛點引言與第 1～4 點說明', hint: '「以前在社群找店…」及每點下方的灰色說明文字', min: 11, max: 20, cssVar: '--fs-help-item-desc' },
 
-        cardTitle: { key: 'cardTitle', tag: '1', label: '工作室卡片店名', hint: '探索頁卡片上的粗體店名（如：霧光美甲）', min: 13, max: 26, cssVar: '--fs-card-title' },
+        cardTitle: { key: 'cardTitle', tag: '1', label: '工作室卡片店名', hint: '探索頁卡片上的粗體店名（如：拾光禮研所）', min: 13, max: 26, cssVar: '--fs-card-title' },
         cardMeta: { key: 'cardMeta', tag: '2', label: '卡片地區與起價', hint: '店名下方的地區、分類與價格數字', min: 10, max: 20, cssVar: '--fs-card-meta' },
-        pill: { key: 'pill', tag: '3', label: '膠囊標籤文字', hint: '如「美甲・台北大安」「法式簡約」「✓ 優質認證工作室」', min: 10, max: 22, cssVar: '--fs-pill' },
+        pill: { key: 'pill', tag: '3', label: '膠囊標籤文字', hint: '如「客製化禮品・台北大安」「法式簡約」「✓ 優質認證工作室」', min: 10, max: 22, cssVar: '--fs-pill' },
         subText: { key: 'subText', tag: '4', label: '補充小字（地址・時長・優惠條）', hint: '詳情頁的交通位置、預約須知、服務時間與優惠橫條', min: 10, max: 20, cssVar: '--fs-sub' },
-        btn: { key: 'btn', tag: '5', label: '按鈕文字大小', hint: '全站按鈕文字（如：探索全台工作室、LINE 預約）', min: 11, max: 20, cssVar: '--fs-btn' }
+        btn: { key: 'btn', tag: '5', label: '按鈕文字大小', hint: '全站按鈕文字（如：探索全台工作室、複製 LINE ID）', min: 11, max: 20, cssVar: '--fs-btn' }
       };
+
+      const CATEGORIES = [
+        '客製化禮品',
+        '花藝設計',
+        '手作香氛',
+        '原創飾品',
+        '親子用品',
+        '手作甜點',
+        '追星周邊',
+        '寵物用品',
+        '插畫與文創',
+        '手作皮件與布藝'
+      ];
+      const CITIES = ['台北', '台中', '高雄', '台南', '新北', '新竹'];
+      const STYLES = ['法式簡約', '森系自然', '韓系簡約', '極簡侘寂'];
 
       const DEFAULT_DATA = {
         adminPassword: '1234',
@@ -624,32 +645,31 @@
         },
         studios: [
           {
-            id: 'mist-nail',
-            name: '霧光美甲',
-            category: '美甲',
+            id: 'shiguang-gift',
+            name: '拾光禮研所',
+            category: '客製化禮品',
             city: '台北',
             location: '台北大安',
-            address: '捷運忠孝敦化站步行 4 分鐘（預約完成後提供私宅門牌）',
+            address: '捷運忠孝復興站步行 5 分鐘（提供禮盒選品諮詢與全台宅配）',
             style: '法式簡約',
-            minPrice: 1200,
+            minPrice: 980,
             certified: true,
             discountRate: 'default',
-            tagline: '從一支筆刷開始，我們只做讓手指安靜發光的設計。',
-            story: '主理人曾於東京進修，希望打造沒有推銷壓力、只有自然光與手沖茶的單人工作室。堅持選用日本低敏凝膠，細緻甘皮護理。',
-            coverImage: 'https://images.unsplash.com/photo-1658390039913-4702ba28c594?auto=format&fit=crop&w=900&q=80',
-            bookingInfo: '每月 20 日晚間開放下月預約｜全預約制',
-            ig: '@mist.nail.tw',
-            line: '@mistnail',
+            tagline: '替每個重要日子，打包只屬於收禮人的姓名溫度與儀式感。',
+            story: '專注於企業贈禮、婚禮伴手禮與生日紀念禮盒設計，可自由搭配雷射雕刻、燙金卡片與跨店聯名選物。',
+            coverImage: makeCoverSvg('#F3E6D8', '#EFEAE0', '#9A5B2C', '拾光禮研所', '客製化禮品 ・ 台北大安'),
+            bookingInfo: '客製禮盒需提前 5-7 個工作天預訂｜急件請先聯繫確認',
+            ig: '@shiguang.gift',
+            line: '@shiguang',
             services: [
-              { name: '單色凝膠', price: '$1,200', duration: '90 分鐘・含前置保養' },
-              { name: '法式設計', price: '$1,600', duration: '120 分鐘・透膚暈染設計' },
-              { name: '卸甲保養', price: '$400', duration: '45 分鐘・溫和修護滋養' }
+              { name: '姓名刻字紀念禮盒', price: '$980', duration: '含客製卡片與緞帶包裝' },
+              { name: '跨界聯名祝福雙人組', price: '$1,880', duration: '禮品＋香氛／花藝搭配' }
             ]
           },
           {
             id: 'chuzhi-floral',
             name: '初枝花藝',
-            category: '花藝',
+            category: '花藝設計',
             city: '台中',
             location: '台中西區',
             address: '審計新村旁靜巷老宅二樓（提供預約自取與專車配送）',
@@ -660,7 +680,7 @@
             tagline: '順應四季花期，把晨露與枝葉線條綁進每一束溫柔裡。',
             story: '不刻意追求工整對稱，而是留下花草自然舒展的呼吸感。每週精選台灣當令切花，為您的贈禮時刻設計花禮。',
             coverImage: 'https://images.unsplash.com/photo-1683606960654-5a71f2015dec?auto=format&fit=crop&w=900&q=80',
-            bookingInfo: '每週二公休｜客製花束請提前 3 日私訊',
+            bookingInfo: '每週二公休｜客製花束請提前 3 日聯繫',
             ig: '@chuzhi.floral',
             line: '@chuzhi',
             services: [
@@ -669,9 +689,75 @@
             ]
           },
           {
+            id: 'senxi-scent',
+            name: '森息調香室',
+            category: '手作香氛',
+            city: '台北',
+            location: '台北中山',
+            address: '捷運雙連站步行 4 分鐘（預約制調香體驗＆擴香訂製）',
+            style: '極簡侘寂',
+            minPrice: 1280,
+            certified: true,
+            discountRate: 'default',
+            tagline: '把雨後森林與茶木氣息裝進玻璃瓶，陪你安靜呼吸。',
+            story: '嚴選法國進口精油與天然大豆蠟，主打低敏不刺鼻的居家香氛與客製香水體驗，可配合婚禮與品牌調配專屬香氣。',
+            coverImage: makeCoverSvg('#E6EDE3', '#EAECE4', '#224937', '森息調香室', '手作香氛 ・ 台北中山'),
+            bookingInfo: '每日開放 3 個調香體驗時段｜全預約制',
+            ig: '@senxi.scent',
+            line: '@senxi',
+            services: [
+              { name: '專屬客製香氛蠟燭', price: '$1,280', duration: '90 分鐘體驗・含玻璃罐與禮盒' },
+              { name: '天然植萃擴香組訂製', price: '$1,680', duration: '150ml 附天然擴香枝' }
+            ]
+          },
+          {
+            id: 'weiguang-jewelry',
+            name: '微光金工飾品',
+            category: '原創飾品',
+            city: '台南',
+            location: '台南中西',
+            address: '神農街周邊老屋二樓工作室（提供客製刻字與終身免費清潔）',
+            style: '法式簡約',
+            minPrice: 1100,
+            certified: true,
+            discountRate: 'default',
+            tagline: '每一道細微錘紋，都是手工敲進日常的溫潤光芒。',
+            story: '以 925 純銀與 14K 注金打造低調耐看的原創飾品，不追逐快時尚，適合日常疊戴或作為周年紀念對戒。',
+            coverImage: makeCoverSvg('#F6F2EA', '#F3E6D8', '#9A5B2C', '微光金工飾品', '原創飾品 ・ 台南中西'),
+            bookingInfo: '每週四至週日開放工作室預約試戴',
+            ig: '@weiguang.silver',
+            line: '@weiguang',
+            services: [
+              { name: '手工錘紋純銀細戒', price: '$1,100', duration: '免費內圍刻字服務' },
+              { name: '情人節雙人對戒訂製', price: '$3,200', duration: '含拭銀布與專屬木盒' }
+            ]
+          },
+          {
+            id: 'xiaoya-kids',
+            name: '小芽親子手作',
+            category: '親子用品',
+            city: '新竹',
+            location: '新竹竹北',
+            address: '竹北高鐵特區親子友善工作室（提供純棉刺繡姓名訂製）',
+            style: '森系自然',
+            minPrice: 750,
+            certified: true,
+            discountRate: 'default',
+            tagline: '給寶貝的第一份貼身禮物，柔軟透氣又有專屬名字記號。',
+            story: '由兩位媽媽共同成立，嚴選有機二重紗與無毒認證布料，提供彌月禮盒、幼稚園三件組與手繡姓名吊牌客製。',
+            coverImage: makeCoverSvg('#E6EDE3', '#F6F2EA', '#224937', '小芽親子手作', '親子用品 ・ 新竹竹北'),
+            bookingInfo: '刺繡訂製約 5 個工作天出貨｜歡迎預約挑選布料',
+            ig: '@xiaoya.kids',
+            line: '@xiaoya',
+            services: [
+              { name: '名字刺繡圍兜平安符組', price: '$750', duration: '可選 12 種植物染花色' },
+              { name: '新生兒彌月純棉禮盒', price: '$1,680', duration: '含蓋毯＋安撫巾＋客製刺繡' }
+            ]
+          },
+          {
             id: 'xiaosen-cake',
             name: '小森烘焙',
-            category: '烘焙',
+            category: '手作甜點',
             city: '高雄',
             location: '高雄左營',
             address: '捷運巨蛋站步行 6 分鐘（工作室自取／限定冷凍宅配）',
@@ -680,7 +766,7 @@
             certified: true,
             discountRate: 'default',
             tagline: '嚴選北海道鮮奶油與小農水果，揉出剛剛好不過甜的日常紀念。',
-            story: '堅持減糖配方、不使用植物性鮮奶油與香精。每一顆蛋糕都在接單後手工烤製抹面。',
+            story: '堅持減糖配方、不使用植物性鮮奶油與香精。每一顆蛋糕都在接單後手工烤製抹面，也常與花藝、禮品配合節慶禮盒。',
             coverImage: 'https://images.unsplash.com/photo-1622063531136-e7efff4ece72?auto=format&fit=crop&w=900&q=80',
             bookingInfo: '每日限量接單 4 顆｜取貨時段 13:00 - 18:30',
             ig: '@xiaosen.bake',
@@ -691,35 +777,97 @@
             ]
           },
           {
-            id: 'guangying-photo',
-            name: '光影日常攝影',
-            category: '攝影',
-            city: '台南',
-            location: '台南中西',
-            address: '赤崁樓周邊老屋自然光棚（提供全台戶外紀實外拍）',
-            style: '法式簡約',
-            minPrice: 3500,
+            id: 'stardust-idol',
+            name: '星塵應援工坊',
+            category: '追星周邊',
+            city: '台北',
+            location: '台北信義',
+            address: '捷運市政府站步行 6 分鐘（提供演唱會應援物／痛包配件客製）',
+            style: '韓系簡約',
+            minPrice: 450,
             certified: true,
             discountRate: 'default',
-            tagline: '不刻意擺拍，只留住微風與你們相視而笑的純粹瞬間。',
-            story: '結合數位與 135 底片拍攝的獨立攝影工作室，擅長捕捉情侶日常、輕婚紗登記與個人肖像。',
-            coverImage: 'https://images.unsplash.com/photo-1774660810725-fb04e002003d?auto=format&fit=crop&w=900&q=80',
-            bookingInfo: '開放預約近三個月檔期',
-            ig: '@guangying.daily',
-            line: '@guangying',
+            tagline: '把喜歡化作隨身的小巧閃耀，陪你安心赴約每一場演出。',
+            story: '專為追星族打造的高質感應援周邊設計，包含串珠手鍊、亞克力應援卡磚、迷你應援棒保護套與生日咖啡廳應援印刷套組。',
+            coverImage: makeCoverSvg('#F3E6D8', '#EFEAE0', '#9A5B2C', '星塵應援工坊', '追星周邊 ・ 台北信義'),
+            bookingInfo: '客製應援卡磚約 3-5 天出貨｜團體應援另有專案',
+            ig: '@stardust.fan',
+            line: '@stardust',
             services: [
-              { name: '個人自然光寫真', price: '$3,500', duration: '90 分鐘・含 10 張精修' },
-              { name: '情侶底片散步紀實', price: '$6,800', duration: '2 小時・附一捲底片' }
+              { name: '客製代表色串珠小卡夾', price: '$450', duration: '可選應援色與英文名吊飾' },
+              { name: '演唱會生日應援禮包組', price: '$1,200', duration: '含手幅＋透卡＋收納包' }
+            ]
+          },
+          {
+            id: 'maoqiu-pet',
+            name: '毛球日常選品',
+            category: '寵物用品',
+            city: '新北',
+            location: '新北板橋',
+            address: '捷運江子翠站步行 5 分鐘（寵物友善試穿空間）',
+            style: '森系自然',
+            minPrice: 680,
+            certified: true,
+            discountRate: 'default',
+            tagline: '讓毛孩穿得自在、戴得安全，每一針線都替牠們想多一點。',
+            story: '手工製作寵物領巾、防掙脫胸背帶、名字刻字防走失吊牌與寵物似顏繪客製小被，全品項採透氣親膚材質。',
+            coverImage: makeCoverSvg('#EAECE4', '#E6EDE3', '#224937', '毛球日常選品', '寵物用品 ・ 新北板橋'),
+            bookingInfo: '歡迎帶毛孩預約現場量身試戴',
+            ig: '@maoqiu.pet',
+            line: '@maoqiu',
+            services: [
+              { name: '客製名字防走失皮革領巾', price: '$680', duration: '含雷射刻字電話牌' },
+              { name: '毛孩專屬外出機能套組', price: '$1,450', duration: '胸背帶＋拾便袋收納包' }
+            ]
+          },
+          {
+            id: 'zhijian-art',
+            name: '紙間慢畫室',
+            category: '插畫與文創',
+            city: '台中',
+            location: '台中西屯',
+            address: '逢甲靜巷文創工作室（提供人像似顏繪與品牌聯名包裝插畫）',
+            style: '極簡侘寂',
+            minPrice: 580,
+            certified: true,
+            discountRate: 'default',
+            tagline: '用細膩水彩與鉛筆筆觸，替平凡日子留下溫柔紀念。',
+            story: '擅長溫暖系手繪似顏繪、情侶婚禮明信片、手帳貼紙與小品牌專屬包裝插畫設計，支援實體複製畫裝裱與數位檔交付。',
+            coverImage: makeCoverSvg('#F6F2EA', '#EFEAE0', '#787166', '紙間慢畫室', '插畫與文創 ・ 台中西屯'),
+            bookingInfo: '每月開放 20 組似顏繪排單｜約 5-7 日完稿',
+            ig: '@zhijian.art',
+            line: '@zhijian',
+            services: [
+              { name: '雙人水彩似顏繪明信片', price: '$580', duration: '含數位檔＋2 張美術紙印製' },
+              { name: '原木框裱裝紀念畫作', price: '$1,380', duration: 'A5 尺寸・附手寫祝福卡' }
+            ]
+          },
+          {
+            id: 'fengshi-leather',
+            name: '縫時革物所',
+            category: '手作皮件與布藝',
+            city: '台南',
+            location: '台南安平',
+            address: '安平運河旁老屋工作坊（預約制皮件訂製與雙人體驗課）',
+            style: '極簡侘寂',
+            minPrice: 1380,
+            certified: true,
+            discountRate: 'default',
+            tagline: '一針一線手縫義大利植鞣革，陪你養出獨一無二的歲月色澤。',
+            story: '使用環保天然植物鞣製牛皮與日本帆布，堅持傳統雙針蠟線手縫，提供短夾、證件套、帆布托特包訂製與免費敲字服務。',
+            coverImage: makeCoverSvg('#F3E6D8', '#E6DFD3', '#9A5B2C', '縫時革物所', '手作皮件與布藝 ・ 台南安平'),
+            bookingInfo: '客製皮件製作約 7-10 天｜體驗課程採預約制',
+            ig: '@fengshi.craft',
+            line: '@fengshi',
+            services: [
+              { name: '植鞣革手縫名片／證件夾', price: '$1,380', duration: '免費英文縮寫鋼印敲字' },
+              { name: '雙拼帆布植鞣革托特包', price: '$2,680', duration: '可選 4 款帆布與皮革配色' }
             ]
           }
         ],
-        savedIds: ['mist-nail', 'chuzhi-floral'],
+        savedIds: ['shiguang-gift', 'chuzhi-floral'],
         inquiries: []
       };
-
-      const CATEGORIES = ['美甲', '花藝', '烘焙', '攝影', '髮型', '婚禮'];
-      const CITIES = ['台北', '台中', '高雄', '台南', '新北', '新竹'];
-      const STYLES = ['法式簡約', '森系自然', '韓系簡約', '極簡侘寂'];
 
       let state = loadState();
       let isAdminAuthed = getSessionAuth();
@@ -785,6 +933,39 @@
               savedIds: Array.isArray(parsed.savedIds) ? parsed.savedIds : DEFAULT_DATA.savedIds,
               inquiries: Array.isArray(parsed.inquiries) ? parsed.inquiries : []
             };
+          }
+
+          // 若從舊版 v3 升級，保留使用者先前的設定與預約紀錄，並更新為新版 10 項工作室
+          const prevRaw = localStorage.getItem(PREV_STORAGE_KEY);
+          if (prevRaw) {
+            const prev = JSON.parse(prevRaw);
+            const ps = prev.site || {};
+            const migrated = {
+              adminPassword: prev.adminPassword || DEFAULT_DATA.adminPassword,
+              fontScale: Number(prev.fontScale) || 1,
+              fontSizes: { ...DEFAULT_FONT_SIZES, ...(prev.fontSizes || {}) },
+              site: {
+                ...DEFAULT_DATA.site,
+                ...ps,
+                defaultDiscountRate: ps.defaultDiscountRate !== undefined
+                  ? Number(ps.defaultDiscountRate)
+                  : DEFAULT_DATA.site.defaultDiscountRate,
+                promoBannerText: ps.promoBannerText !== undefined
+                  ? ps.promoBannerText
+                  : DEFAULT_DATA.site.promoBannerText,
+                helpCustomerItems: Array.isArray(ps.helpCustomerItems)
+                  ? ps.helpCustomerItems
+                  : DEFAULT_DATA.site.helpCustomerItems,
+                helpStudioItems: Array.isArray(ps.helpStudioItems)
+                  ? ps.helpStudioItems
+                  : DEFAULT_DATA.site.helpStudioItems
+              },
+              studios: JSON.parse(JSON.stringify(DEFAULT_DATA.studios)),
+              savedIds: [...DEFAULT_DATA.savedIds],
+              inquiries: Array.isArray(prev.inquiries) ? prev.inquiries : []
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
+            return migrated;
           }
         } catch (e) {}
         return JSON.parse(JSON.stringify(DEFAULT_DATA));
@@ -1126,7 +1307,7 @@
               <h1 class="section-heading">探索工作室</h1>
               <p class="body-text" style="color:var(--muted);">發掘全台質感獨立創作者，尋找你的理想服務。</p>
               <div class="filter-bar">
-                <input class="input" style="min-width:180px; flex:1;" placeholder="搜尋工作室名稱、地區..." value="${esc(filters.q)}" data-filter="q" />
+                <input class="input" style="min-width:180px; flex:1;" placeholder="搜尋工作室名稱、地區、類型..." value="${esc(filters.q)}" data-filter="q" />
                 <select class="select" data-filter="city">
                   <option value="全部">全台地區</option>
                   ${CITIES.map((c) => `<option value="${c}" ${filters.city === c ? 'selected' : ''}>${c}</option>`).join('')}
@@ -1381,7 +1562,7 @@
           }
         } else if (adminTab === 'fonts') {
           const firstCustomerItem = (state.site.helpCustomerItems && state.site.helpCustomerItems[0]) ? state.site.helpCustomerItems[0] : { title: '價格與地區先看懂', desc: '先確認預算範圍與距離再聯繫。' };
-          const firstStudioImg = (state.studios && state.studios[0]) ? state.studios[0].coverImage : '';
+          const previewStudio = (state.studios && state.studios[0]) ? state.studios[0] : DEFAULT_DATA.studios[0];
           bodyHTML = `
             <div class="stack">
               <div class="card" style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; padding:16px 20px;">
@@ -1446,25 +1627,25 @@
                     <div class="preview-pane-label">👁️ 即時卡片與詳情標籤預覽</div>
                     <div class="studio-card" style="max-width:280px; cursor:default;">
                       <div class="studio-thumb">
-                        <img src="${esc(firstStudioImg)}" alt="" onerror="this.style.display='none'" />
+                        <img src="${esc(previewStudio.coverImage)}" alt="" onerror="this.style.display='none'" />
                         <span class="studio-cert-tag">✓ 優質認證</span>
                       </div>
                       <div class="studio-body">
-                        <div class="studio-name"><span class="fs-tag-badge">1</span>霧光美甲</div>
+                        <div class="studio-name"><span class="fs-tag-badge">1</span>${esc(previewStudio.name)}</div>
                         <div class="studio-meta">
-                          <span class="studio-loc"><span class="fs-tag-badge">2</span>台北大安・美甲</span>
-                          <span class="studio-price">$1,200起</span>
+                          <span class="studio-loc"><span class="fs-tag-badge">2</span>${esc(previewStudio.location)}・${esc(previewStudio.category)}</span>
+                          <span class="studio-price">$${Number(previewStudio.minPrice || 0).toLocaleString()}起</span>
                         </div>
                       </div>
                     </div>
                     <div class="card" style="padding:14px; background:var(--linen);">
                       <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px;">
-                        <span class="pill pill-sage"><span class="fs-tag-badge">3</span>美甲・台北大安</span>
-                        <span class="pill pill-peach">法式簡約</span>
+                        <span class="pill pill-sage"><span class="fs-tag-badge">3</span>${esc(previewStudio.category)}・${esc(previewStudio.location)}</span>
+                        <span class="pill pill-peach">${esc(previewStudio.style)}</span>
                         <span class="pill pill-sage">✓ 優質認證工作室</span>
                       </div>
                       <p class="sub-text" style="color:var(--muted); margin-bottom:10px;">
-                        <span class="fs-tag-badge">4</span>📍 捷運忠孝敦化站步行 4 分鐘｜90 分鐘・含前置保養
+                        <span class="fs-tag-badge">4</span>📍 ${esc(previewStudio.address)}
                       </p>
                       <button type="button" class="btn btn-forest"><span class="fs-tag-badge" style="background:rgba(255,255,255,0.25);">5</span>探索全台工作室</button>
                     </div>
@@ -1973,7 +2154,7 @@
               </div>
               <div>
                 <label class="label" for="inquiry-note-input">備註（選填）</label>
-                <textarea class="textarea" id="inquiry-note-input" name="note" rows="2" placeholder="例如：希望時段（下午）、是否需卸甲、特殊需求等..."></textarea>
+                <textarea class="textarea" id="inquiry-note-input" name="note" rows="2" placeholder="例如：希望時段（下午）、客製文字內容、特殊需求等..."></textarea>
               </div>
               <button type="submit" class="btn btn-forest btn-sm">送出預約詢問</button>
             </form>
@@ -2009,7 +2190,7 @@
         } else if (act === 'admin-new-studio') {
           const newId = 'studio-' + Date.now();
           draftStudio = {
-            id: newId, name: '新個人工作室', category: '美甲', city: '台北', location: '台北大安',
+            id: newId, name: '新個人工作室', category: CATEGORIES[0], city: '台北', location: '台北大安',
             address: '全預約制工作室（預約後提供詳細地址）', style: '法式簡約', minPrice: 1200,
             certified: false, discountRate: 'default',
             tagline: '請輸入一句話介紹...', story: '請輸入品牌故事...',
