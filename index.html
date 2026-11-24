@@ -347,6 +347,7 @@
       border: 1px solid var(--hairline); background: var(--linen);
       font-size: 14px; outline: none;
     }
+    input[type="date"] { cursor: pointer; min-height: 40px; }
     .input:focus, .select:focus, .textarea:focus { border-color: var(--forest); background: var(--ivory); }
     .filter-bar .select, .filter-bar .input { width: auto; border-radius: 999px; background: var(--ivory); padding: 7px 14px; font-size: 13px; }
     .label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 5px; }
@@ -728,6 +729,14 @@
       let filters = { q: '', city: '全部', category: '全部', style: '全部' };
       let lastHandledHash = '';
       let pendingAdminPrompt = false;
+
+      function getTodayDateStr() {
+        const d = new Date();
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+      }
 
       function getSessionAuth() {
         try { return sessionStorage.getItem(SESSION_AUTH_KEY) === '1'; }
@@ -1204,7 +1213,8 @@
                     <div class="admin-row" style="padding:10px 0;">
                       <div>
                         <div class="body-text" style="font-weight:700;">${esc(inq.studioName)} — ${esc(inq.service)}</div>
-                        <div class="sub-text" style="color:var(--muted);">${esc(inq.datePref)} ・ ${esc(inq.createdAt)}</div>
+                        <div class="sub-text" style="color:var(--muted);">期望日期：${esc(inq.datePref || '未指定日期')} ・ 送出日：${esc(inq.createdAt)}</div>
+                        ${inq.note ? `<div class="sub-text" style="color:var(--ink); margin-top:2px;">備註：${esc(inq.note)}</div>` : ''}
                       </div>
                       <span class="pill pill-sage">${esc(inq.status)}</span>
                     </div>
@@ -1591,7 +1601,8 @@
                     <div class="admin-row">
                       <div>
                         <div style="font-weight:700; font-size:14px;">${esc(inq.studioName)} — ${esc(inq.service)}</div>
-                        <div style="font-size:12px; color:var(--muted);">顧客：${esc(inq.customerName)} ｜ 聯絡：${esc(inq.contact)} ｜ 期望日期：${esc(inq.datePref)}</div>
+                        <div style="font-size:12px; color:var(--muted);">顧客：${esc(inq.customerName)} ｜ 聯絡：${esc(inq.contact)} ｜ 期望日期：${esc(inq.datePref || '未指定日期')}</div>
+                        ${inq.note ? `<div style="font-size:12px; color:var(--ink); margin-top:2px;">備註：${esc(inq.note)}</div>` : ''}
                       </div>
                       <div style="display:flex; gap:8px; align-items:center;">
                         <select class="select" style="width:auto;" data-inq-status="${esc(inq.id)}">
@@ -1844,6 +1855,10 @@
       });
 
       document.addEventListener('click', (e) => {
+        if (e.target && e.target.matches('input[type="date"]') && typeof e.target.showPicker === 'function') {
+          try { e.target.showPicker(); } catch (err) {}
+        }
+
         const el = e.target.closest('[data-action]');
         if (!el) {
           if (e.target.id === 'modal-backdrop') closeModal(true);
@@ -1929,10 +1944,23 @@
             </div>
             <form id="inquiry-form" class="stack" style="margin-top:0;" data-studio-id="${esc(el.dataset.id)}" data-service="${esc(savedServiceLabel)}" data-rate-label="${esc(rateLabel)}">
               <div class="grid-2">
-                <input class="input" name="customerName" required placeholder="您的稱呼 *" />
-                <input class="input" name="contact" required placeholder="LINE ID 或手機 *" />
+                <div>
+                  <label class="label">您的稱呼 *</label>
+                  <input class="input" name="customerName" required placeholder="例如：林小姐" />
+                </div>
+                <div>
+                  <label class="label">LINE ID 或手機 *</label>
+                  <input class="input" name="contact" required placeholder="方便工作室聯繫您" />
+                </div>
               </div>
-              <input class="input" name="datePref" placeholder="期望日期或備註（選填）" />
+              <div>
+                <label class="label" for="inquiry-date-input">期望預約日期（選填，點擊選擇日期）</label>
+                <input class="input" type="date" id="inquiry-date-input" name="datePref" min="${getTodayDateStr()}" />
+              </div>
+              <div>
+                <label class="label" for="inquiry-note-input">備註（選填）</label>
+                <textarea class="textarea" id="inquiry-note-input" name="note" rows="2" placeholder="例如：希望時段（下午）、是否需卸甲、特殊需求等..."></textarea>
+              </div>
               <button type="submit" class="btn btn-forest btn-sm">送出預約詢問</button>
             </form>
           `;
@@ -2204,7 +2232,8 @@
             service: form.dataset.service,
             customerName: fd.get('customerName'),
             contact: fd.get('contact'),
-            datePref: fd.get('datePref') || '待確認時段',
+            datePref: fd.get('datePref') || '未指定日期',
+            note: String(fd.get('note') || '').trim(),
             createdAt: new Date().toLocaleDateString('zh-TW'),
             status: '待回覆'
           });
