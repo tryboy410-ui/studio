@@ -81,9 +81,9 @@
     .brand-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
     @media (max-width: 480px) { .brand-sub { display: none; } }
 
-    .nav-links { display: none; gap: 20px; align-items: center; }
+    .nav-links { display: none; gap: 16px; align-items: center; }
     @media (min-width: 768px) { .nav-links { display: flex; } }
-    .nav-btn { font-size: 14px; font-weight: 500; color: var(--muted); padding: 6px 2px; }
+    .nav-btn { font-size: 14px; font-weight: 500; color: var(--muted); padding: 6px 2px; white-space: nowrap; }
     .nav-btn.active { color: var(--forest); font-weight: 700; border-bottom: 2px solid var(--forest); }
 
     .top-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
@@ -105,6 +105,7 @@
     .btn-forest { background: var(--forest); color: #fff; }
     .btn-sage { background: var(--sage); color: var(--forest); }
     .btn-ivory { background: var(--ivory); color: var(--ink); border: 1px solid var(--hairline); }
+    .btn-peach { background: var(--peach); color: var(--bronze); }
     .btn-danger { background: #FEE2E2; color: var(--danger); }
     .btn-sm { padding: 6px 11px; font-size: 12px; }
 
@@ -125,17 +126,20 @@
       border-radius: 12px; padding: 10px 12px; font-size: 12px;
     }
 
-    /* 手機底部導覽 */
+    /* 手機底部導覽（5 分頁） */
     .bottom-nav {
       position: fixed; bottom: 0; left: 0; right: 0; z-index: 30;
       background: rgba(255, 254, 250, 0.96); backdrop-filter: blur(8px);
       border-top: 1px solid var(--hairline);
-      display: grid; grid-template-columns: repeat(4, 1fr); height: 62px;
+      display: grid; grid-template-columns: repeat(5, 1fr); height: 62px;
     }
     @media (min-width: 768px) { .bottom-nav { display: none; } }
     .bottom-nav button {
       display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
-      font-size: 12px; color: var(--muted);
+      font-size: 11px; color: var(--muted); padding: 0 2px; min-width: 0;
+    }
+    .bottom-nav button span {
+      display: block; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .bottom-nav button.active { color: var(--forest); font-weight: 700; }
 
@@ -249,6 +253,87 @@
     .price-regular {
       font-size: calc(var(--fs-body) * var(--font-scale));
       font-weight: 700; color: var(--forest);
+    }
+
+    /* 跨店合作專區樣式 */
+    .collab-grid {
+      display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px;
+    }
+    @media (min-width: 768px) {
+      .collab-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .collab-card {
+      background: var(--ivory); border: 1px solid var(--hairline);
+      border-radius: 20px; overflow: hidden; cursor: pointer;
+      display: flex; flex-direction: column;
+      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 2px 10px rgba(40, 38, 35, 0.03);
+    }
+    .collab-card:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(40,38,35,0.07); }
+    .collab-thumb {
+      position: relative; aspect-ratio: 16 / 9; background: var(--sand); overflow: hidden;
+    }
+    .collab-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .collab-tag-badge {
+      position: absolute; top: 10px; left: 10px;
+      background: rgba(34, 73, 55, 0.9); color: #fff;
+      padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700;
+    }
+    .collab-save-badge {
+      position: absolute; top: 10px; right: 10px;
+      background: rgba(255, 254, 250, 0.94); color: var(--bronze);
+      border: 1px solid #E5C7A6;
+      padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 700;
+    }
+    .collab-body {
+      padding: 16px; display: flex; flex-direction: column; gap: 10px; flex: 1;
+    }
+    .collab-partners-line {
+      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    }
+    .collab-includes-preview {
+      background: var(--linen); border: 1px solid #EAE2D5;
+      border-radius: 12px; padding: 10px 12px;
+      display: flex; flex-direction: column; gap: 5px;
+    }
+    .collab-include-bullet {
+      display: flex; align-items: flex-start; gap: 6px;
+      font-size: calc(var(--fs-sub) * var(--font-scale));
+      line-height: 1.45;
+    }
+    .collab-footer {
+      margin-top: auto; padding-top: 10px; border-top: 1px solid #EFE9DF;
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    }
+    .collab-partner-chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 12px; border-radius: 999px;
+      background: var(--sage); color: var(--forest);
+      border: 1px solid rgba(34, 73, 55, 0.2);
+      font-size: calc(var(--fs-pill) * var(--font-scale));
+      font-weight: 700; transition: background 0.15s;
+    }
+    .collab-partner-chip:hover { background: #D7E3D2; }
+    .collab-include-card-row {
+      display: flex; flex-direction: column; gap: 4px;
+      padding: 10px 12px; border-radius: 12px;
+      background: var(--linen); border: 1px solid var(--hairline);
+    }
+    .collab-linked-mini {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 10px 12px; border-radius: 12px;
+      background: #FAF5EB; border: 1px solid #EAD3B3;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .collab-linked-mini:hover { background: #F5EBD8; }
+    .studio-check-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(175px, 1fr)); gap: 8px;
+      background: var(--linen); padding: 12px; border-radius: 12px; border: 1px solid var(--hairline);
+    }
+    .studio-check-item {
+      display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600;
+      cursor: pointer; background: var(--ivory); padding: 6px 10px; border-radius: 8px;
+      border: 1px solid var(--hairline);
     }
 
     /* 首頁主視覺拼貼 */
@@ -426,7 +511,14 @@
       background: var(--linen); padding: 10px; border-radius: 12px; border: 1px solid var(--hairline);
       margin-bottom: 8px;
     }
-    @media (max-width: 640px) { .service-edit-row { grid-template-columns: minmax(0, 1fr); } }
+    .collab-inc-edit-row {
+      display: grid; grid-template-columns: 1.5fr 3fr auto; gap: 8px; align-items: center;
+      background: var(--linen); padding: 10px; border-radius: 12px; border: 1px solid var(--hairline);
+      margin-bottom: 8px;
+    }
+    @media (max-width: 640px) {
+      .service-edit-row, .collab-inc-edit-row { grid-template-columns: minmax(0, 1fr); }
+    }
 
     /* 字體設定列（左調右看） */
     .fs-control-card {
@@ -490,10 +582,11 @@
       </button>
 
       <nav class="nav-links" id="desktop-nav">
-        <button class="nav-btn active" data-action="go-tab" data-tab="home">首頁</button>
-        <button class="nav-btn" data-action="go-tab" data-tab="explore">探索</button>
-        <button class="nav-btn" data-action="go-tab" data-tab="saved">收藏</button>
-        <button class="nav-btn" data-action="go-tab" data-tab="profile">申請進駐</button>
+        <button class="nav-btn active" data-action="go-tab" data-tab="home" data-nav-key="navHome">首頁</button>
+        <button class="nav-btn" data-action="go-tab" data-tab="explore" data-nav-key="navExplore">探索</button>
+        <button class="nav-btn" data-action="go-tab" data-tab="collab" data-nav-key="navCollab">跨店合作</button>
+        <button class="nav-btn" data-action="go-tab" data-tab="saved" data-nav-key="navSaved">收藏</button>
+        <button class="nav-btn" data-action="go-tab" data-tab="profile" data-nav-key="navProfile">申請進駐</button>
       </nav>
 
       <div class="top-actions">
@@ -519,10 +612,11 @@
 
   <!-- 手機底部導覽列 -->
   <nav class="bottom-nav" id="mobile-nav">
-    <button class="active" data-action="go-tab" data-tab="home"><span>首頁</span></button>
-    <button data-action="go-tab" data-tab="explore"><span>探索</span></button>
-    <button data-action="go-tab" data-tab="saved"><span>收藏</span></button>
-    <button data-action="go-tab" data-tab="profile"><span>申請</span></button>
+    <button class="active" data-action="go-tab" data-tab="home"><span data-nav-key="navHome">首頁</span></button>
+    <button data-action="go-tab" data-tab="explore"><span data-nav-key="navExplore">探索</span></button>
+    <button data-action="go-tab" data-tab="collab"><span data-nav-key="navCollab">跨店合作</span></button>
+    <button data-action="go-tab" data-tab="saved"><span data-nav-key="navSaved">收藏</span></button>
+    <button data-action="go-tab" data-tab="profile"><span data-nav-key="navProfile">申請進駐</span></button>
   </nav>
 
   <!-- 彈窗容器 -->
@@ -543,12 +637,12 @@
     };
 
     (function () {
-      const STORAGE_KEY = 'sishixuan_unified_v5';
-      const LEGACY_KEYS = ['sishixuan_unified_v4', 'sishixuan_unified_v3'];
+      const STORAGE_KEY = 'sishixuan_unified_v6';
+      const LEGACY_KEYS = ['sishixuan_unified_v5', 'sishixuan_unified_v4', 'sishixuan_unified_v3'];
       const SESSION_AUTH_KEY = 'sishixuan_admin_authed';
 
       function makeCoverSvg(bg1, bg2, accent, title, sub) {
-        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="${bg1}"/><stop offset="100%" stop-color="${bg2}"/></linearGradient></defs><rect width="800" height="600" fill="url(#g)"/><circle cx="640" cy="140" r="130" fill="${accent}" fill-opacity="0.16"/><circle cx="170" cy="470" r="160" fill="${accent}" fill-opacity="0.12"/><rect x="70" y="70" width="660" height="460" rx="28" fill="none" stroke="${accent}" stroke-opacity="0.28" stroke-width="2"/><text x="400" y="285" text-anchor="middle" font-family="Noto Sans TC, PingFang TC, Microsoft JhengHei, sans-serif" font-size="44" font-weight="700" fill="#282623">${title}</text><text x="400" y="340" text-anchor="middle" font-family="Noto Sans TC, PingFang TC, Microsoft JhengHei, sans-serif" font-size="22" fill="${accent}">${sub}</text></svg>`;
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="${bg1}"/><stop offset="100%" stop-color="${bg2}"/></linearGradient></defs><rect width="800" height="600" fill="url(#g)"/><circle cx="640" cy="140" r="130" fill="${accent}" fill-opacity="0.16"/><circle cx="170" cy="470" r="160" fill="${accent}" fill-opacity="0.12"/><rect x="70" y="70" width="660" height="460" rx="28" fill="none" stroke="${accent}" stroke-opacity="0.28" stroke-width="2"/><text x="400" y="285" text-anchor="middle" font-family="Noto Sans TC, PingFang TC, Microsoft JhengHei, sans-serif" font-size="40" font-weight="700" fill="#282623">${title}</text><text x="400" y="340" text-anchor="middle" font-family="Noto Sans TC, PingFang TC, Microsoft JhengHei, sans-serif" font-size="21" fill="${accent}">${sub}</text></svg>`;
         return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
       }
 
@@ -596,8 +690,8 @@
         brand: { key: 'brand', tag: 'A', label: '頂部品牌名稱（私室選）', hint: '最左上角 LOGO 旁的品牌大字', min: 14, max: 32, cssVar: '--fs-brand' },
         hero: { key: 'hero', tag: 'B', label: '首頁主視覺大標題', hint: '「好作品值得被看見…」照片上的白色大字', min: 18, max: 46, cssVar: '--fs-hero' },
         heroBadge: { key: 'heroBadge', tag: 'C', label: '首頁主視覺副標', hint: '白色大標題下方的深色膠囊小字', min: 10, max: 22, cssVar: '--fs-hero-badge' },
-        heading: { key: 'heading', tag: 'D', label: '各區塊與頁面大標題', hint: '如「這個 App 幫你解決了什麼問題？」「探索工作室」', min: 16, max: 34, cssVar: '--fs-heading' },
-        body: { key: 'body', tag: 'E', label: '一般內文與故事文字', hint: '如「為什麼創立這個平台」段落與工作室品牌故事', min: 12, max: 24, cssVar: '--fs-body' },
+        heading: { key: 'heading', tag: 'D', label: '各區塊與頁面大標題', hint: '如「探索工作室」「跨店合作企劃」', min: 16, max: 34, cssVar: '--fs-heading' },
+        body: { key: 'body', tag: 'E', label: '一般內文與故事文字', hint: '如「為什麼創立這個平台」段落與品牌故事', min: 12, max: 24, cssVar: '--fs-body' },
         principle: { key: 'principle', tag: 'F', label: '三大堅持卡片文字', hint: '01 只收錄獨立創作者／02 優質認證／03 不畫大餅', min: 11, max: 22, cssVar: '--fs-principle' },
         quote: { key: 'quote', tag: 'G', label: '創辦人承諾金句', hint: '「我們不保證訂單，只承諾認真審核每一間工作室。」', min: 13, max: 28, cssVar: '--fs-quote' },
 
@@ -605,10 +699,10 @@
         helpItemTitle: { key: 'helpItemTitle', tag: '②', label: '第 1～4 點粗體小標題', hint: '如「價格與地區先看懂，不需反覆私訊試探」', min: 12, max: 24, cssVar: '--fs-help-item-title' },
         helpItemDesc: { key: 'helpItemDesc', tag: '③', label: '痛點引言與第 1～4 點說明', hint: '「以前在社群找店…」及每點下方的灰色說明文字', min: 11, max: 20, cssVar: '--fs-help-item-desc' },
 
-        cardTitle: { key: 'cardTitle', tag: '1', label: '工作室卡片店名', hint: '探索頁卡片上的粗體店名（如：拾光禮研所）', min: 13, max: 26, cssVar: '--fs-card-title' },
+        cardTitle: { key: 'cardTitle', tag: '1', label: '卡片主標題（店名／聯名名稱）', hint: '探索頁與跨店合作卡片上的粗體標題', min: 13, max: 26, cssVar: '--fs-card-title' },
         cardMeta: { key: 'cardMeta', tag: '2', label: '卡片地區與起價', hint: '店名下方的地區、分類與價格數字', min: 10, max: 20, cssVar: '--fs-card-meta' },
-        pill: { key: 'pill', tag: '3', label: '膠囊標籤文字', hint: '如「客製化禮品・台北大安」「法式簡約」「✓ 優質認證工作室」', min: 10, max: 22, cssVar: '--fs-pill' },
-        subText: { key: 'subText', tag: '4', label: '補充小字（地址・時長・優惠條）', hint: '詳情頁的交通位置、預約須知、服務時間與優惠橫條', min: 10, max: 20, cssVar: '--fs-sub' },
+        pill: { key: 'pill', tag: '3', label: '膠囊標籤文字', hint: '如「客製化禮品・台北大安」「雙店聯名」', min: 10, max: 22, cssVar: '--fs-pill' },
+        subText: { key: 'subText', tag: '4', label: '補充小字（地址・時長・套餐內容）', hint: '詳情頁的交通位置、預約須知、服務時間與明細', min: 10, max: 20, cssVar: '--fs-sub' },
         btn: { key: 'btn', tag: '5', label: '按鈕文字大小', hint: '全站按鈕文字（如：探索全台工作室、開啟 LINE 聯繫）', min: 11, max: 20, cssVar: '--fs-btn' }
       };
 
@@ -629,6 +723,7 @@
       ];
       const CITIES = ['台北', '台中', '高雄', '台南', '新北', '新竹'];
       const STYLES = ['法式簡約', '森系自然', '韓系簡約', '極簡侘寂'];
+      const COLLAB_TAGS = ['雙店聯名', '節慶限定', '婚禮聯名', '限量企劃'];
 
       const DEFAULT_DATA = {
         adminPassword: '1234',
@@ -637,6 +732,25 @@
         site: {
           brandName: '私室選',
           brandSub: '嚴選獨立工作室指南',
+
+          // 導覽列與各分頁可編輯標題文字
+          navHome: '首頁',
+          navExplore: '探索',
+          navCollab: '跨店合作',
+          navSaved: '收藏',
+          navProfile: '申請進駐',
+
+          exploreTitle: '探索工作室',
+          exploreSub: '發掘全台質感獨立創作者，尋找你的理想服務。',
+          collabTitle: '跨店合作企劃',
+          collabSub: '由風格相近的獨立工作室攜手推出，一次收藏雙倍用心的聯名組合套餐。',
+          savedTitle: '我的收藏',
+          savedSub: '點開工作室詳情點擊「收藏」即可加入此清單',
+          profileBadge: '創始工作室招募計畫',
+          profileTitle: '申請進駐「私室選」',
+          profileSub: '送出後會立即新增至工作室清單，經審核後即可授予優質認證。',
+          inquiriesTitle: '我的預約詢問紀錄',
+
           defaultDiscountRate: 0.9,
           promoBannerText: '透過「私室選」完成預約並消費，結帳即享 9 折專屬優惠',
           heroLine1: '好作品值得被看見，',
@@ -998,6 +1112,65 @@
             ]
           }
         ],
+        collaborations: [
+          {
+            id: 'collab-gift-scent',
+            title: '「晨光與森息」姓名刻字擴香禮盒組',
+            tag: '雙店聯名',
+            city: '台北',
+            location: '台北大安 × 中山',
+            studioIds: ['shiguang-gift', 'senxi-scent'],
+            origPrice: 2660,
+            comboPrice: 2280,
+            certified: true,
+            coverImage: makeCoverSvg('#F3E6D8', '#E6EDE3', '#224937', '晨光與森息聯名禮盒', '拾光禮研所 × 森息調香室'),
+            tagline: '把專屬姓名的紀念木盒，裝進雨後森林的溫柔氣息。',
+            description: '拾光禮研所與森息調香室共同企劃的質感贈禮套餐！一次擁有客製雷射刻字紀念禮盒與天然植萃擴香組，省去分別挑選搭配的時間，最適合喬遷、生日或重要紀念日送禮。',
+            bookingInfo: '需提前 5 個工作天預訂｜提供雙店聯合精美包裝與全台宅配',
+            includes: [
+              { studioName: '拾光禮研所', item: '姓名刻字紀念木盒＋專屬燙金祝福卡片與緞帶包裝' },
+              { studioName: '森息調香室', item: '天然植萃擴香組 150ml（可自選森林／白茶／柑橘調）' }
+            ]
+          },
+          {
+            id: 'collab-floral-art',
+            title: '「花與畫的紀念日」手綁鮮花 × 水彩似顏繪組',
+            tag: '節慶限定',
+            city: '台中',
+            location: '台中西區 × 西屯',
+            studioIds: ['chuzhi-floral', 'zhijian-art'],
+            origPrice: 2380,
+            comboPrice: 1980,
+            certified: true,
+            coverImage: makeCoverSvg('#EFEAE0', '#E6EDE3', '#9A5B2C', '花與畫的紀念日', '初枝花藝 × 紙間慢畫室'),
+            tagline: '把當下的浪漫交給鮮花，把永恆的微笑留給手繪水彩。',
+            description: '由台中兩間人氣工作室聯合打造！先提供雙人照片繪製溫暖水彩似顏繪明信片，再由花藝師依照畫作色系搭配當季鮮花束，讓花禮與畫作在送出那刻彼此呼應。',
+            bookingInfo: '請提前 7 天預訂以利手繪完稿｜台中西區可一次雙品項自取或專車配送',
+            includes: [
+              { studioName: '初枝花藝', item: '依畫作色系客製・季節手綁鮮花束（中束）' },
+              { studioName: '紙間慢畫室', item: '雙人水彩似顏繪明信片 2 張＋高畫質數位檔' }
+            ]
+          },
+          {
+            id: 'collab-wedding-combo',
+            title: '「序曲與柔光」輕婚禮家宴全案企劃',
+            tag: '婚禮聯名',
+            city: '台北',
+            location: '台北士林 × 全台服務',
+            studioIds: ['xuqu-wedding', 'rouguang-bridal'],
+            origPrice: 30800,
+            comboPrice: 27500,
+            certified: true,
+            coverImage: makeCoverSvg('#F6F2EA', '#F3E6D8', '#9A5B2C', '序曲與柔光婚禮企劃', '序曲婚禮設計 × 柔光新秘造型'),
+            tagline: '讓空間花藝與新娘妝髮說同一種美學語言，輕鬆完成夢幻家宴。',
+            description: '專為 30-60 人溫馨家宴與登記證婚打造！由花藝布置團隊與新娘秘書共同對接婚禮色調，新娘手上的捧花與頭飾花材皆與現場布置一致，大幅減輕新人籌備溝通的負擔。',
+            bookingInfo: '建議於婚期前 3 個月預約雙團隊聯合諮詢｜加贈同色系鮮花頭飾升級',
+            includes: [
+              { studioName: '序曲婚禮設計', item: '家宴迎賓送客區客製布置＋同色系新娘手綁捧花一束' },
+              { studioName: '柔光新秘造型', item: '婚宴三造型新娘秘書（含試妝諮詢與鮮花頭飾搭配）' }
+            ]
+          }
+        ],
         savedIds: ['shiguang-gift', 'chuzhi-floral'],
         inquiries: []
       };
@@ -1009,9 +1182,13 @@
       let homeHelpRole = 'customer';
       let adminTab = 'studios';
       let currentStudioId = null;
+      let currentCollabId = null;
       let editingStudioId = null;
       let draftStudio = null;
+      let editingCollabId = null;
+      let draftCollab = null;
       let filters = { q: '', city: '全部', category: '全部', style: '全部' };
+      let collabFilters = { q: '', city: '全部', tag: '全部' };
       let lastHandledHash = '';
       let pendingAdminPrompt = false;
 
@@ -1134,6 +1311,7 @@
               fontSizes: { ...DEFAULT_FONT_SIZES, ...(parsed.fontSizes || {}) },
               site: buildSiteState(parsed.site),
               studios: Array.isArray(parsed.studios) ? parsed.studios : DEFAULT_DATA.studios,
+              collaborations: Array.isArray(parsed.collaborations) ? parsed.collaborations : DEFAULT_DATA.collaborations,
               savedIds: Array.isArray(parsed.savedIds) ? parsed.savedIds : DEFAULT_DATA.savedIds,
               inquiries: Array.isArray(parsed.inquiries) ? parsed.inquiries : []
             };
@@ -1148,7 +1326,7 @@
 
             let mergedStudios;
             let mergedSaved;
-            if (LEGACY_KEYS[i] === 'sishixuan_unified_v4' && Array.isArray(prev.studios)) {
+            if ((LEGACY_KEYS[i] === 'sishixuan_unified_v5' || LEGACY_KEYS[i] === 'sishixuan_unified_v4') && Array.isArray(prev.studios)) {
               const existingIds = new Set();
               mergedStudios = prev.studios.map((st) => {
                 existingIds.add(st.id);
@@ -1172,6 +1350,7 @@
               fontSizes: { ...DEFAULT_FONT_SIZES, ...(prev.fontSizes || {}) },
               site: buildSiteState(prev.site),
               studios: mergedStudios,
+              collaborations: Array.isArray(prev.collaborations) ? prev.collaborations : JSON.parse(JSON.stringify(DEFAULT_DATA.collaborations)),
               savedIds: mergedSaved,
               inquiries: Array.isArray(prev.inquiries) ? prev.inquiries : []
             };
@@ -1202,39 +1381,50 @@
           viewMode = 'front';
           frontTab = 'home';
           currentStudioId = null;
+          currentCollabId = null;
           return;
         }
         if (raw === 'admin') {
           if (isAdminAuthed) {
             viewMode = 'admin';
             editingStudioId = null;
+            editingCollabId = null;
             currentStudioId = null;
+            currentCollabId = null;
           } else {
             viewMode = 'front';
             frontTab = 'home';
             currentStudioId = null;
+            currentCollabId = null;
             pendingAdminPrompt = true;
           }
           return;
         }
         const parts = raw.split('/');
         const tab = parts[0];
-        let studioId = null;
+        let itemId = null;
         if (parts[1]) {
           try {
-            studioId = decodeURIComponent(parts[1]);
+            itemId = decodeURIComponent(parts[1]);
           } catch (e) {
-            studioId = null;
+            itemId = null;
           }
         }
-        if (['home', 'explore', 'saved', 'profile'].includes(tab)) {
+        if (['home', 'explore', 'collab', 'saved', 'profile'].includes(tab)) {
           viewMode = 'front';
           frontTab = tab;
-          currentStudioId = studioId && state.studios.some(s => s.id === studioId) ? studioId : null;
+          if (tab === 'collab') {
+            currentStudioId = null;
+            currentCollabId = itemId && state.collaborations.some(c => c.id === itemId) ? itemId : null;
+          } else {
+            currentCollabId = null;
+            currentStudioId = itemId && state.studios.some(s => s.id === itemId) ? itemId : null;
+          }
         } else {
           viewMode = 'front';
           frontTab = 'home';
           currentStudioId = null;
+          currentCollabId = null;
         }
       }
 
@@ -1320,6 +1510,18 @@
         el._t = setTimeout(() => el.classList.add('hidden'), 2400);
       }
 
+      function getCollabStudios(collab) {
+        const ids = Array.isArray(collab.studioIds) ? collab.studioIds : [];
+        return ids.map(id => state.studios.find(s => s.id === id)).filter(Boolean);
+      }
+
+      function getCollabPartnerTitle(collab) {
+        const partners = getCollabStudios(collab);
+        if (partners.length > 0) return partners.map(p => p.name).join(' × ');
+        const incNames = (collab.includes || []).map(x => x.studioName).filter(Boolean);
+        return incNames.length > 0 ? incNames.join(' × ') : '獨立工作室聯名';
+      }
+
       function studioCardHTML(s) {
         const isSaved = state.savedIds.indexOf(s.id) !== -1;
         const saveCount = getStudioSaveCount(s);
@@ -1344,6 +1546,51 @@
         `;
       }
 
+      function collabCardHTML(c) {
+        const partnerTitle = getCollabPartnerTitle(c);
+        const orig = Number(c.origPrice || 0);
+        const combo = Number(c.comboPrice || 0);
+        const savedAmount = orig > combo && combo > 0 ? orig - combo : 0;
+
+        return `
+          <div class="collab-card" data-action="open-collab" data-id="${esc(c.id)}">
+            <div class="collab-thumb">
+              <img src="${esc(c.coverImage)}" alt="${esc(c.title)}" onerror="this.style.display='none'" />
+              <span class="collab-tag-badge">🤝 ${esc(c.tag || '跨店聯名')}</span>
+              ${savedAmount > 0 ? `<span class="collab-save-badge">聯名現省 $${savedAmount.toLocaleString()}</span>` : ''}
+            </div>
+            <div class="collab-body">
+              <div class="collab-partners-line">
+                <span class="pill pill-sage">${esc(partnerTitle)}</span>
+                <span class="pill pill-peach">${esc(c.location || c.city)}</span>
+              </div>
+              <div>
+                <div class="studio-name" style="white-space:normal;">${esc(c.title)}</div>
+                <p class="sub-text" style="color:var(--muted); margin-top:4px;">${esc(c.tagline)}</p>
+              </div>
+              <div class="collab-includes-preview">
+                ${(c.includes || []).slice(0, 3).map(inc => `
+                  <div class="collab-include-bullet">
+                    <span style="color:var(--forest); font-weight:700; flex-shrink:0;">• ${esc(inc.studioName)}：</span>
+                    <span style="color:var(--ink);">${esc(inc.item)}</span>
+                  </div>
+                `).join('')}
+              </div>
+              <div class="collab-footer">
+                <div>
+                  ${orig > combo ? `<span class="price-orig">原價合計 $${orig.toLocaleString()}</span>` : ''}
+                  <div class="price-deal-row">
+                    <span class="promo-tag">聯名組合價</span>
+                    <strong class="price-deal" style="font-size:calc(16px * var(--font-scale));">$${combo.toLocaleString()}</strong>
+                  </div>
+                </div>
+                <span class="btn btn-sage btn-sm">查看套餐詳情 →</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
       function getFilteredStudios() {
         return state.studios.filter((st) => {
           if (filters.city !== '全部' && st.city !== filters.city) return false;
@@ -1352,6 +1599,21 @@
           if (filters.q.trim()) {
             const kw = filters.q.trim().toLowerCase();
             const hay = `${st.name} ${st.location} ${st.category} ${st.style}`.toLowerCase();
+            if (hay.indexOf(kw) === -1) return false;
+          }
+          return true;
+        });
+      }
+
+      function getFilteredCollabs() {
+        return state.collaborations.filter((c) => {
+          if (collabFilters.city !== '全部' && c.city !== collabFilters.city) return false;
+          if (collabFilters.tag !== '全部' && c.tag !== collabFilters.tag) return false;
+          if (collabFilters.q.trim()) {
+            const kw = collabFilters.q.trim().toLowerCase();
+            const partnerTitle = getCollabPartnerTitle(c);
+            const incText = (c.includes || []).map(x => `${x.studioName} ${x.item}`).join(' ');
+            const hay = `${c.title} ${c.tagline} ${c.location} ${c.tag} ${partnerTitle} ${incText}`.toLowerCase();
             if (hay.indexOf(kw) === -1) return false;
           }
           return true;
@@ -1370,10 +1632,28 @@
         return `<div class="studio-grid">${list.map(studioCardHTML).join('')}</div>`;
       }
 
+      function collabResultsHTML(list) {
+        if (list.length === 0) {
+          return `
+            <div class="card" style="text-align:center; padding:40px 20px;">
+              <p class="body-text" style="font-weight:700; margin-bottom:10px;">目前沒有符合條件的跨店合作套餐</p>
+              <button class="btn btn-forest btn-sm" data-action="reset-collab-filters">顯示全部企劃</button>
+            </div>
+          `;
+        }
+        return `<div class="collab-grid">${list.map(collabCardHTML).join('')}</div>`;
+      }
+
       function renderExploreResults() {
         const container = document.getElementById('explore-results');
         if (!container) return;
         container.innerHTML = exploreResultsHTML(getFilteredStudios());
+      }
+
+      function renderCollabResults() {
+        const container = document.getElementById('collab-results');
+        if (!container) return;
+        container.innerHTML = collabResultsHTML(getFilteredCollabs());
       }
 
       function helpCardHTML(title, beforeText, items, isHiddenMobile, role) {
@@ -1424,8 +1704,14 @@
       }
 
       function renderHeader() {
-        document.getElementById('hdr-brand-name').textContent = state.site.brandName;
-        document.getElementById('hdr-brand-sub').textContent = state.site.brandSub;
+        const s = state.site;
+        document.getElementById('hdr-brand-name').textContent = s.brandName;
+        document.getElementById('hdr-brand-sub').textContent = s.brandSub;
+
+        document.querySelectorAll('[data-nav-key]').forEach((el) => {
+          const k = el.dataset.navKey;
+          if (s[k]) el.textContent = s[k];
+        });
 
         const modeBtn = document.getElementById('toggle-mode-btn');
         const desktopNav = document.getElementById('desktop-nav');
@@ -1509,6 +1795,7 @@
               <p class="body-text" style="color:var(--muted); margin-top:6px;">${esc(s.quoteAuthor)}</p>
               <div style="margin-top:14px; display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
                 <button class="btn btn-ivory" data-action="go-tab" data-tab="explore">探索全台工作室</button>
+                <button class="btn btn-sage" data-action="go-tab" data-tab="collab">🤝 逛逛跨店合作套餐</button>
                 <button class="btn btn-forest" data-action="go-tab" data-tab="profile">申請成為創始夥伴</button>
               </div>
             </section>
@@ -1521,8 +1808,8 @@
 
           main.innerHTML = `
             <div>
-              <h1 class="section-heading">探索工作室</h1>
-              <p class="body-text" style="color:var(--muted);">發掘全台質感獨立創作者，尋找你的理想服務。</p>
+              <h1 class="section-heading">${esc(s.exploreTitle)}</h1>
+              <p class="body-text" style="color:var(--muted);">${esc(s.exploreSub)}</p>
               <div class="filter-bar">
                 <input class="input" style="min-width:180px; flex:1;" placeholder="搜尋工作室名稱、地區、類型..." value="${esc(filters.q)}" data-filter="q" />
                 <select class="select" data-filter="city">
@@ -1544,12 +1831,40 @@
           return;
         }
 
+        if (frontTab === 'collab') {
+          const list = getFilteredCollabs();
+          const allTags = Array.from(new Set(COLLAB_TAGS.concat(state.collaborations.map(c => c.tag).filter(Boolean))));
+
+          main.innerHTML = `
+            <div>
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:4px;">
+                <h1 class="section-heading">${esc(s.collabTitle)}</h1>
+                <span class="pill pill-sage">1 + 1 聯名限定</span>
+              </div>
+              <p class="body-text" style="color:var(--muted);">${esc(s.collabSub)}</p>
+              <div class="filter-bar">
+                <input class="input" style="min-width:180px; flex:1;" placeholder="搜尋聯名套餐、合作品牌或禮物內容..." value="${esc(collabFilters.q)}" data-collab-filter="q" />
+                <select class="select" data-collab-filter="city">
+                  <option value="全部">全台地區</option>
+                  ${CITIES.map((c) => `<option value="${c}" ${collabFilters.city === c ? 'selected' : ''}>${c}</option>`).join('')}
+                </select>
+                <select class="select" data-collab-filter="tag">
+                  <option value="全部">全部企劃類型</option>
+                  ${allTags.map((t) => `<option value="${esc(t)}" ${collabFilters.tag === t ? 'selected' : ''}>${esc(t)}</option>`).join('')}
+                </select>
+              </div>
+            </div>
+            <div id="collab-results">${collabResultsHTML(list)}</div>
+          `;
+          return;
+        }
+
         if (frontTab === 'saved') {
           const savedList = state.studios.filter((st) => state.savedIds.indexOf(st.id) !== -1);
           main.innerHTML = `
             <div>
-              <h1 class="section-heading">我的收藏 (${savedList.length})</h1>
-              <p class="body-text" style="color:var(--muted); margin-top:4px;">點開工作室詳情點擊「收藏」即可加入此清單</p>
+              <h1 class="section-heading">${esc(s.savedTitle)} (${savedList.length})</h1>
+              <p class="body-text" style="color:var(--muted); margin-top:4px;">${esc(s.savedSub)}</p>
             </div>
             ${savedList.length === 0
               ? `<div class="card" style="text-align:center; padding:36px 20px;">
@@ -1565,9 +1880,9 @@
         if (frontTab === 'profile') {
           main.innerHTML = `
             <div class="card">
-              <span class="pill pill-sage" style="margin-bottom:8px;">創始工作室招募計畫</span>
-              <h2 class="section-heading" style="margin-bottom:4px;">申請進駐「${esc(state.site.brandName)}」</h2>
-              <p class="body-text" style="color:var(--muted); margin-bottom:14px;">送出後會立即新增至工作室清單，經審核後即可授予優質認證。</p>
+              <span class="pill pill-sage" style="margin-bottom:8px;">${esc(s.profileBadge)}</span>
+              <h2 class="section-heading" style="margin-bottom:4px;">${esc(s.profileTitle)}</h2>
+              <p class="body-text" style="color:var(--muted); margin-bottom:14px;">${esc(s.profileSub)}</p>
               <form id="apply-form" class="stack" style="margin-top:0;">
                 <div class="grid-2">
                   <div>
@@ -1612,9 +1927,9 @@
             </div>
 
             <div class="card">
-              <h3 class="section-heading" style="margin-bottom:10px;">我的預約詢問紀錄 (${state.inquiries.length})</h3>
+              <h3 class="section-heading" style="margin-bottom:10px;">${esc(s.inquiriesTitle)} (${state.inquiries.length})</h3>
               ${state.inquiries.length === 0
-                ? `<p class="body-text" style="color:var(--muted);">尚無詢問紀錄，點進任一工作室的服務項目即可送出預約詢問。</p>`
+                ? `<p class="body-text" style="color:var(--muted);">尚無詢問紀錄，點進任一工作室或跨店聯名套餐即可送出預約詢問。</p>`
                 : state.inquiries.map((inq) => `
                     <div class="admin-row" style="padding:10px 0;">
                       <div>
@@ -1800,6 +2115,143 @@
               </div>
             `;
           }
+        } else if (adminTab === 'collabs') {
+          if (editingCollabId && draftCollab) {
+            const selectedIds = Array.isArray(draftCollab.studioIds) ? draftCollab.studioIds : [];
+            bodyHTML = `
+              <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid var(--hairline);">
+                  <h2 style="font-size:17px;">${state.collaborations.some(x => x.id === draftCollab.id) ? '編輯跨店合作套餐' : '新增跨店合作套餐'}</h2>
+                  <button class="btn btn-ivory btn-sm" data-action="admin-cancel-collab">返回列表</button>
+                </div>
+                <form id="collab-edit-form" class="stack">
+                  <div class="grid-2">
+                    <div>
+                      <label class="label">聯名組合名稱 *</label>
+                      <input class="input" data-collab-draft="title" required value="${esc(draftCollab.title)}" placeholder="例如：「晨光與森息」聯名禮盒組" />
+                    </div>
+                    <div>
+                      <label class="label">企劃標籤</label>
+                      <input class="input" data-collab-draft="tag" value="${esc(draftCollab.tag)}" placeholder="例如：雙店聯名、節慶限定、婚禮聯名" />
+                    </div>
+                    <div>
+                      <label class="label">主要所在城市</label>
+                      <select class="select" data-collab-draft="city">
+                        ${CITIES.map(c => `<option value="${c}" ${draftCollab.city === c ? 'selected' : ''}>${c}</option>`).join('')}
+                      </select>
+                    </div>
+                    <div>
+                      <label class="label">顯示合作地區（如：台北大安 × 中山）</label>
+                      <input class="input" data-collab-draft="location" value="${esc(draftCollab.location)}" />
+                    </div>
+                    <div>
+                      <label class="label">原本合計原價（數字 NT$）</label>
+                      <input class="input" type="number" data-collab-draft="origPrice" value="${esc(draftCollab.origPrice)}" />
+                    </div>
+                    <div>
+                      <label class="label">跨店聯名優惠價（數字 NT$）</label>
+                      <input class="input" type="number" data-collab-draft="comboPrice" required value="${esc(draftCollab.comboPrice)}" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="label">勾選參與合作的工作室（建議勾選 2 間以上，前台點擊標籤可直接連回該店）</label>
+                    <div class="studio-check-grid">
+                      ${state.studios.map(st => `
+                        <label class="studio-check-item">
+                          <input type="checkbox" data-collab-studio-id="${esc(st.id)}" ${selectedIds.includes(st.id) ? 'checked' : ''} />
+                          <span>${esc(st.name)}（${esc(st.category)}）</span>
+                        </label>
+                      `).join('')}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="label">封面圖片網址 (URL)</label>
+                    <input class="input" data-collab-draft="coverImage" value="${esc(draftCollab.coverImage)}" />
+                  </div>
+                  <div>
+                    <label class="label">一句話聯名標語</label>
+                    <input class="input" data-collab-draft="tagline" value="${esc(draftCollab.tagline)}" />
+                  </div>
+                  <div>
+                    <label class="label">合作理念與詳細說明</label>
+                    <textarea class="textarea" rows="3" data-collab-draft="description">${esc(draftCollab.description)}</textarea>
+                  </div>
+                  <div>
+                    <label class="label">取貨／配送與預約須知</label>
+                    <input class="input" data-collab-draft="bookingInfo" value="${esc(draftCollab.bookingInfo)}" />
+                  </div>
+
+                  <label style="display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; color:var(--forest); cursor:pointer;">
+                    <input type="checkbox" data-collab-draft-check="certified" ${draftCollab.certified ? 'checked' : ''} />
+                    <span>顯示「平台聯合審核推薦」標章</span>
+                  </label>
+
+                  <div style="border-top:1px solid var(--hairline); padding-top:14px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                      <span style="font-size:13px; font-weight:700;">套餐包含內容明細（列出每間店分別負責的項目）</span>
+                      <button type="button" class="btn btn-sage btn-sm" data-action="collab-add-inc">+ 新增一項內容</button>
+                    </div>
+                    <div>
+                      ${(draftCollab.includes || []).map((inc, idx) => `
+                        <div class="collab-inc-edit-row">
+                          <input class="input" placeholder="負責店家名稱" data-inc-idx="${idx}" data-inc-field="studioName" value="${esc(inc.studioName)}" />
+                          <input class="input" placeholder="提供的商品或服務內容" data-inc-idx="${idx}" data-inc-field="item" value="${esc(inc.item)}" />
+                          <button type="button" class="btn btn-danger btn-sm" data-action="collab-del-inc" data-idx="${idx}">刪除</button>
+                        </div>
+                      `).join('')}
+                    </div>
+                  </div>
+
+                  <div style="display:flex; justify-content:flex-end; gap:10px; padding-top:10px;">
+                    <button type="button" class="btn btn-ivory" data-action="admin-cancel-collab">取消</button>
+                    <button type="submit" class="btn btn-forest">儲存跨店合作套餐</button>
+                  </div>
+                </form>
+              </div>
+            `;
+          } else {
+            bodyHTML = `
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                  <h2 style="font-size:17px;">跨店合作套餐管理 (${state.collaborations.length})</h2>
+                  <p style="font-size:12px; color:var(--muted);">管理店家與店家聯手推出的組合企劃，前台會同步連動店家頁面</p>
+                </div>
+                <button class="btn btn-forest btn-sm" data-action="admin-new-collab">+ 新增跨店合作</button>
+              </div>
+              <div class="card" style="padding:0;">
+                ${state.collaborations.length === 0
+                  ? `<div style="padding:28px; text-align:center; font-size:13px; color:var(--muted);">尚無跨店合作企劃，點擊右上方「+ 新增跨店合作」開始建立。</div>`
+                  : state.collaborations.map((c) => {
+                      const orig = Number(c.origPrice || 0);
+                      const combo = Number(c.comboPrice || 0);
+                      const diff = orig > combo ? orig - combo : 0;
+                      return `
+                        <div class="admin-row">
+                          <div style="display:flex; align-items:center; gap:12px;">
+                            <img src="${esc(c.coverImage)}" alt="" style="width:64px; height:48px; border-radius:10px; object-fit:cover; background:var(--sand);" onerror="this.style.display='none'" />
+                            <div>
+                              <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                                <strong style="font-size:14px;">${esc(c.title)}</strong>
+                                <span class="admin-badge">${esc(c.tag || '雙店聯名')}</span>
+                              </div>
+                              <div style="font-size:12px; color:var(--muted); margin-top:2px;">
+                                🤝 ${esc(getCollabPartnerTitle(c))} ・ 組合價 $${combo.toLocaleString()}${diff > 0 ? `（原價 $${orig.toLocaleString()}，省 $${diff.toLocaleString()}）` : ''}
+                              </div>
+                            </div>
+                          </div>
+                          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                            <button class="btn btn-sage btn-sm" data-action="admin-edit-collab" data-id="${esc(c.id)}">編輯</button>
+                            <button class="btn btn-danger btn-sm" data-action="admin-del-collab" data-id="${esc(c.id)}">刪除</button>
+                          </div>
+                        </div>
+                      `;
+                    }).join('')
+                }
+              </div>
+            `;
+          }
         } else if (adminTab === 'fonts') {
           const firstCustomerItem = (state.site.helpCustomerItems && state.site.helpCustomerItems[0]) ? state.site.helpCustomerItems[0] : { title: '價格與地區先看懂', desc: '先確認預算範圍與距離再聯繫。' };
           const previewStudio = (state.studios && state.studios[0]) ? state.studios[0] : DEFAULT_DATA.studios[0];
@@ -1853,7 +2305,7 @@
 
               <div class="card stack">
                 <div style="border-bottom:1px solid var(--hairline); padding-bottom:10px;">
-                  <strong style="font-size:15px; color:var(--forest);">二、探索頁卡片、詳情標籤與按鈕</strong>
+                  <strong style="font-size:15px; color:var(--forest);">二、探索頁與聯名卡片、詳情標籤與按鈕</strong>
                 </div>
                 <div class="grid-2" style="align-items:start;">
                   <div class="stack" style="margin-top:0; gap:10px;">
@@ -1944,7 +2396,33 @@
           const curDefaultRate = s.defaultDiscountRate !== undefined ? Number(s.defaultDiscountRate) : 0.9;
           bodyHTML = `
             <form id="site-edit-form" class="card stack">
-              <h2 style="font-size:17px;">首頁、品牌文案與平台優惠設定</h2>
+              <h2 style="font-size:17px;">全站標題、首頁文案與平台優惠設定</h2>
+
+              <div class="fs-control-card" style="background:#EFF4EC; border-color:#C7D8C2;">
+                <strong style="font-size:14px; color:var(--forest);">📌 導覽列選單與各分頁標題文字設定</strong>
+                <p style="font-size:11px; color:var(--muted);">可自由修改上方與底部選單的文字，以及探索、跨店合作、收藏、申請進駐四個分頁的標題與說明。</p>
+
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:8px; margin-top:4px;">
+                  <div><label class="label">選單 1（首頁）</label><input class="input" name="navHome" value="${esc(s.navHome)}" /></div>
+                  <div><label class="label">選單 2（探索）</label><input class="input" name="navExplore" value="${esc(s.navExplore)}" /></div>
+                  <div><label class="label">選單 3（跨店合作）</label><input class="input" name="navCollab" value="${esc(s.navCollab)}" /></div>
+                  <div><label class="label">選單 4（收藏）</label><input class="input" name="navSaved" value="${esc(s.navSaved)}" /></div>
+                  <div><label class="label">選單 5（申請進駐）</label><input class="input" name="navProfile" value="${esc(s.navProfile)}" /></div>
+                </div>
+
+                <div class="grid-2" style="margin-top:6px;">
+                  <div><label class="label">「探索」頁面主標題</label><input class="input" name="exploreTitle" value="${esc(s.exploreTitle)}" /></div>
+                  <div><label class="label">「探索」頁面副標題</label><input class="input" name="exploreSub" value="${esc(s.exploreSub)}" /></div>
+                  <div><label class="label">「跨店合作」頁面主標題</label><input class="input" name="collabTitle" value="${esc(s.collabTitle)}" /></div>
+                  <div><label class="label">「跨店合作」頁面副標題</label><input class="input" name="collabSub" value="${esc(s.collabSub)}" /></div>
+                  <div><label class="label">「收藏」頁面主標題</label><input class="input" name="savedTitle" value="${esc(s.savedTitle)}" /></div>
+                  <div><label class="label">「收藏」頁面副標題</label><input class="input" name="savedSub" value="${esc(s.savedSub)}" /></div>
+                  <div><label class="label">「申請進駐」上方膠囊徽章</label><input class="input" name="profileBadge" value="${esc(s.profileBadge)}" /></div>
+                  <div><label class="label">「申請進駐」頁面主標題</label><input class="input" name="profileTitle" value="${esc(s.profileTitle)}" /></div>
+                  <div><label class="label">「申請進駐」頁面副標題</label><input class="input" name="profileSub" value="${esc(s.profileSub)}" /></div>
+                  <div><label class="label">「預約紀錄」區塊標題</label><input class="input" name="inquiriesTitle" value="${esc(s.inquiriesTitle)}" /></div>
+                </div>
+              </div>
 
               <div class="fs-control-card" style="background:#FAF5EB; border-color:#EAD3B3;">
                 <strong style="font-size:14px; color:#854B1E;">🎁 平台預約優惠與價格折扣設定</strong>
@@ -2017,7 +2495,7 @@
                 <div><label class="label">創辦人承諾金句</label><input class="input" name="quote" value="${esc(s.quote)}" /></div>
                 <div><label class="label">署名</label><input class="input" name="quoteAuthor" value="${esc(s.quoteAuthor)}" /></div>
               </div>
-              <button type="submit" class="btn btn-forest" style="align-self:flex-end;">儲存首頁與優惠設定</button>
+              <button type="submit" class="btn btn-forest" style="align-self:flex-end;">儲存全部標題與文案設定</button>
             </form>
           `;
         } else if (adminTab === 'inquiries') {
@@ -2085,8 +2563,9 @@
           </div>
           <div class="admin-tabs">
             <button class="admin-tab-btn ${adminTab === 'studios' ? 'active' : ''}" data-action="admin-tab" data-tab="studios">工作室管理 (${state.studios.length})</button>
+            <button class="admin-tab-btn ${adminTab === 'collabs' ? 'active' : ''}" data-action="admin-tab" data-tab="collabs">跨店合作 (${state.collaborations.length})</button>
+            <button class="admin-tab-btn ${adminTab === 'site' ? 'active' : ''}" data-action="admin-tab" data-tab="site">標題、文案與優惠</button>
             <button class="admin-tab-btn ${adminTab === 'fonts' ? 'active' : ''}" data-action="admin-tab" data-tab="fonts">各區塊字體設定</button>
-            <button class="admin-tab-btn ${adminTab === 'site' ? 'active' : ''}" data-action="admin-tab" data-tab="site">首頁文案與優惠</button>
             <button class="admin-tab-btn ${adminTab === 'inquiries' ? 'active' : ''}" data-action="admin-tab" data-tab="inquiries">預約詢問 (${state.inquiries.length})</button>
             <button class="admin-tab-btn ${adminTab === 'backup' ? 'active' : ''}" data-action="admin-tab" data-tab="backup">密碼與備份</button>
           </div>
@@ -2131,9 +2610,11 @@
         if (shouldSyncHash === undefined) shouldSyncHash = true;
         const s = state.studios.find((x) => x.id === id);
         if (!s) return;
+        currentCollabId = null;
         currentStudioId = s.id;
         if (shouldSyncHash) {
-          syncHash('#' + frontTab + '/' + encodeURIComponent(s.id));
+          const targetTab = frontTab === 'collab' ? 'explore' : frontTab;
+          syncHash('#' + targetTab + '/' + encodeURIComponent(s.id));
         }
         const isSaved = state.savedIds.indexOf(s.id) !== -1;
         const saveCount = getStudioSaveCount(s);
@@ -2142,6 +2623,7 @@
         const bannerText = getStudioPromoBannerText(s, rate);
         const lineHref = buildLineUrl(s);
         const igHref = buildIgUrl(s);
+        const linkedCollabs = state.collaborations.filter(c => Array.isArray(c.studioIds) && c.studioIds.includes(s.id));
 
         const box = document.getElementById('modal-box');
         box.classList.remove('modal-box-sm');
@@ -2216,6 +2698,24 @@
               </div>
             </div>
 
+            ${linkedCollabs.length > 0
+              ? `<div class="card" style="padding:16px;">
+                   <div class="body-text" style="font-weight:700; margin-bottom:10px;">🤝 本工作室參與中的跨店合作套餐</div>
+                   <div style="display:flex; flex-direction:column; gap:8px;">
+                     ${linkedCollabs.map(c => `
+                       <div class="collab-linked-mini" data-action="open-collab" data-id="${esc(c.id)}">
+                         <div>
+                           <div class="body-text" style="font-weight:700; color:var(--forest);">${esc(c.title)}</div>
+                           <div class="sub-text" style="color:var(--muted);">${esc(getCollabPartnerTitle(c))} ・ 聯名價 $${Number(c.comboPrice || 0).toLocaleString()}</div>
+                         </div>
+                         <span class="btn btn-peach btn-sm" style="flex-shrink:0;">查看套餐 →</span>
+                       </div>
+                     `).join('')}
+                   </div>
+                 </div>`
+              : ''
+            }
+
             <div id="inquiry-box" class="hidden card" style="border-color:var(--forest);"></div>
 
             <div class="grid-2">
@@ -2234,6 +2734,115 @@
                 ${s.ig ? `<button type="button" class="btn btn-ivory btn-sm social-copy-btn" data-action="copy-text" data-label="IG" data-val="${esc(s.ig)}" title="複製 IG 帳號／連結">複製</button>` : ''}
               </div>
             </div>
+          </div>
+        `;
+        document.getElementById('modal-backdrop').classList.remove('hidden');
+      }
+
+      function openCollabModal(id, shouldSyncHash) {
+        if (shouldSyncHash === undefined) shouldSyncHash = true;
+        const c = state.collaborations.find((x) => x.id === id);
+        if (!c) return;
+        currentStudioId = null;
+        currentCollabId = c.id;
+        if (shouldSyncHash) {
+          syncHash('#collab/' + encodeURIComponent(c.id));
+        }
+
+        const partners = getCollabStudios(c);
+        const partnerTitle = getCollabPartnerTitle(c);
+        const orig = Number(c.origPrice || 0);
+        const combo = Number(c.comboPrice || 0);
+        const diff = orig > combo ? orig - combo : 0;
+
+        const box = document.getElementById('modal-box');
+        box.classList.remove('modal-box-sm');
+        box.innerHTML = `
+          <div class="modal-head">
+            <strong class="section-heading">${esc(c.title)}</strong>
+            <div class="modal-head-actions">
+              ${fontSelectHTML('modal-font-size-select')}
+              <button class="btn btn-ivory btn-sm" data-action="close-modal">關閉</button>
+            </div>
+          </div>
+          <div class="modal-body stack">
+            <img src="${esc(c.coverImage)}" alt="${esc(c.title)}" style="width:100%; aspect-ratio:16/9; object-fit:cover; border-radius:16px; background:var(--sand);" onerror="this.style.display='none'" />
+
+            <div>
+              <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:8px;">
+                <span class="pill pill-sage">🤝 ${esc(c.tag || '跨店聯名')}</span>
+                <span class="pill pill-peach">${esc(c.location || c.city)}</span>
+                ${c.certified ? '<span class="pill pill-sage">✓ 平台聯合推薦</span>' : ''}
+              </div>
+              <p class="body-text" style="font-weight:700;">${esc(c.tagline)}</p>
+              <p class="body-text" style="color:var(--muted); margin-top:6px;">${esc(c.description)}</p>
+              <p class="sub-text" style="color:var(--muted); margin-top:8px;">🗓️ ${esc(c.bookingInfo)}</p>
+            </div>
+
+            ${partners.length > 0
+              ? `<div>
+                   <div class="sub-text" style="font-weight:700; color:var(--muted); margin-bottom:6px;">參與合作工作室（點擊可查看各店完整介紹）：</div>
+                   <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                     ${partners.map(p => `
+                       <button type="button" class="collab-partner-chip" data-action="open-studio" data-id="${esc(p.id)}">
+                         <span>🏠 ${esc(p.name)}（${esc(p.category)}）</span>
+                         <span>→</span>
+                       </button>
+                     `).join('')}
+                   </div>
+                 </div>`
+              : ''
+            }
+
+            <div class="card" style="padding:16px;">
+              <div class="service-head-bar" style="justify-content:space-between;">
+                <span class="body-text" style="font-weight:700;">🎁 聯名套餐包含內容</span>
+                <div style="text-align:right;">
+                  ${orig > combo ? `<span class="price-orig">原價合計 $${orig.toLocaleString()}</span>` : ''}
+                  <div class="price-deal-row">
+                    ${diff > 0 ? `<span class="promo-tag">現省 $${diff.toLocaleString()}</span>` : ''}
+                    <strong class="price-deal" style="font-size:calc(18px * var(--font-scale));">$${combo.toLocaleString()}</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:14px;">
+                ${(c.includes || []).map(inc => `
+                  <div class="collab-include-card-row">
+                    <span class="sub-text" style="font-weight:700; color:var(--forest);">來自「${esc(inc.studioName)}」</span>
+                    <span class="body-text">${esc(inc.item)}</span>
+                  </div>
+                `).join('')}
+              </div>
+
+              <button type="button" class="btn btn-forest" style="width:100%;" data-action="pick-collab" data-id="${esc(c.id)}" data-title="${esc(c.title)}" data-partners="${esc(partnerTitle)}" data-price="$${combo.toLocaleString()}">
+                👇 預約詢問此跨店聯名套餐（$${combo.toLocaleString()}）
+              </button>
+            </div>
+
+            <div id="collab-inquiry-box" class="hidden card" style="border-color:var(--forest);"></div>
+
+            ${partners.length > 0
+              ? `<div class="card" style="padding:14px; background:var(--linen);">
+                   <div class="sub-text" style="font-weight:700; color:var(--muted); margin-bottom:8px;">或直接聯繫任一合作工作室窗口：</div>
+                   <div style="display:flex; flex-direction:column; gap:8px;">
+                     ${partners.map(p => {
+                       const lUrl = buildLineUrl(p);
+                       const iUrl = buildIgUrl(p);
+                       return `
+                         <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px; padding-bottom:6px; border-bottom:1px dashed var(--hairline);">
+                           <strong class="sub-text">${esc(p.name)}</strong>
+                           <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                             ${lUrl ? `<a class="btn btn-sage btn-sm" href="${esc(lUrl)}" target="_blank" rel="noopener noreferrer">💬 LINE</a>` : ''}
+                             ${iUrl ? `<a class="btn btn-ivory btn-sm" href="${esc(iUrl)}" target="_blank" rel="noopener noreferrer">📷 IG</a>` : ''}
+                           </div>
+                         </div>
+                       `;
+                     }).join('')}
+                   </div>
+                 </div>`
+              : ''
+            }
           </div>
         `;
         document.getElementById('modal-backdrop').classList.remove('hidden');
@@ -2264,8 +2873,9 @@
       function closeModal(shouldSyncHash) {
         if (shouldSyncHash === undefined) shouldSyncHash = true;
         document.getElementById('modal-backdrop').classList.add('hidden');
-        if (currentStudioId) {
+        if (currentStudioId || currentCollabId) {
           currentStudioId = null;
+          currentCollabId = null;
           if (shouldSyncHash && viewMode === 'front') {
             syncHash('#' + frontTab);
           }
@@ -2282,6 +2892,8 @@
         if (pendingAdminPrompt) {
           pendingAdminPrompt = false;
           openAdminLoginModal();
+        } else if (currentCollabId) {
+          openCollabModal(currentCollabId, false);
         } else if (currentStudioId) {
           openStudioModal(currentStudioId, false);
         } else {
@@ -2314,6 +2926,7 @@
           viewMode = 'front';
           frontTab = el.dataset.tab;
           currentStudioId = null;
+          currentCollabId = null;
           closeModal(false);
           syncHash('#' + frontTab);
           renderAll();
@@ -2335,13 +2948,16 @@
           if (viewMode === 'admin') {
             viewMode = 'front';
             editingStudioId = null;
+            editingCollabId = null;
             syncHash('#' + frontTab);
             renderAll();
             window.scrollTo({ top: 0, behavior: 'smooth' });
           } else if (isAdminAuthed) {
             viewMode = 'admin';
             editingStudioId = null;
+            editingCollabId = null;
             currentStudioId = null;
+            currentCollabId = null;
             syncHash('#admin');
             renderAll();
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -2352,11 +2968,14 @@
           setSessionAuth(false);
           viewMode = 'front';
           editingStudioId = null;
+          editingCollabId = null;
           syncHash('#' + frontTab);
           renderAll();
           showToast('已登出並鎖定管理後台');
         } else if (act === 'open-studio') {
           openStudioModal(el.dataset.id, true);
+        } else if (act === 'open-collab') {
+          openCollabModal(el.dataset.id, true);
         } else if (act === 'open-cert') {
           openCertModal();
         } else if (act === 'close-modal') {
@@ -2420,12 +3039,50 @@
             </form>
           `;
           box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } else if (act === 'pick-collab') {
+          const box = document.getElementById('collab-inquiry-box');
+          if (!box) return;
+          box.classList.remove('hidden');
+          const cTitle = el.dataset.title || '';
+          const cPartners = el.dataset.partners || '';
+          const cPrice = el.dataset.price || '';
+          box.innerHTML = `
+            <div class="body-text" style="font-weight:700; color:var(--forest); margin-bottom:8px;">
+              跨店聯名預約詢問：${esc(cTitle)}（${esc(cPrice)}）
+            </div>
+            <form id="collab-inquiry-form" class="stack" style="margin-top:0;" data-partners="${esc(cPartners)}" data-service="${esc(cTitle)}（聯名價 ${esc(cPrice)}）">
+              <div class="grid-2">
+                <div>
+                  <label class="label">您的稱呼 *</label>
+                  <input class="input" name="customerName" required placeholder="例如：林小姐" />
+                </div>
+                <div>
+                  <label class="label">手機號碼 *</label>
+                  <input class="input" type="tel" name="contact" required placeholder="請輸入手機號碼（例如：0912345678）" inputmode="tel" />
+                </div>
+              </div>
+              <div>
+                <label class="label">期望取貨／預約日期（選填）</label>
+                <input class="input" type="date" name="datePref" min="${getTodayDateStr()}" />
+              </div>
+              <div>
+                <label class="label">客製備註（選填）</label>
+                <textarea class="textarea" name="note" rows="2" placeholder="例如：刻字內容、喜愛色系／香氣、希望自取或宅配等..."></textarea>
+              </div>
+              <button type="submit" class="btn btn-forest btn-sm">送出跨店聯名預約詢問</button>
+            </form>
+          `;
+          box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         } else if (act === 'reset-filters') {
           filters = { q: '', city: '全部', category: '全部', style: '全部' };
+          renderFront();
+        } else if (act === 'reset-collab-filters') {
+          collabFilters = { q: '', city: '全部', tag: '全部' };
           renderFront();
         } else if (act === 'admin-tab') {
           adminTab = el.dataset.tab;
           editingStudioId = null;
+          editingCollabId = null;
           renderAdmin();
         } else if (act === 'step-fs') {
           const k = el.dataset.key;
@@ -2481,6 +3138,10 @@
             const delId = el.dataset.id;
             state.studios = state.studios.filter(s => s.id !== delId);
             state.savedIds = state.savedIds.filter(id => id !== delId);
+            state.collaborations = state.collaborations.map(c => ({
+              ...c,
+              studioIds: (c.studioIds || []).filter(sid => sid !== delId)
+            }));
             saveState(); renderAdmin(); showToast('已刪除工作室');
           }
         } else if (act === 'draft-add-service' && draftStudio) {
@@ -2490,6 +3151,58 @@
         } else if (act === 'draft-del-service' && draftStudio) {
           if (Array.isArray(draftStudio.services)) {
             draftStudio.services.splice(Number(el.dataset.idx), 1);
+          }
+          renderAdmin();
+        } else if (act === 'admin-new-collab') {
+          const newId = 'collab-' + Date.now();
+          const defaultP1 = state.studios[0];
+          const defaultP2 = state.studios[1];
+          const pIds = [defaultP1, defaultP2].filter(Boolean).map(x => x.id);
+          draftCollab = {
+            id: newId,
+            title: '新跨店聯名組合套餐',
+            tag: '雙店聯名',
+            city: defaultP1 ? defaultP1.city : '台北',
+            location: defaultP1 ? defaultP1.location : '台北大安',
+            studioIds: pIds,
+            origPrice: 2500,
+            comboPrice: 2100,
+            certified: true,
+            coverImage: makeCoverSvg('#F3E6D8', '#E6EDE3', '#224937', '跨店聯名企劃', '獨立工作室攜手限定'),
+            tagline: '兩間質感工作室攜手推出的限定優惠套餐。',
+            description: '請輸入本次跨店合作的理念、適合送禮或體驗的場合...',
+            bookingInfo: '需提前 5 個工作天預訂｜提供聯名包裝與宅配／自取',
+            includes: [
+              { studioName: defaultP1 ? defaultP1.name : '合作工作室 A', item: '提供精選招牌商品或服務一份' },
+              { studioName: defaultP2 ? defaultP2.name : '合作工作室 B', item: '提供互補搭配商品或體驗一份' }
+            ]
+          };
+          editingCollabId = newId;
+          renderAdmin();
+        } else if (act === 'admin-edit-collab') {
+          const found = state.collaborations.find(x => x.id === el.dataset.id);
+          if (found) {
+            draftCollab = JSON.parse(JSON.stringify(found));
+            if (!Array.isArray(draftCollab.studioIds)) draftCollab.studioIds = [];
+            if (!Array.isArray(draftCollab.includes)) draftCollab.includes = [];
+            editingCollabId = found.id;
+            renderAdmin();
+          }
+        } else if (act === 'admin-cancel-collab') {
+          editingCollabId = null; draftCollab = null; renderAdmin();
+        } else if (act === 'admin-del-collab') {
+          if (confirm('確定要刪除這個跨店合作企劃嗎？')) {
+            const delId = el.dataset.id;
+            state.collaborations = state.collaborations.filter(c => c.id !== delId);
+            saveState(); renderAdmin(); showToast('已刪除跨店合作企劃');
+          }
+        } else if (act === 'collab-add-inc' && draftCollab) {
+          if (!Array.isArray(draftCollab.includes)) draftCollab.includes = [];
+          draftCollab.includes.push({ studioName: '合作工作室', item: '套餐包含項目說明' });
+          renderAdmin();
+        } else if (act === 'collab-del-inc' && draftCollab) {
+          if (Array.isArray(draftCollab.includes)) {
+            draftCollab.includes.splice(Number(el.dataset.idx), 1);
           }
           renderAdmin();
         } else if (act === 'admin-del-inq') {
@@ -2557,6 +3270,10 @@
           filters[t.dataset.filter] = t.value;
           if (t.dataset.filter === 'q') renderExploreResults();
         }
+        if (t.dataset.collabFilter) {
+          collabFilters[t.dataset.collabFilter] = t.value;
+          if (t.dataset.collabFilter === 'q') renderCollabResults();
+        }
         if (draftStudio && t.dataset.draft) {
           draftStudio[t.dataset.draft] = t.dataset.draft === 'minPrice' ? Number(t.value) || 0 : t.value;
           if (['ig', 'line', 'igUrl', 'lineUrl'].includes(t.dataset.draft)) {
@@ -2565,6 +3282,13 @@
         }
         if (draftStudio && t.dataset.srvIdx !== undefined) {
           draftStudio.services[Number(t.dataset.srvIdx)][t.dataset.srvField] = t.value;
+        }
+        if (draftCollab && t.dataset.collabDraft) {
+          const k = t.dataset.collabDraft;
+          draftCollab[k] = (k === 'origPrice' || k === 'comboPrice') ? Number(t.value) || 0 : t.value;
+        }
+        if (draftCollab && t.dataset.incIdx !== undefined) {
+          draftCollab.includes[Number(t.dataset.incIdx)][t.dataset.incField] = t.value;
         }
       });
 
@@ -2594,11 +3318,29 @@
           filters[t.dataset.filter] = t.value;
           renderExploreResults();
         }
+        if (t.dataset.collabFilter && t.dataset.collabFilter !== 'q') {
+          collabFilters[t.dataset.collabFilter] = t.value;
+          renderCollabResults();
+        }
         if (draftStudio && t.dataset.draft) {
           draftStudio[t.dataset.draft] = t.dataset.draft === 'minPrice' ? Number(t.value) || 0 : t.value;
         }
         if (draftStudio && t.dataset.draftCheck) {
           draftStudio[t.dataset.draftCheck] = t.checked;
+        }
+        if (draftCollab && t.dataset.collabDraft) {
+          const k = t.dataset.collabDraft;
+          draftCollab[k] = (k === 'origPrice' || k === 'comboPrice') ? Number(t.value) || 0 : t.value;
+        }
+        if (draftCollab && t.dataset.collabDraftCheck) {
+          draftCollab[t.dataset.collabDraftCheck] = t.checked;
+        }
+        if (draftCollab && t.dataset.collabStudioId) {
+          const sid = t.dataset.collabStudioId;
+          const ids = Array.isArray(draftCollab.studioIds) ? draftCollab.studioIds : [];
+          if (t.checked && !ids.includes(sid)) ids.push(sid);
+          else if (!t.checked) draftCollab.studioIds = ids.filter(x => x !== sid);
+          else draftCollab.studioIds = ids;
         }
         if (t.dataset.inqStatus) {
           state.inquiries = state.inquiries.map(i => i.id === t.dataset.inqStatus ? { ...i, status: t.value } : i);
@@ -2614,7 +3356,10 @@
                   ...DEFAULT_DATA,
                   ...parsed,
                   fontSizes: { ...DEFAULT_FONT_SIZES, ...(parsed.fontSizes || {}) },
-                  site: { ...DEFAULT_DATA.site, ...(parsed.site || {}) }
+                  site: { ...DEFAULT_DATA.site, ...(parsed.site || {}) },
+                  collaborations: Array.isArray(parsed.collaborations)
+                    ? parsed.collaborations
+                    : JSON.parse(JSON.stringify(DEFAULT_DATA.collaborations))
                 };
                 saveState(); renderAll(); showToast('匯入還原成功！');
               } else alert('備份檔格式不正確');
@@ -2636,6 +3381,7 @@
             closeModal(false);
             viewMode = 'admin';
             editingStudioId = null;
+            editingCollabId = null;
             syncHash('#admin');
             renderAll();
             showToast('驗證成功，歡迎進入管理後台');
@@ -2658,10 +3404,22 @@
           editingStudioId = null; draftStudio = null;
           renderAdmin();
           showToast('已儲存工作室資料！');
+        } else if (form.id === 'collab-edit-form' && draftCollab) {
+          const idx = state.collaborations.findIndex(x => x.id === draftCollab.id);
+          if (idx >= 0) state.collaborations[idx] = draftCollab;
+          else state.collaborations.unshift(draftCollab);
+          saveState();
+          editingCollabId = null; draftCollab = null;
+          renderAdmin();
+          showToast('已儲存跨店合作套餐！');
         } else if (form.id === 'site-edit-form') {
           const fd = new FormData(form);
           const simpleKeys = [
-            'brandName', 'brandSub', 'promoBannerText', 'heroLine1', 'heroLine2', 'heroBadge',
+            'brandName', 'brandSub',
+            'navHome', 'navExplore', 'navCollab', 'navSaved', 'navProfile',
+            'exploreTitle', 'exploreSub', 'collabTitle', 'collabSub',
+            'savedTitle', 'savedSub', 'profileBadge', 'profileTitle', 'profileSub', 'inquiriesTitle',
+            'promoBannerText', 'heroLine1', 'heroLine2', 'heroBadge',
             'heroImg1', 'heroImg2', 'heroImg3', 'whyTitle', 'whyDesc1', 'whyDesc2',
             'helpSectionTitle', 'helpSectionSub', 'helpCustomerTitle', 'helpCustomerBefore',
             'helpStudioTitle', 'helpStudioBefore', 'quote', 'quoteAuthor'
@@ -2682,7 +3440,7 @@
           }));
           saveState();
           renderHeader();
-          showToast('已儲存首頁文案與優惠設定！');
+          showToast('已儲存全站標題、文案與優惠設定！');
         } else if (form.id === 'apply-form') {
           const fd = new FormData(form);
           const city = fd.get('city');
@@ -2732,10 +3490,26 @@
           });
           saveState();
           const confirmMsg = rateLabel
-            ? `✓ 已送出預約詢問！待工作室確認檔期並完成預約後，結帳即可享有平台 ${esc(rateLabel)} 優惠（可於「申請 / 紀錄」查看）。`
-            : `✓ 已送出預約詢問！待工作室確認檔期後將盡快與您聯繫（可於「申請 / 紀錄」查看）。`;
+            ? `✓ 已送出預約詢問！待工作室確認檔期並完成預約後，結帳即可享有平台 ${esc(rateLabel)} 優惠（可於「${esc(state.site.navProfile)} / 紀錄」查看）。`
+            : `✓ 已送出預約詢問！待工作室確認檔期後將盡快與您聯繫（可於「${esc(state.site.navProfile)} / 紀錄」查看）。`;
           document.getElementById('inquiry-box').innerHTML = `<div class="body-text" style="color:var(--forest); font-weight:700; text-align:center;">${confirmMsg}</div>`;
           showToast('預約詢問已送出');
+        } else if (form.id === 'collab-inquiry-form') {
+          const fd = new FormData(form);
+          state.inquiries.unshift({
+            id: 'inq-' + Date.now(),
+            studioName: '[跨店聯名] ' + (form.dataset.partners || ''),
+            service: form.dataset.service || '跨店聯名套餐',
+            customerName: fd.get('customerName'),
+            contact: fd.get('contact'),
+            datePref: fd.get('datePref') || '未指定日期',
+            note: String(fd.get('note') || '').trim(),
+            createdAt: new Date().toLocaleDateString('zh-TW'),
+            status: '待回覆'
+          });
+          saveState();
+          document.getElementById('collab-inquiry-box').innerHTML = `<div class="body-text" style="color:var(--forest); font-weight:700; text-align:center;">✓ 已送出跨店聯名預約詢問！聯合窗口確認檔期後將盡快與您聯繫（可於「${esc(state.site.navProfile)} / 紀錄」查看）。</div>`;
+          showToast('聯名套餐詢問已送出');
         }
       });
 
@@ -2746,6 +3520,8 @@
       if (pendingAdminPrompt) {
         pendingAdminPrompt = false;
         openAdminLoginModal();
+      } else if (currentCollabId) {
+        openCollabModal(currentCollabId, false);
       } else if (currentStudioId) {
         openStudioModal(currentStudioId, false);
       }
