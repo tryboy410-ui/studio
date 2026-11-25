@@ -99,6 +99,7 @@
       padding: 8px 15px; border-radius: 999px;
       font-size: calc(var(--fs-btn) * var(--font-scale));
       font-weight: 600; transition: opacity 0.15s, transform 0.1s;
+      text-decoration: none;
     }
     .btn:active { transform: scale(0.98); }
     .btn-forest { background: var(--forest); color: #fff; }
@@ -106,6 +107,23 @@
     .btn-ivory { background: var(--ivory); color: var(--ink); border: 1px solid var(--hairline); }
     .btn-danger { background: #FEE2E2; color: var(--danger); }
     .btn-sm { padding: 6px 11px; font-size: 12px; }
+
+    /* 社群直接連線 + 複製組合按鈕 */
+    .social-btn-group {
+      display: flex; align-items: stretch; gap: 6px; min-width: 0;
+    }
+    .social-main-link {
+      flex: 1; min-width: 0; text-align: center;
+      line-height: 1.35; word-break: break-word;
+    }
+    .social-copy-btn {
+      flex-shrink: 0; padding: 8px 12px;
+    }
+    .social-preview-bar {
+      display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+      background: var(--linen); border: 1px dashed var(--hairline);
+      border-radius: 12px; padding: 10px 12px; font-size: 12px;
+    }
 
     /* 手機底部導覽 */
     .bottom-nav {
@@ -591,7 +609,7 @@
         cardMeta: { key: 'cardMeta', tag: '2', label: '卡片地區與起價', hint: '店名下方的地區、分類與價格數字', min: 10, max: 20, cssVar: '--fs-card-meta' },
         pill: { key: 'pill', tag: '3', label: '膠囊標籤文字', hint: '如「客製化禮品・台北大安」「法式簡約」「✓ 優質認證工作室」', min: 10, max: 22, cssVar: '--fs-pill' },
         subText: { key: 'subText', tag: '4', label: '補充小字（地址・時長・優惠條）', hint: '詳情頁的交通位置、預約須知、服務時間與優惠橫條', min: 10, max: 20, cssVar: '--fs-sub' },
-        btn: { key: 'btn', tag: '5', label: '按鈕文字大小', hint: '全站按鈕文字（如：探索全台工作室、複製 LINE ID）', min: 11, max: 20, cssVar: '--fs-btn' }
+        btn: { key: 'btn', tag: '5', label: '按鈕文字大小', hint: '全站按鈕文字（如：探索全台工作室、開啟 LINE 聯繫）', min: 11, max: 20, cssVar: '--fs-btn' }
       };
 
       const CATEGORIES = [
@@ -639,7 +657,7 @@
             { title: '價格與地區先看懂，不需反覆私訊試探', desc: '先確認預算範圍、所在地區與預約規則，確定適合自己再放心聯繫。' },
             { title: '作品實拍有人把關，大幅降低踩雷風險', desc: '人工審核作品真實性與標價透明度，避免修圖過度或現場臨時加價。' },
             { title: '遇見演算法以外的寶藏手藝人', desc: '避開大品牌廣告洗版，依照喜歡的風格與色系，找到隱身巷弄的一人工作室。' },
-            { title: '一鍵收藏比較，預約不再手忙腳亂', desc: '把喜歡的店家存進收藏夾，有興趣直接送出預約詢問或複製 LINE / IG。' }
+            { title: '一鍵收藏比較，預約不再手忙腳亂', desc: '把喜歡的店家存進收藏夾，有興趣直接送出預約詢問或直接聯繫 LINE / IG。' }
           ],
           helpStudioTitle: '幫助了「用心創作的工作室」',
           helpStudioBefore: '以前接案日常：白天忙完客人，晚上還要一直回「多少錢、在哪裡」，不買廣告就很難被看見⋯⋯',
@@ -671,7 +689,9 @@
             coverImage: makeCoverSvg('#F3E6D8', '#EFEAE0', '#9A5B2C', '拾光禮研所', '客製化禮品 ・ 台北大安'),
             bookingInfo: '客製禮盒需提前 5-7 個工作天預訂｜急件請先聯繫確認',
             ig: '@shiguang.gift',
+            igUrl: '',
             line: '@shiguang',
+            lineUrl: '',
             services: [
               { name: '姓名刻字紀念禮盒', price: '$980', duration: '含客製卡片與緞帶包裝' },
               { name: '跨界聯名祝福雙人組', price: '$1,880', duration: '禮品＋香氛／花藝搭配' }
@@ -694,7 +714,9 @@
             coverImage: 'https://images.unsplash.com/photo-1683606960654-5a71f2015dec?auto=format&fit=crop&w=900&q=80',
             bookingInfo: '每週二公休｜客製花束請提前 3 日聯繫',
             ig: '@chuzhi.floral',
+            igUrl: '',
             line: '@chuzhi',
+            lineUrl: '',
             services: [
               { name: '日常單品花束', price: '$800', duration: '當季花材搭配' },
               { name: '客製紀念日手綁花', price: '$1,800', duration: '需提前 3 天預訂' }
@@ -717,7 +739,9 @@
             coverImage: makeCoverSvg('#E6EDE3', '#EAECE4', '#224937', '森息調香室', '手作香氛 ・ 台北中山'),
             bookingInfo: '每日開放 3 個調香體驗時段｜全預約制',
             ig: '@senxi.scent',
+            igUrl: '',
             line: '@senxi',
+            lineUrl: '',
             services: [
               { name: '專屬客製香氛蠟燭', price: '$1,280', duration: '90 分鐘體驗・含玻璃罐與禮盒' },
               { name: '天然植萃擴香組訂製', price: '$1,680', duration: '150ml 附天然擴香枝' }
@@ -740,7 +764,9 @@
             coverImage: makeCoverSvg('#F6F2EA', '#F3E6D8', '#9A5B2C', '微光金工飾品', '原創飾品 ・ 台南中西'),
             bookingInfo: '每週四至週日開放工作室預約試戴',
             ig: '@weiguang.silver',
+            igUrl: '',
             line: '@weiguang',
+            lineUrl: '',
             services: [
               { name: '手工錘紋純銀細戒', price: '$1,100', duration: '免費內圍刻字服務' },
               { name: '情人節雙人對戒訂製', price: '$3,200', duration: '含拭銀布與專屬木盒' }
@@ -763,7 +789,9 @@
             coverImage: makeCoverSvg('#E6EDE3', '#F6F2EA', '#224937', '小芽親子手作', '親子用品 ・ 新竹竹北'),
             bookingInfo: '刺繡訂製約 5 個工作天出貨｜歡迎預約挑選布料',
             ig: '@xiaoya.kids',
+            igUrl: '',
             line: '@xiaoya',
+            lineUrl: '',
             services: [
               { name: '名字刺繡圍兜平安符組', price: '$750', duration: '可選 12 種植物染花色' },
               { name: '新生兒彌月純棉禮盒', price: '$1,680', duration: '含蓋毯＋安撫巾＋客製刺繡' }
@@ -786,7 +814,9 @@
             coverImage: 'https://images.unsplash.com/photo-1622063531136-e7efff4ece72?auto=format&fit=crop&w=900&q=80',
             bookingInfo: '每日限量接單 4 顆｜取貨時段 13:00 - 18:30',
             ig: '@xiaosen.bake',
+            igUrl: '',
             line: '@xiaosen',
+            lineUrl: '',
             services: [
               { name: '4 吋奶油水果蛋糕', price: '$1,500', duration: '提前 7 天預訂' },
               { name: '6 吋季節草莓戚風', price: '$2,100', duration: '提前 7-10 天預訂' }
@@ -809,7 +839,9 @@
             coverImage: makeCoverSvg('#F3E6D8', '#EFEAE0', '#9A5B2C', '星塵應援工坊', '追星周邊 ・ 台北信義'),
             bookingInfo: '客製應援卡磚約 3-5 天出貨｜團體應援另有專案',
             ig: '@stardust.fan',
+            igUrl: '',
             line: '@stardust',
+            lineUrl: '',
             services: [
               { name: '客製代表色串珠小卡夾', price: '$450', duration: '可選應援色與英文名吊飾' },
               { name: '演唱會生日應援禮包組', price: '$1,200', duration: '含手幅＋透卡＋收納包' }
@@ -832,7 +864,9 @@
             coverImage: makeCoverSvg('#EAECE4', '#E6EDE3', '#224937', '毛球日常選品', '寵物用品 ・ 新北板橋'),
             bookingInfo: '歡迎帶毛孩預約現場量身試戴',
             ig: '@maoqiu.pet',
+            igUrl: '',
             line: '@maoqiu',
+            lineUrl: '',
             services: [
               { name: '客製名字防走失皮革領巾', price: '$680', duration: '含雷射刻字電話牌' },
               { name: '毛孩專屬外出機能套組', price: '$1,450', duration: '胸背帶＋拾便袋收納包' }
@@ -855,7 +889,9 @@
             coverImage: makeCoverSvg('#F6F2EA', '#EFEAE0', '#787166', '紙間慢畫室', '插畫與文創 ・ 台中西屯'),
             bookingInfo: '每月開放 20 組似顏繪排單｜約 5-7 日完稿',
             ig: '@zhijian.art',
+            igUrl: '',
             line: '@zhijian',
+            lineUrl: '',
             services: [
               { name: '雙人水彩似顏繪明信片', price: '$580', duration: '含數位檔＋2 張美術紙印製' },
               { name: '原木框裱裝紀念畫作', price: '$1,380', duration: 'A5 尺寸・附手寫祝福卡' }
@@ -878,7 +914,9 @@
             coverImage: makeCoverSvg('#F3E6D8', '#E6DFD3', '#9A5B2C', '縫時革物所', '手作皮件與布藝 ・ 台南安平'),
             bookingInfo: '客製皮件製作約 7-10 天｜體驗課程採預約制',
             ig: '@fengshi.craft',
+            igUrl: '',
             line: '@fengshi',
+            lineUrl: '',
             services: [
               { name: '植鞣革手縫名片／證件夾', price: '$1,380', duration: '免費英文縮寫鋼印敲字' },
               { name: '雙拼帆布植鞣革托特包', price: '$2,680', duration: '可選 4 款帆布與皮革配色' }
@@ -901,7 +939,9 @@
             coverImage: makeCoverSvg('#F6F2EA', '#F3E6D8', '#9A5B2C', '序曲婚禮設計', '婚禮布置 ・ 台北士林'),
             bookingInfo: '建議於婚期前 3-6 個月預約檔期諮詢',
             ig: '@xuqu.wedding',
+            igUrl: '',
             line: '@xuquwed',
+            lineUrl: '',
             services: [
               { name: '家宴迎賓送客區客製布置', price: '$12,000起', duration: '含設計提案・專人撤場' },
               { name: '戶外證婚拱門花藝全案', price: '$26,000起', duration: '含主視覺花藝＋椅子紗幔' }
@@ -924,7 +964,9 @@
             coverImage: makeCoverSvg('#F3E6D8', '#EFEAE0', '#9A5B2C', '柔光新秘造型', '新娘秘書 ・ 台中北屯'),
             bookingInfo: '開放預約未來一年婚禮檔期｜提供付費試妝',
             ig: '@rouguang.bridal',
+            igUrl: '',
             line: '@rouguang',
+            lineUrl: '',
             services: [
               { name: '單妝／登記證婚造型', price: '$8,800', duration: '贈早鳥乾燥花頭飾搭配' },
               { name: '婚宴三造型新娘秘書', price: '$18,800', duration: '含新郎妝髮＋媽媽妝髮一位' }
@@ -947,7 +989,9 @@
             coverImage: 'https://images.unsplash.com/photo-1774660810725-fb04e002003d?auto=format&fit=crop&w=900&q=80',
             bookingInfo: '開放預約近三個月檔期',
             ig: '@guangying.daily',
+            igUrl: '',
             line: '@guangying',
+            lineUrl: '',
             services: [
               { name: '個人自然光寫真', price: '$3,500', duration: '90 分鐘・含 10 張精修' },
               { name: '情侶底片散步紀實', price: '$6,800', duration: '2 小時・附一捲底片' }
@@ -977,6 +1021,66 @@
         const m = String(d.getMonth() + 1).padStart(2, '0');
         const day = String(d.getDate()).padStart(2, '0');
         return `${y}-${m}-${day}`;
+      }
+
+      function buildLineUrl(studio) {
+        const custom = studio && studio.lineUrl ? String(studio.lineUrl).trim() : '';
+        if (custom) {
+          return /^https?:\/\//i.test(custom) ? custom : 'https://' + custom;
+        }
+        const raw = studio && studio.line ? String(studio.line).trim() : '';
+        if (!raw) return '';
+        if (/^https?:\/\//i.test(raw)) return raw;
+        if (/^(line\.me|lin\.ee)\//i.test(raw)) return 'https://' + raw;
+        if (raw.startsWith('@')) {
+          return 'https://line.me/R/ti/p/' + encodeURIComponent(raw);
+        }
+        return 'https://line.me/ti/p/~' + encodeURIComponent(raw);
+      }
+
+      function buildIgUrl(studio) {
+        const custom = studio && studio.igUrl ? String(studio.igUrl).trim() : '';
+        if (custom) {
+          return /^https?:\/\//i.test(custom) ? custom : 'https://' + custom;
+        }
+        const raw = studio && studio.ig ? String(studio.ig).trim() : '';
+        if (!raw) return '';
+        if (/^https?:\/\//i.test(raw)) return raw;
+        if (/^(www\.)?instagram\.com\//i.test(raw)) return 'https://' + raw;
+        const handle = raw.replace(/^@+/, '');
+        if (!handle) return '';
+        return 'https://www.instagram.com/' + encodeURIComponent(handle) + '/';
+      }
+
+      function formatSocialDisplay(val) {
+        const raw = String(val || '').trim();
+        if (!raw) return '未提供';
+        if (/^https?:\/\//i.test(raw)) {
+          return raw.replace(/^https?:\/\/(www\.)?/i, '').replace(/\/$/, '');
+        }
+        return raw;
+      }
+
+      function copyToClipboard(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(text).catch(() => fallbackCopy(text));
+        } else {
+          fallbackCopy(text);
+        }
+      }
+
+      function fallbackCopy(text) {
+        try {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.left = '-9999px';
+          document.body.appendChild(ta);
+          ta.focus();
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+        } catch (err) {}
       }
 
       function getStudioSaveCount(s) {
@@ -1487,13 +1591,17 @@
                     <input class="input" name="district" placeholder="例如：大安、西區" />
                   </div>
                   <div>
-                    <label class="label">Instagram 帳號 *</label>
-                    <input class="input" name="ig" required placeholder="@your.studio" />
+                    <label class="label">Instagram 帳號或網址 *</label>
+                    <input class="input" name="ig" required placeholder="@your.studio 或 IG 網址" />
                   </div>
                   <div>
-                    <label class="label">最低起價 (NT$)</label>
-                    <input class="input" type="number" name="minPrice" value="1200" />
+                    <label class="label">LINE ID 或官方連結</label>
+                    <input class="input" name="line" placeholder="@your.line 或 https://lin.ee/..." />
                   </div>
+                </div>
+                <div>
+                  <label class="label">最低起價 (NT$)</label>
+                  <input class="input" type="number" name="minPrice" value="1200" />
                 </div>
                 <div>
                   <label class="label">一句話特色介紹</label>
@@ -1532,6 +1640,9 @@
             const globalRateVal = state.site.defaultDiscountRate !== undefined ? state.site.defaultDiscountRate : 0.9;
             const globalOpt = getDiscountOption(globalRateVal);
             const curDraftRate = draftStudio.discountRate !== undefined ? draftStudio.discountRate : 'default';
+            const previewLineHref = buildLineUrl(draftStudio);
+            const previewIgHref = buildIgUrl(draftStudio);
+
             bodyHTML = `
               <div class="card">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid var(--hairline);">
@@ -1571,13 +1682,29 @@
                       <input class="input" type="number" data-draft="minPrice" value="${esc(draftStudio.minPrice)}" />
                     </div>
                     <div>
-                      <label class="label">Instagram 帳號</label>
-                      <input class="input" data-draft="ig" value="${esc(draftStudio.ig)}" />
+                      <label class="label">Instagram 帳號（填 @帳號 或網址）</label>
+                      <input class="input" data-draft="ig" value="${esc(draftStudio.ig)}" placeholder="@your.studio" />
                     </div>
                     <div>
-                      <label class="label">LINE ID</label>
-                      <input class="input" data-draft="line" value="${esc(draftStudio.line)}" />
+                      <label class="label">LINE ID（@官方帳號、個人ID 或 lin.ee 網址）</label>
+                      <input class="input" data-draft="line" value="${esc(draftStudio.line)}" placeholder="@your.line" />
                     </div>
+                    <div>
+                      <label class="label">IG 專屬連結（選填，留白則依上方帳號自動產生）</label>
+                      <input class="input" data-draft="igUrl" value="${esc(draftStudio.igUrl || '')}" placeholder="https://www.instagram.com/your.studio/" />
+                    </div>
+                    <div>
+                      <label class="label">LINE 專屬連結（選填，留白則依上方 ID 自動產生）</label>
+                      <input class="input" data-draft="lineUrl" value="${esc(draftStudio.lineUrl || '')}" placeholder="https://lin.ee/xxxxxx 或 https://line.me/R/ti/p/@yourid" />
+                    </div>
+                  </div>
+
+                  <div class="social-preview-bar">
+                    <span style="font-weight:700; color:var(--forest);">🔗 目前直接連線測試：</span>
+                    <a id="preview-line-link" class="btn btn-sage btn-sm ${previewLineHref ? '' : 'hidden'}" href="${esc(previewLineHref || '#')}" target="_blank" rel="noopener noreferrer">測試開啟 LINE</a>
+                    <span id="preview-line-empty" class="${previewLineHref ? 'hidden' : ''}" style="color:var(--muted);">LINE 未設定</span>
+                    <a id="preview-ig-link" class="btn btn-ivory btn-sm ${previewIgHref ? '' : 'hidden'}" href="${esc(previewIgHref || '#')}" target="_blank" rel="noopener noreferrer">測試開啟 IG</a>
+                    <span id="preview-ig-empty" class="${previewIgHref ? 'hidden' : ''}" style="color:var(--muted);">IG 未設定</span>
                   </div>
 
                   <div>
@@ -2013,6 +2140,8 @@
         const rate = getStudioDiscountRate(s);
         const discOpt = getDiscountOption(rate);
         const bannerText = getStudioPromoBannerText(s, rate);
+        const lineHref = buildLineUrl(s);
+        const igHref = buildIgUrl(s);
 
         const box = document.getElementById('modal-box');
         box.classList.remove('modal-box-sm');
@@ -2090,8 +2219,20 @@
             <div id="inquiry-box" class="hidden card" style="border-color:var(--forest);"></div>
 
             <div class="grid-2">
-              <button class="btn btn-forest" data-action="copy-text" data-label="LINE ID" data-val="${esc(s.line)}">複製 LINE ID（${esc(s.line)}）</button>
-              <button class="btn btn-ivory" data-action="copy-text" data-label="IG 帳號" data-val="${esc(s.ig)}">複製 IG（${esc(s.ig)}）</button>
+              <div class="social-btn-group">
+                ${lineHref
+                  ? `<a class="btn btn-forest social-main-link" href="${esc(lineHref)}" target="_blank" rel="noopener noreferrer">💬 開啟 LINE 聯繫（${esc(formatSocialDisplay(s.line))}）</a>`
+                  : `<span class="btn btn-forest social-main-link" style="opacity:0.55; cursor:not-allowed;">💬 未設定 LINE</span>`
+                }
+                ${s.line ? `<button type="button" class="btn btn-sage btn-sm social-copy-btn" data-action="copy-text" data-label="LINE" data-val="${esc(s.line)}" title="複製 LINE ID／連結">複製</button>` : ''}
+              </div>
+              <div class="social-btn-group">
+                ${igHref
+                  ? `<a class="btn btn-ivory social-main-link" href="${esc(igHref)}" target="_blank" rel="noopener noreferrer">📷 前往 IG 頁面（${esc(formatSocialDisplay(s.ig))}）</a>`
+                  : `<span class="btn btn-ivory social-main-link" style="opacity:0.55; cursor:not-allowed;">📷 未設定 IG</span>`
+                }
+                ${s.ig ? `<button type="button" class="btn btn-ivory btn-sm social-copy-btn" data-action="copy-text" data-label="IG" data-val="${esc(s.ig)}" title="複製 IG 帳號／連結">複製</button>` : ''}
+              </div>
             </div>
           </div>
         `;
@@ -2237,7 +2378,7 @@
           showToast(state.savedIds.indexOf(id) !== -1 ? '已加入收藏' : '已取消收藏');
         } else if (act === 'copy-text') {
           const val = el.dataset.val;
-          if (navigator.clipboard) navigator.clipboard.writeText(val).catch(() => {});
+          copyToClipboard(val);
           showToast(`已複製 ${el.dataset.label}：${val}`);
         } else if (act === 'pick-service') {
           const box = document.getElementById('inquiry-box');
@@ -2314,7 +2455,7 @@
             baseSavedCount: 0, certified: false, discountRate: 'default',
             tagline: '請輸入一句話介紹...', story: '請輸入品牌故事...',
             coverImage: 'https://images.unsplash.com/photo-1685963086339-85c3b3ecafe9?auto=format&fit=crop&w=900&q=80',
-            bookingInfo: '採預約制', ig: '@your.studio', line: '@yourstudio',
+            bookingInfo: '採預約制', ig: '@your.studio', igUrl: '', line: '@yourstudio', lineUrl: '',
             services: [{ name: '基礎預約項目', price: '$1,200', duration: '90 分鐘' }]
           };
           editingStudioId = newId;
@@ -2324,6 +2465,8 @@
           if (found) {
             draftStudio = JSON.parse(JSON.stringify(found));
             if (draftStudio.discountRate === undefined) draftStudio.discountRate = 'default';
+            if (draftStudio.igUrl === undefined) draftStudio.igUrl = '';
+            if (draftStudio.lineUrl === undefined) draftStudio.lineUrl = '';
             if (!Array.isArray(draftStudio.services)) draftStudio.services = [];
             editingStudioId = found.id;
             renderAdmin();
@@ -2369,6 +2512,36 @@
         }
       });
 
+      function updateAdminSocialPreview() {
+        if (!draftStudio) return;
+        const lineLink = document.getElementById('preview-line-link');
+        const lineEmpty = document.getElementById('preview-line-empty');
+        const igLink = document.getElementById('preview-ig-link');
+        const igEmpty = document.getElementById('preview-ig-empty');
+        const lUrl = buildLineUrl(draftStudio);
+        const iUrl = buildIgUrl(draftStudio);
+        if (lineLink && lineEmpty) {
+          if (lUrl) {
+            lineLink.href = lUrl;
+            lineLink.classList.remove('hidden');
+            lineEmpty.classList.add('hidden');
+          } else {
+            lineLink.classList.add('hidden');
+            lineEmpty.classList.remove('hidden');
+          }
+        }
+        if (igLink && igEmpty) {
+          if (iUrl) {
+            igLink.href = iUrl;
+            igLink.classList.remove('hidden');
+            igEmpty.classList.add('hidden');
+          } else {
+            igLink.classList.add('hidden');
+            igEmpty.classList.remove('hidden');
+          }
+        }
+      }
+
       document.addEventListener('input', (e) => {
         const t = e.target;
         if (t.dataset.fsKey) {
@@ -2386,6 +2559,9 @@
         }
         if (draftStudio && t.dataset.draft) {
           draftStudio[t.dataset.draft] = t.dataset.draft === 'minPrice' ? Number(t.value) || 0 : t.value;
+          if (['ig', 'line', 'igUrl', 'lineUrl'].includes(t.dataset.draft)) {
+            updateAdminSocialPreview();
+          }
         }
         if (draftStudio && t.dataset.srvIdx !== undefined) {
           draftStudio.services[Number(t.dataset.srvIdx)][t.dataset.srvField] = t.value;
@@ -2527,8 +2703,10 @@
             story: fd.get('tagline') || '歡迎預約體驗。',
             coverImage: 'https://images.unsplash.com/photo-1685963086339-85c3b3ecafe9?auto=format&fit=crop&w=900&q=80',
             bookingInfo: '採預約制',
-            ig: fd.get('ig'),
-            line: '@studio',
+            ig: String(fd.get('ig') || '').trim(),
+            igUrl: '',
+            line: String(fd.get('line') || '').trim(),
+            lineUrl: '',
             services: [{ name: '基礎體驗項目', price: '$' + Number(fd.get('minPrice') || 1200).toLocaleString(), duration: '90 分鐘' }]
           };
           state.studios.unshift(newStudio);
