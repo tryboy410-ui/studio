@@ -40,7 +40,7 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { max-width: 100%; overflow-x: hidden; }
+    html, body { max-width: 100%; overflow-x: clip; }
     body {
       background: var(--linen);
       color: var(--ink);
@@ -424,6 +424,7 @@
       background: var(--ivory); border: 1px solid var(--hairline);
       border-radius: 18px; overflow: hidden; cursor: pointer;
       transition: transform 0.15s, box-shadow 0.15s;
+      display: flex; flex-direction: column;
     }
     .studio-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(40,38,35,0.06); }
     .studio-thumb { position: relative; aspect-ratio: 4 / 3; background: var(--sand); overflow: hidden; }
@@ -433,7 +434,7 @@
       background: rgba(255, 254, 250, 0.92); color: var(--forest);
       padding: 3px 8px; border-radius: 999px; font-size: 11px; font-weight: 700;
     }
-    .studio-body { padding: 12px; }
+    .studio-body { padding: 12px; display: flex; flex-direction: column; flex: 1; }
     .studio-name {
       font-size: calc(var(--fs-card-title) * var(--font-scale));
       font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -445,12 +446,59 @@
     .studio-loc { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .studio-price { color: var(--forest); font-weight: 700; flex-shrink: 0; }
     .studio-saved-row {
-      display: flex; align-items: center; gap: 4px; margin-top: 7px;
-      padding-top: 6px; border-top: 1px solid #EFE9DF;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 6px; flex-wrap: wrap;
+      margin-top: auto;
+      padding-top: 8px;
+      border-top: 1px solid #EFE9DF;
       font-size: calc(11px * var(--font-scale));
       color: var(--muted); font-weight: 600;
     }
-    .studio-saved-row.is-saved { color: var(--bronze); }
+    .studio-saved-count {
+      display: inline-flex; align-items: center; gap: 3px;
+    }
+    .studio-saved-row.is-saved .studio-saved-count { color: var(--bronze); }
+    .studio-comment-btn {
+      display: inline-flex; align-items: center; gap: 3px;
+      padding: 2px 8px; border-radius: 999px;
+      background: var(--linen); color: var(--forest);
+      border: 1px solid var(--hairline);
+      font-size: calc(11px * var(--font-scale));
+      font-weight: 600; line-height: 1.4;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .studio-comment-btn:hover {
+      background: var(--sage);
+      border-color: rgba(34, 73, 55, 0.25);
+    }
+
+    /* 工作室留言區樣式 */
+    #studio-comments-section {
+      scroll-margin-top: 68px;
+    }
+    .comments-list {
+      display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px;
+    }
+    .comment-item {
+      background: var(--linen); border: 1px solid #EAE2D5;
+      border-radius: 12px; padding: 10px 12px;
+    }
+    .comment-item-head {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      margin-bottom: 4px;
+    }
+    .comment-author {
+      font-size: calc(var(--fs-sub) * var(--font-scale));
+      font-weight: 700; color: var(--forest);
+    }
+    .comment-date {
+      font-size: calc(11px * var(--font-scale));
+      color: var(--muted);
+    }
+    .comment-form-box {
+      background: #FAF7F0; border: 1px dashed var(--hairline);
+      border-radius: 14px; padding: 12px;
+    }
 
     /* 表單與篩選 */
     .filter-bar { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
@@ -1172,7 +1220,41 @@
           }
         ],
         savedIds: ['shiguang-gift', 'chuzhi-floral'],
-        inquiries: []
+        inquiries: [],
+        comments: [
+          {
+            id: 'cmt-1',
+            studioId: 'shiguang-gift',
+            studioName: '拾光禮研所',
+            author: '陳小姐',
+            text: '客製刻字木盒的質感非常好，朋友收到生日禮物超級喜歡！包裝也很用心。',
+            createdAt: '2026/11/18'
+          },
+          {
+            id: 'cmt-2',
+            studioId: 'shiguang-gift',
+            studioName: '拾光禮研所',
+            author: '林先生',
+            text: '回覆訊息很有耐心，急件也有準時收到，推薦給要送紀念禮的人。',
+            createdAt: '2026/11/21'
+          },
+          {
+            id: 'cmt-3',
+            studioId: 'chuzhi-floral',
+            studioName: '初枝花藝',
+            author: '小芸',
+            text: '花束配色很自然耐看，跟照片實拍完全一致，老宅空間也非常舒服。',
+            createdAt: '2026/11/19'
+          },
+          {
+            id: 'cmt-4',
+            studioId: 'xiaosen-cake',
+            studioName: '小森烘焙',
+            author: '張小姐',
+            text: '減糖鮮奶油吃起來完全不膩口，草莓也很新鮮，家人一致好評！',
+            createdAt: '2026/11/22'
+          }
+        ]
       };
 
       let state = loadState();
@@ -1267,6 +1349,10 @@
         return base + isSavedByMe;
       }
 
+      function getStudioComments(studioId) {
+        return (state.comments || []).filter(c => c.studioId === studioId);
+      }
+
       function getSessionAuth() {
         try { return sessionStorage.getItem(SESSION_AUTH_KEY) === '1'; }
         catch (e) { return false; }
@@ -1313,7 +1399,8 @@
               studios: Array.isArray(parsed.studios) ? parsed.studios : DEFAULT_DATA.studios,
               collaborations: Array.isArray(parsed.collaborations) ? parsed.collaborations : DEFAULT_DATA.collaborations,
               savedIds: Array.isArray(parsed.savedIds) ? parsed.savedIds : DEFAULT_DATA.savedIds,
-              inquiries: Array.isArray(parsed.inquiries) ? parsed.inquiries : []
+              inquiries: Array.isArray(parsed.inquiries) ? parsed.inquiries : [],
+              comments: Array.isArray(parsed.comments) ? parsed.comments : JSON.parse(JSON.stringify(DEFAULT_DATA.comments))
             };
           }
 
@@ -1352,7 +1439,8 @@
               studios: mergedStudios,
               collaborations: Array.isArray(prev.collaborations) ? prev.collaborations : JSON.parse(JSON.stringify(DEFAULT_DATA.collaborations)),
               savedIds: mergedSaved,
-              inquiries: Array.isArray(prev.inquiries) ? prev.inquiries : []
+              inquiries: Array.isArray(prev.inquiries) ? prev.inquiries : [],
+              comments: Array.isArray(prev.comments) ? prev.comments : JSON.parse(JSON.stringify(DEFAULT_DATA.comments))
             };
             localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
             return migrated;
@@ -1525,6 +1613,7 @@
       function studioCardHTML(s) {
         const isSaved = state.savedIds.indexOf(s.id) !== -1;
         const saveCount = getStudioSaveCount(s);
+        const commentCount = getStudioComments(s.id).length;
         return `
           <div class="studio-card" data-action="open-studio" data-id="${esc(s.id)}">
             <div class="studio-thumb">
@@ -1538,8 +1627,14 @@
                 <span class="studio-price">$${Number(s.minPrice || 0).toLocaleString()}起</span>
               </div>
               <div class="studio-saved-row ${isSaved ? 'is-saved' : ''}">
-                <span>${isSaved ? '♥' : '♡'}</span>
-                <span>${saveCount.toLocaleString()} 人收藏</span>
+                <span class="studio-saved-count">
+                  <span>${isSaved ? '♥' : '♡'}</span>
+                  <span>${saveCount.toLocaleString()} 人收藏</span>
+                </span>
+                <button type="button" class="studio-comment-btn" data-action="open-studio-comments" data-id="${esc(s.id)}" title="查看或撰寫留言">
+                  <span>💬</span>
+                  <span>${commentCount.toLocaleString()} 則留言</span>
+                </button>
               </div>
             </div>
           </div>
@@ -2090,6 +2185,7 @@
                 ${state.studios.map((s) => {
                   const effRate = getStudioDiscountRate(s);
                   const effOpt = getDiscountOption(effRate);
+                  const cmtCount = getStudioComments(s.id).length;
                   return `
                   <div class="admin-row">
                     <div style="display:flex; align-items:center; gap:12px;">
@@ -2101,7 +2197,7 @@
                           <span class="admin-badge" style="background:#FAF0E2;color:#854B1E;">${effRate >= 0.999 ? '原價' : esc(effOpt.label)}</span>
                         </div>
                         <div style="font-size:12px; color:var(--muted); margin-top:2px;">
-                          ${esc(s.location)}・${esc(s.category)}・$${Number(s.minPrice || 0).toLocaleString()}起・${getStudioSaveCount(s).toLocaleString()} 人收藏
+                          ${esc(s.location)}・${esc(s.category)}・$${Number(s.minPrice || 0).toLocaleString()}起・${getStudioSaveCount(s).toLocaleString()} 人收藏・${cmtCount} 則留言
                         </div>
                       </div>
                     </div>
@@ -2255,6 +2351,7 @@
         } else if (adminTab === 'fonts') {
           const firstCustomerItem = (state.site.helpCustomerItems && state.site.helpCustomerItems[0]) ? state.site.helpCustomerItems[0] : { title: '價格與地區先看懂', desc: '先確認預算範圍與距離再聯繫。' };
           const previewStudio = (state.studios && state.studios[0]) ? state.studios[0] : DEFAULT_DATA.studios[0];
+          const previewCmtCount = getStudioComments(previewStudio.id).length;
           bodyHTML = `
             <div class="stack">
               <div class="card" style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; padding:16px 20px;">
@@ -2329,8 +2426,14 @@
                           <span class="studio-price">$${Number(previewStudio.minPrice || 0).toLocaleString()}起</span>
                         </div>
                         <div class="studio-saved-row is-saved">
-                          <span>♥</span>
-                          <span>${getStudioSaveCount(previewStudio).toLocaleString()} 人收藏</span>
+                          <span class="studio-saved-count">
+                            <span>♥</span>
+                            <span>${getStudioSaveCount(previewStudio).toLocaleString()} 人收藏</span>
+                          </span>
+                          <span class="studio-comment-btn" style="cursor:default;">
+                            <span>💬</span>
+                            <span>${previewCmtCount} 則留言</span>
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -2498,6 +2601,35 @@
               <button type="submit" class="btn btn-forest" style="align-self:flex-end;">儲存全部標題與文案設定</button>
             </form>
           `;
+        } else if (adminTab === 'comments') {
+          const allComments = state.comments || [];
+          bodyHTML = `
+            <div class="card" style="padding:0;">
+              <div style="padding:16px 18px; border-bottom:1px solid var(--hairline); font-weight:700;">
+                工作室留言管理 (${allComments.length})
+              </div>
+              ${allComments.length === 0
+                ? `<div style="padding:28px; text-align:center; font-size:13px; color:var(--muted);">目前尚無顧客留言紀錄。</div>`
+                : allComments.map((cmt) => {
+                    const st = state.studios.find(x => x.id === cmt.studioId);
+                    const stName = st ? st.name : (cmt.studioName || '已移除的工作室');
+                    return `
+                      <div class="admin-row">
+                        <div style="flex:1; min-width:200px;">
+                          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                            <strong style="font-size:14px;">${esc(stName)}</strong>
+                            <span class="admin-badge">留言者：${esc(cmt.author)}</span>
+                            <span style="font-size:12px; color:var(--muted);">${esc(cmt.createdAt)}</span>
+                          </div>
+                          <div style="font-size:13px; color:var(--ink); margin-top:6px;">${esc(cmt.text)}</div>
+                        </div>
+                        <button class="btn btn-danger btn-sm" data-action="admin-del-comment" data-id="${esc(cmt.id)}">刪除</button>
+                      </div>
+                    `;
+                  }).join('')
+              }
+            </div>
+          `;
         } else if (adminTab === 'inquiries') {
           bodyHTML = `
             <div class="card" style="padding:0;">
@@ -2564,6 +2696,7 @@
           <div class="admin-tabs">
             <button class="admin-tab-btn ${adminTab === 'studios' ? 'active' : ''}" data-action="admin-tab" data-tab="studios">工作室管理 (${state.studios.length})</button>
             <button class="admin-tab-btn ${adminTab === 'collabs' ? 'active' : ''}" data-action="admin-tab" data-tab="collabs">跨店合作 (${state.collaborations.length})</button>
+            <button class="admin-tab-btn ${adminTab === 'comments' ? 'active' : ''}" data-action="admin-tab" data-tab="comments">留言管理 (${(state.comments || []).length})</button>
             <button class="admin-tab-btn ${adminTab === 'site' ? 'active' : ''}" data-action="admin-tab" data-tab="site">標題、文案與優惠</button>
             <button class="admin-tab-btn ${adminTab === 'fonts' ? 'active' : ''}" data-action="admin-tab" data-tab="fonts">各區塊字體設定</button>
             <button class="admin-tab-btn ${adminTab === 'inquiries' ? 'active' : ''}" data-action="admin-tab" data-tab="inquiries">預約詢問 (${state.inquiries.length})</button>
@@ -2606,7 +2739,7 @@
         }, 50);
       }
 
-      function openStudioModal(id, shouldSyncHash) {
+      function openStudioModal(id, shouldSyncHash, scrollToComments) {
         if (shouldSyncHash === undefined) shouldSyncHash = true;
         const s = state.studios.find((x) => x.id === id);
         if (!s) return;
@@ -2618,6 +2751,7 @@
         }
         const isSaved = state.savedIds.indexOf(s.id) !== -1;
         const saveCount = getStudioSaveCount(s);
+        const studioComments = getStudioComments(s.id);
         const rate = getStudioDiscountRate(s);
         const discOpt = getDiscountOption(rate);
         const bannerText = getStudioPromoBannerText(s, rate);
@@ -2718,6 +2852,40 @@
 
             <div id="inquiry-box" class="hidden card" style="border-color:var(--forest);"></div>
 
+            <div class="card" id="studio-comments-section" style="padding:16px;">
+              <div class="service-head-bar" style="justify-content:space-between; margin-bottom:12px;">
+                <span class="body-text" style="font-weight:700;">💬 顧客留言區 (${studioComments.length})</span>
+                <span class="sub-text" style="color:var(--muted);">歡迎分享實際體驗與作品心得</span>
+              </div>
+
+              <div class="comments-list">
+                ${studioComments.length === 0
+                  ? `<div class="sub-text" style="color:var(--muted); text-align:center; padding:12px 0;">目前還沒有留言，歡迎成為第一位留下心得的人！</div>`
+                  : studioComments.map((cmt) => `
+                      <div class="comment-item">
+                        <div class="comment-item-head">
+                          <span class="comment-author">${esc(cmt.author)}</span>
+                          <span class="comment-date">${esc(cmt.createdAt)}</span>
+                        </div>
+                        <div class="body-text">${esc(cmt.text)}</div>
+                      </div>
+                    `).join('')
+                }
+              </div>
+
+              <form id="studio-comment-form" class="comment-form-box stack" style="margin-top:0; gap:10px;" data-studio-id="${esc(s.id)}">
+                <div>
+                  <label class="label" for="comment-author-input">您的稱呼 *</label>
+                  <input class="input" id="comment-author-input" name="author" required placeholder="例如：王小姐、小美" maxlength="30" />
+                </div>
+                <div>
+                  <label class="label" for="comment-text-input">留言內容 *</label>
+                  <textarea class="textarea" id="comment-text-input" name="text" rows="2" required placeholder="分享你對這間工作室的感想、作品體驗或推薦之處..." maxlength="300"></textarea>
+                </div>
+                <button type="submit" class="btn btn-forest btn-sm" style="align-self:flex-end;">送出留言</button>
+              </form>
+            </div>
+
             <div class="grid-2">
               <div class="social-btn-group">
                 ${lineHref
@@ -2737,6 +2905,13 @@
           </div>
         `;
         document.getElementById('modal-backdrop').classList.remove('hidden');
+
+        if (scrollToComments) {
+          setTimeout(() => {
+            const cmtSec = document.getElementById('studio-comments-section');
+            if (cmtSec) cmtSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 60);
+        }
       }
 
       function openCollabModal(id, shouldSyncHash) {
@@ -2973,7 +3148,9 @@
           renderAll();
           showToast('已登出並鎖定管理後台');
         } else if (act === 'open-studio') {
-          openStudioModal(el.dataset.id, true);
+          openStudioModal(el.dataset.id, true, false);
+        } else if (act === 'open-studio-comments') {
+          openStudioModal(el.dataset.id, true, true);
         } else if (act === 'open-collab') {
           openCollabModal(el.dataset.id, true);
         } else if (act === 'open-cert') {
@@ -2991,7 +3168,7 @@
           if (state.savedIds.indexOf(id) !== -1) state.savedIds = state.savedIds.filter(x => x !== id);
           else state.savedIds.push(id);
           saveState();
-          openStudioModal(id, false);
+          openStudioModal(id, false, false);
           if (frontTab === 'saved') renderFront();
           else if (frontTab === 'explore') renderExploreResults();
           showToast(state.savedIds.indexOf(id) !== -1 ? '已加入收藏' : '已取消收藏');
@@ -3138,6 +3315,7 @@
             const delId = el.dataset.id;
             state.studios = state.studios.filter(s => s.id !== delId);
             state.savedIds = state.savedIds.filter(id => id !== delId);
+            state.comments = (state.comments || []).filter(c => c.studioId !== delId);
             state.collaborations = state.collaborations.map(c => ({
               ...c,
               studioIds: (c.studioIds || []).filter(sid => sid !== delId)
@@ -3205,6 +3383,9 @@
             draftCollab.includes.splice(Number(el.dataset.idx), 1);
           }
           renderAdmin();
+        } else if (act === 'admin-del-comment') {
+          state.comments = (state.comments || []).filter(c => c.id !== el.dataset.id);
+          saveState(); renderAdmin(); showToast('已刪除留言');
         } else if (act === 'admin-del-inq') {
           state.inquiries = state.inquiries.filter(i => i.id !== el.dataset.id);
           saveState(); renderAdmin();
@@ -3338,9 +3519,14 @@
         if (draftCollab && t.dataset.collabStudioId) {
           const sid = t.dataset.collabStudioId;
           const ids = Array.isArray(draftCollab.studioIds) ? draftCollab.studioIds : [];
-          if (t.checked && !ids.includes(sid)) ids.push(sid);
-          else if (!t.checked) draftCollab.studioIds = ids.filter(x => x !== sid);
-          else draftCollab.studioIds = ids;
+          if (t.checked && !ids.includes(sid)) {
+            ids.push(sid);
+            draftCollab.studioIds = ids;
+          } else if (!t.checked) {
+            draftCollab.studioIds = ids.filter(x => x !== sid);
+          } else {
+            draftCollab.studioIds = ids;
+          }
         }
         if (t.dataset.inqStatus) {
           state.inquiries = state.inquiries.map(i => i.id === t.dataset.inqStatus ? { ...i, status: t.value } : i);
@@ -3359,7 +3545,8 @@
                   site: { ...DEFAULT_DATA.site, ...(parsed.site || {}) },
                   collaborations: Array.isArray(parsed.collaborations)
                     ? parsed.collaborations
-                    : JSON.parse(JSON.stringify(DEFAULT_DATA.collaborations))
+                    : JSON.parse(JSON.stringify(DEFAULT_DATA.collaborations)),
+                  comments: Array.isArray(parsed.comments) ? parsed.comments : []
                 };
                 saveState(); renderAll(); showToast('匯入還原成功！');
               } else alert('備份檔格式不正確');
@@ -3469,10 +3656,32 @@
           };
           state.studios.unshift(newStudio);
           saveState();
+          filters = { q: '', city: '全部', category: '全部', style: '全部' };
           frontTab = 'explore';
           syncHash('#explore');
           renderAll();
           showToast(`已新增「${newStudio.name}」至探索頁！`);
+        } else if (form.id === 'studio-comment-form') {
+          const fd = new FormData(form);
+          const studioId = form.dataset.studioId;
+          const author = String(fd.get('author') || '').trim();
+          const text = String(fd.get('text') || '').trim();
+          if (!author || !text) return;
+          const st = state.studios.find(x => x.id === studioId);
+          if (!Array.isArray(state.comments)) state.comments = [];
+          state.comments.unshift({
+            id: 'cmt-' + Date.now(),
+            studioId: studioId,
+            studioName: st ? st.name : '',
+            author: author,
+            text: text,
+            createdAt: new Date().toLocaleDateString('zh-TW')
+          });
+          saveState();
+          openStudioModal(studioId, false, true);
+          if (frontTab === 'explore') renderExploreResults();
+          else if (frontTab === 'saved') renderFront();
+          showToast('已發布留言！');
         } else if (form.id === 'inquiry-form') {
           const fd = new FormData(form);
           const st = state.studios.find(x => x.id === form.dataset.studioId);
