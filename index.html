@@ -201,6 +201,29 @@
       background: var(--sage); color: var(--forest);
     }
 
+    /* 瀏覽人數統計條 */
+    .stats-bar {
+      display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+      gap: 10px 24px;
+      background: var(--ivory); border: 1px solid var(--hairline);
+      border-radius: 16px; padding: 11px 18px;
+      box-shadow: 0 2px 10px rgba(40, 38, 35, 0.03);
+    }
+    .stat-chip {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: calc(var(--fs-sub) * var(--font-scale));
+    }
+    .stat-label { color: var(--muted); font-weight: 600; }
+    .stat-value {
+      color: var(--forest); font-weight: 700;
+      font-size: calc(var(--fs-body) * var(--font-scale));
+      background: var(--sage); padding: 2px 11px; border-radius: 999px;
+    }
+    .stat-divider {
+      width: 1px; height: 18px; background: var(--hairline);
+    }
+    @media (max-width: 480px) { .stat-divider { display: none; } }
+
     /* 服務項目與平台優惠排版 */
     .service-head-bar {
       display: flex; align-items: center; justify-content: flex-start;
@@ -689,6 +712,14 @@
       const LEGACY_KEYS = ['sishixuan_unified_v5', 'sishixuan_unified_v4', 'sishixuan_unified_v3'];
       const SESSION_AUTH_KEY = 'sishixuan_admin_authed';
 
+      function getTodayDateStr() {
+        const d = new Date();
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+      }
+
       function escXml(str) {
         return String(str == null ? '' : str)
           .replace(/&/g, '&amp;')
@@ -821,6 +852,12 @@
         adminPassword: '1234',
         fontScale: 1,
         fontSizes: { ...DEFAULT_FONT_SIZES },
+        stats: {
+          totalViews: 0,
+          todayViews: 0,
+          todayDate: '',
+          showPublic: true
+        },
         site: {
           brandName: '私室選',
           brandSub: '嚴選獨立工作室指南',
@@ -1301,6 +1338,8 @@
       };
 
       let state = loadState();
+      recordPageView();
+
       let isAdminAuthed = getSessionAuth();
       let viewMode = 'front';
       let frontTab = 'home';
@@ -1319,14 +1358,6 @@
       let backdropMouseDownOnSelf = false;
       let logoTapCount = 0;
       let logoTapTimer = null;
-
-      function getTodayDateStr() {
-        const d = new Date();
-        const y = d.getFullYear();
-        const m = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        return `${y}-${m}-${day}`;
-      }
 
       function buildLineUrl(studio) {
         const custom = studio && studio.lineUrl ? String(studio.lineUrl).trim() : '';
@@ -1432,6 +1463,30 @@
         };
       }
 
+      function buildStatsState(pStats) {
+        const s = (pStats && typeof pStats === 'object') ? pStats : {};
+        return {
+          totalViews: Math.max(0, Number(s.totalViews) || 0),
+          todayViews: Math.max(0, Number(s.todayViews) || 0),
+          todayDate: String(s.todayDate || ''),
+          showPublic: s.showPublic !== false
+        };
+      }
+
+      function recordPageView() {
+        const today = getTodayDateStr();
+        if (!state.stats || typeof state.stats !== 'object') {
+          state.stats = { totalViews: 0, todayViews: 0, todayDate: today, showPublic: true };
+        }
+        if (state.stats.todayDate !== today) {
+          state.stats.todayDate = today;
+          state.stats.todayViews = 0;
+        }
+        state.stats.totalViews = Math.max(0, Number(state.stats.totalViews) || 0) + 1;
+        state.stats.todayViews = Math.max(0, Number(state.stats.todayViews) || 0) + 1;
+        saveState();
+      }
+
       function normalizeListCities(list) {
         return (list || []).map((item) => ({
           ...item,
@@ -1448,6 +1503,7 @@
               adminPassword: parsed.adminPassword || DEFAULT_DATA.adminPassword,
               fontScale: Number(parsed.fontScale) || 1,
               fontSizes: { ...DEFAULT_FONT_SIZES, ...(parsed.fontSizes || {}) },
+              stats: buildStatsState(parsed.stats),
               site: buildSiteState(parsed.site),
               studios: normalizeListCities(Array.isArray(parsed.studios) ? parsed.studios : DEFAULT_DATA.studios),
               collaborations: normalizeListCities(Array.isArray(parsed.collaborations) ? parsed.collaborations : DEFAULT_DATA.collaborations),
@@ -1488,6 +1544,7 @@
               adminPassword: prev.adminPassword || DEFAULT_DATA.adminPassword,
               fontScale: Number(prev.fontScale) || 1,
               fontSizes: { ...DEFAULT_FONT_SIZES, ...(prev.fontSizes || {}) },
+              stats: buildStatsState(prev.stats),
               site: buildSiteState(prev.site),
               studios: normalizeListCities(mergedStudios),
               collaborations: normalizeListCities(Array.isArray(prev.collaborations) ? prev.collaborations : JSON.parse(JSON.stringify(DEFAULT_DATA.collaborations))),
@@ -1886,8 +1943,23 @@
       function renderFront() {
         const main = document.getElementById('main-content');
         const s = state.site;
+        const st = state.stats || { totalViews: 1, todayViews: 1, showPublic: true };
 
         if (frontTab === 'home') {
+          const statsBarHTML = st.showPublic !== false ? `
+            <div class="stats-bar" aria-label="瀏覽人數統計">
+              <div class="stat-chip">
+                <span class="stat-label">👁️ 今天瀏覽人數</span>
+                <strong class="stat-value">${Number(st.todayViews || 0).toLocaleString()} 人</strong>
+              </div>
+              <div class="stat-divider"></div>
+              <div class="stat-chip">
+                <span class="stat-label">📊 總瀏覽人數</span>
+                <strong class="stat-value">${Number(st.totalViews || 0).toLocaleString()} 人</strong>
+              </div>
+            </div>
+          ` : '';
+
           main.innerHTML = `
             <div class="hero">
               <div class="hero-grid">
@@ -1902,6 +1974,8 @@
                 <div class="hero-badge">${esc(s.heroBadge)}</div>
               </div>
             </div>
+
+            ${statsBarHTML}
 
             <section class="card">
               <span class="pill pill-sage" style="margin-bottom:10px;">為什麼創立這個平台</span>
@@ -2551,10 +2625,30 @@
           `;
         } else if (adminTab === 'site') {
           const s = state.site;
+          const st = state.stats || { totalViews: 0, todayViews: 0, showPublic: true };
           const curDefaultRate = s.defaultDiscountRate !== undefined ? Number(s.defaultDiscountRate) : 0.9;
           bodyHTML = `
             <form id="site-edit-form" class="card stack">
               <h2 style="font-size:17px;">全站標題、首頁文案與平台優惠設定</h2>
+
+              <div class="fs-control-card" style="background:#EFF4EC; border-color:#C7D8C2;">
+                <strong style="font-size:14px; color:var(--forest);">📊 瀏覽人數統計設定</strong>
+                <p style="font-size:11px; color:var(--muted);">每次開啟或重新整理網站會自動累計；跨日會自動將「今天瀏覽人數」歸零重新計算（資料儲存於本機瀏覽器）。</p>
+                <div class="grid-2" style="margin-top:4px;">
+                  <div>
+                    <label class="label">今天瀏覽人數（${esc(st.todayDate || getTodayDateStr())}）</label>
+                    <input class="input" type="number" min="0" name="statTodayViews" value="${Number(st.todayViews || 0)}" />
+                  </div>
+                  <div>
+                    <label class="label">總瀏覽人數</label>
+                    <input class="input" type="number" min="0" name="statTotalViews" value="${Number(st.totalViews || 0)}" />
+                  </div>
+                </div>
+                <label style="display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; color:var(--forest); cursor:pointer; margin-top:2px;">
+                  <input type="checkbox" name="statShowPublic" ${st.showPublic !== false ? 'checked' : ''} />
+                  <span>在前台首頁顯示「今天瀏覽人數」與「總瀏覽人數」統計條</span>
+                </label>
+              </div>
 
               <div class="fs-control-card" style="background:#EFF4EC; border-color:#C7D8C2;">
                 <strong style="font-size:14px; color:var(--forest);">📌 導覽列選單與各分頁標題文字設定</strong>
@@ -2653,7 +2747,7 @@
                 <div><label class="label">創辦人承諾金句</label><input class="input" name="quote" value="${esc(s.quote)}" /></div>
                 <div><label class="label">署名</label><input class="input" name="quoteAuthor" value="${esc(s.quoteAuthor)}" /></div>
               </div>
-              <button type="submit" class="btn btn-forest" style="align-self:flex-end;">儲存全部標題與文案設定</button>
+              <button type="submit" class="btn btn-forest" style="align-self:flex-end;">儲存全部標題、文案與統計設定</button>
             </form>
           `;
         } else if (adminTab === 'comments') {
@@ -2737,11 +2831,16 @@
           `;
         }
 
+        const adminStats = state.stats || { todayViews: 0, totalViews: 0 };
+
         main.innerHTML = `
           <div class="admin-banner">
             <div>
               <div style="font-size:16px; font-weight:700;">網站內容管理後台</div>
-              <div style="font-size:12px; opacity:0.85;">進入方式：網址加 #admin，或連點左上角「私室選」LOGO 5 下（修改後自動儲存）</div>
+              <div style="font-size:12px; opacity:0.88;">
+                <span id="admin-stats-summary">👁️ 今日瀏覽：${Number(adminStats.todayViews || 0).toLocaleString()} 人 ｜ 📊 總瀏覽：${Number(adminStats.totalViews || 0).toLocaleString()} 人</span>
+                <span style="display:block; opacity:0.85; margin-top:2px;">進入方式：網址加 #admin，或連點左上角「私室選」LOGO 5 下（修改後自動儲存）</span>
+              </div>
             </div>
             <div style="display:flex; gap:8px; flex-wrap:wrap;">
               <button class="btn btn-ivory btn-sm" data-action="toggle-admin">回到前台預覽</button>
@@ -3490,7 +3589,9 @@
         } else if (act === 'reset-all-data') {
           if (confirm('確定要清除所有自訂資料，恢復為系統預設嗎？')) {
             state = JSON.parse(JSON.stringify(DEFAULT_DATA));
-            saveState(); renderAll(); showToast('已恢復預設資料');
+            recordPageView();
+            renderAll();
+            showToast('已恢復預設資料');
           }
         }
       });
@@ -3631,6 +3732,7 @@
                   ...DEFAULT_DATA,
                   ...parsed,
                   fontSizes: { ...DEFAULT_FONT_SIZES, ...(parsed.fontSizes || {}) },
+                  stats: buildStatsState(parsed.stats),
                   site: { ...DEFAULT_DATA.site, ...(parsed.site || {}) },
                   studios: normalizeListCities(parsed.studios),
                   collaborations: normalizeListCities(
@@ -3717,9 +3819,29 @@
             title: fd.has('s_title_' + idx) ? fd.get('s_title_' + idx) : it.title,
             desc: fd.has('s_desc_' + idx) ? fd.get('s_desc_' + idx) : it.desc
           }));
+
+          if (!state.stats || typeof state.stats !== 'object') {
+            state.stats = { totalViews: 0, todayViews: 0, todayDate: getTodayDateStr(), showPublic: true };
+          }
+          if (fd.has('statTotalViews')) {
+            state.stats.totalViews = Math.max(0, parseInt(fd.get('statTotalViews'), 10) || 0);
+          }
+          if (fd.has('statTodayViews')) {
+            state.stats.todayViews = Math.max(0, parseInt(fd.get('statTodayViews'), 10) || 0);
+          }
+          state.stats.todayDate = getTodayDateStr();
+          const showPubCheckbox = form.querySelector('[name="statShowPublic"]');
+          if (showPubCheckbox) {
+            state.stats.showPublic = showPubCheckbox.checked;
+          }
+
           saveState();
           renderHeader();
-          showToast('已儲存全站標題、文案與優惠設定！');
+          const adminStatsEl = document.getElementById('admin-stats-summary');
+          if (adminStatsEl) {
+            adminStatsEl.textContent = `👁️ 今日瀏覽：${Number(state.stats.todayViews || 0).toLocaleString()} 人 ｜ 📊 總瀏覽：${Number(state.stats.totalViews || 0).toLocaleString()} 人`;
+          }
+          showToast('已儲存全站標題、文案與統計設定！');
         } else if (form.id === 'apply-form') {
           const fd = new FormData(form);
           const city = fd.get('city');
