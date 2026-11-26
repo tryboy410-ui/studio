@@ -614,7 +614,7 @@
   <!-- 頂部導覽列 -->
   <header class="topbar">
     <div class="topbar-inner">
-      <button class="brand" data-action="go-tab" data-tab="home">
+      <button class="brand" id="brand-trigger" data-action="go-tab" data-tab="home">
         <div class="brand-logo">
           <svg width="24" height="24" viewBox="0 0 40 40" fill="none">
             <rect x="2.5" y="2.5" width="35" height="35" rx="10" stroke="#D8B671" stroke-opacity="0.6" stroke-width="1.2"/>
@@ -654,7 +654,7 @@
   <main class="container stack" id="main-content">
     <div class="card" style="text-align:center; padding:32px;">
       <p style="font-weight:700;">正在載入「私室選」畫面...</p>
-      <p id="boot-error-msg" style="font-size:13px; color:#787166; margin-top:8px;">若未出現畫面，請確認程式碼複製完整且編碼為 UTF-8。</p>
+      <p id="boot-error-msg" style="font-size:13px; color:#787166; margin-top:8px;">若未出現畫面，請確認副檔名為 .html，並使用 Chrome / Safari / Edge 瀏覽器開啟（勿使用 iPhone 檔案 App 內建預覽）。</p>
     </div>
   </main>
 
@@ -689,8 +689,17 @@
       const LEGACY_KEYS = ['sishixuan_unified_v5', 'sishixuan_unified_v4', 'sishixuan_unified_v3'];
       const SESSION_AUTH_KEY = 'sishixuan_admin_authed';
 
+      function escXml(str) {
+        return String(str == null ? '' : str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&apos;');
+      }
+
       function makeCoverSvg(bg1, bg2, accent, title, sub) {
-        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="${bg1}"/><stop offset="100%" stop-color="${bg2}"/></linearGradient></defs><rect width="800" height="600" fill="url(#g)"/><circle cx="640" cy="140" r="130" fill="${accent}" fill-opacity="0.16"/><circle cx="170" cy="470" r="160" fill="${accent}" fill-opacity="0.12"/><rect x="70" y="70" width="660" height="460" rx="28" fill="none" stroke="${accent}" stroke-opacity="0.28" stroke-width="2"/><text x="400" y="285" text-anchor="middle" font-family="Noto Sans TC, PingFang TC, Microsoft JhengHei, sans-serif" font-size="40" font-weight="700" fill="#282623">${title}</text><text x="400" y="340" text-anchor="middle" font-family="Noto Sans TC, PingFang TC, Microsoft JhengHei, sans-serif" font-size="21" fill="${accent}">${sub}</text></svg>`;
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="${bg1}"/><stop offset="100%" stop-color="${bg2}"/></linearGradient></defs><rect width="800" height="600" fill="url(#g)"/><circle cx="640" cy="140" r="130" fill="${accent}" fill-opacity="0.16"/><circle cx="170" cy="470" r="160" fill="${accent}" fill-opacity="0.12"/><rect x="70" y="70" width="660" height="460" rx="28" fill="none" stroke="${accent}" stroke-opacity="0.28" stroke-width="2"/><text x="400" y="285" text-anchor="middle" font-family="Noto Sans TC, PingFang TC, Microsoft JhengHei, sans-serif" font-size="40" font-weight="700" fill="#282623">${escXml(title)}</text><text x="400" y="340" text-anchor="middle" font-family="Noto Sans TC, PingFang TC, Microsoft JhengHei, sans-serif" font-size="21" fill="${accent}">${escXml(sub)}</text></svg>`;
         return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
       }
 
@@ -769,9 +778,44 @@
         '新娘秘書',
         '攝影'
       ];
-      const CITIES = ['台北', '台中', '高雄', '台南', '新北', '新竹'];
+
+      // 全台 22 縣市
+      const CITIES = [
+        '台北', '新北', '基隆', '桃園', '新竹市', '新竹縣', '宜蘭',
+        '苗栗', '台中', '彰化', '南投', '雲林',
+        '嘉義市', '嘉義縣', '台南', '高雄', '屏東',
+        '花蓮', '台東',
+        '澎湖', '金門', '連江'
+      ];
       const STYLES = ['法式簡約', '森系自然', '韓系簡約', '極簡侘寂'];
       const COLLAB_TAGS = ['雙店聯名', '節慶限定', '婚禮聯名', '限量企劃'];
+
+      function cityLabel(c) {
+        return c === '連江' ? '連江（馬祖）' : c;
+      }
+
+      function cityOptionsHTML(selectedCity, includeAllOption) {
+        let html = includeAllOption ? '<option value="全部">全台地區</option>' : '';
+        html += CITIES.map((c) => `<option value="${c}" ${selectedCity === c ? 'selected' : ''}>${cityLabel(c)}</option>`).join('');
+        return html;
+      }
+
+      function normalizeCity(city, location) {
+        const c = String(city || '').trim().replace(/^臺/, '台');
+        const loc = String(location || '').replace(/^臺/, '台');
+        if (c === '新竹') {
+          if (/竹北|竹東|新豐|湖口|新埔|關西|芎林|寶山|橫山|北埔|峨眉|尖石|五峰|新竹縣/.test(loc)) return '新竹縣';
+          return '新竹市';
+        }
+        if (c === '嘉義') {
+          if (/太保|朴子|布袋|大林|民雄|溪口|新港|六腳|東石|義竹|鹿草|水上|中埔|竹崎|梅山|番路|大埔|阿里山|嘉義縣/.test(loc)) return '嘉義縣';
+          return '嘉義市';
+        }
+        if (c === '新竹市' || c === '新竹縣' || c === '嘉義市' || c === '嘉義縣') return c;
+        const stripped = c.replace(/[市縣]$/, '');
+        if (stripped === '馬祖') return '連江';
+        return stripped || '台北';
+      }
 
       const DEFAULT_DATA = {
         adminPassword: '1234',
@@ -781,7 +825,6 @@
           brandName: '私室選',
           brandSub: '嚴選獨立工作室指南',
 
-          // 導覽列與各分頁可編輯標題文字
           navHome: '首頁',
           navExplore: '探索',
           navCollab: '跨店合作',
@@ -938,7 +981,7 @@
             id: 'xiaoya-kids',
             name: '小芽親子手作',
             category: '親子用品',
-            city: '新竹',
+            city: '新竹縣',
             location: '新竹竹北',
             address: '竹北高鐵特區親子友善工作室（提供純棉刺繡姓名訂製）',
             style: '森系自然',
@@ -1273,6 +1316,9 @@
       let collabFilters = { q: '', city: '全部', tag: '全部' };
       let lastHandledHash = '';
       let pendingAdminPrompt = false;
+      let backdropMouseDownOnSelf = false;
+      let logoTapCount = 0;
+      let logoTapTimer = null;
 
       function getTodayDateStr() {
         const d = new Date();
@@ -1386,6 +1432,13 @@
         };
       }
 
+      function normalizeListCities(list) {
+        return (list || []).map((item) => ({
+          ...item,
+          city: normalizeCity(item.city, item.location)
+        }));
+      }
+
       function loadState() {
         try {
           const raw = localStorage.getItem(STORAGE_KEY);
@@ -1396,8 +1449,8 @@
               fontScale: Number(parsed.fontScale) || 1,
               fontSizes: { ...DEFAULT_FONT_SIZES, ...(parsed.fontSizes || {}) },
               site: buildSiteState(parsed.site),
-              studios: Array.isArray(parsed.studios) ? parsed.studios : DEFAULT_DATA.studios,
-              collaborations: Array.isArray(parsed.collaborations) ? parsed.collaborations : DEFAULT_DATA.collaborations,
+              studios: normalizeListCities(Array.isArray(parsed.studios) ? parsed.studios : DEFAULT_DATA.studios),
+              collaborations: normalizeListCities(Array.isArray(parsed.collaborations) ? parsed.collaborations : DEFAULT_DATA.collaborations),
               savedIds: Array.isArray(parsed.savedIds) ? parsed.savedIds : DEFAULT_DATA.savedIds,
               inquiries: Array.isArray(parsed.inquiries) ? parsed.inquiries : [],
               comments: Array.isArray(parsed.comments) ? parsed.comments : JSON.parse(JSON.stringify(DEFAULT_DATA.comments))
@@ -1436,8 +1489,8 @@
               fontScale: Number(prev.fontScale) || 1,
               fontSizes: { ...DEFAULT_FONT_SIZES, ...(prev.fontSizes || {}) },
               site: buildSiteState(prev.site),
-              studios: mergedStudios,
-              collaborations: Array.isArray(prev.collaborations) ? prev.collaborations : JSON.parse(JSON.stringify(DEFAULT_DATA.collaborations)),
+              studios: normalizeListCities(mergedStudios),
+              collaborations: normalizeListCities(Array.isArray(prev.collaborations) ? prev.collaborations : JSON.parse(JSON.stringify(DEFAULT_DATA.collaborations))),
               savedIds: mergedSaved,
               inquiries: Array.isArray(prev.inquiries) ? prev.inquiries : [],
               comments: Array.isArray(prev.comments) ? prev.comments : JSON.parse(JSON.stringify(DEFAULT_DATA.comments))
@@ -1457,9 +1510,11 @@
 
       function syncHash(target) {
         lastHandledHash = target;
-        if (window.location.hash !== target) {
-          window.location.hash = target;
-        }
+        try {
+          if (window.location.hash !== target) {
+            window.location.hash = target;
+          }
+        } catch (e) {}
       }
 
       function applyHashRoute() {
@@ -1688,7 +1743,7 @@
 
       function getFilteredStudios() {
         return state.studios.filter((st) => {
-          if (filters.city !== '全部' && st.city !== filters.city) return false;
+          if (filters.city !== '全部' && normalizeCity(st.city, st.location) !== filters.city) return false;
           if (filters.category !== '全部' && st.category !== filters.category) return false;
           if (filters.style !== '全部' && st.style !== filters.style) return false;
           if (filters.q.trim()) {
@@ -1702,7 +1757,7 @@
 
       function getFilteredCollabs() {
         return state.collaborations.filter((c) => {
-          if (collabFilters.city !== '全部' && c.city !== collabFilters.city) return false;
+          if (collabFilters.city !== '全部' && normalizeCity(c.city, c.location) !== collabFilters.city) return false;
           if (collabFilters.tag !== '全部' && c.tag !== collabFilters.tag) return false;
           if (collabFilters.q.trim()) {
             const kw = collabFilters.q.trim().toLowerCase();
@@ -1908,8 +1963,7 @@
               <div class="filter-bar">
                 <input class="input" style="min-width:180px; flex:1;" placeholder="搜尋工作室名稱、地區、類型..." value="${esc(filters.q)}" data-filter="q" />
                 <select class="select" data-filter="city">
-                  <option value="全部">全台地區</option>
-                  ${CITIES.map((c) => `<option value="${c}" ${filters.city === c ? 'selected' : ''}>${c}</option>`).join('')}
+                  ${cityOptionsHTML(filters.city, true)}
                 </select>
                 <select class="select" data-filter="category">
                   <option value="全部">全部分類</option>
@@ -1940,8 +1994,7 @@
               <div class="filter-bar">
                 <input class="input" style="min-width:180px; flex:1;" placeholder="搜尋聯名套餐、合作品牌或禮物內容..." value="${esc(collabFilters.q)}" data-collab-filter="q" />
                 <select class="select" data-collab-filter="city">
-                  <option value="全部">全台地區</option>
-                  ${CITIES.map((c) => `<option value="${c}" ${collabFilters.city === c ? 'selected' : ''}>${c}</option>`).join('')}
+                  ${cityOptionsHTML(collabFilters.city, true)}
                 </select>
                 <select class="select" data-collab-filter="tag">
                   <option value="全部">全部企劃類型</option>
@@ -1993,7 +2046,7 @@
                   <div>
                     <label class="label">所在城市</label>
                     <select class="select" name="city">
-                      ${CITIES.map((c) => `<option value="${c}">${c}</option>`).join('')}
+                      ${cityOptionsHTML('台北', false)}
                     </select>
                   </div>
                   <div>
@@ -2052,6 +2105,7 @@
             const curDraftRate = draftStudio.discountRate !== undefined ? draftStudio.discountRate : 'default';
             const previewLineHref = buildLineUrl(draftStudio);
             const previewIgHref = buildIgUrl(draftStudio);
+            const normalizedCity = normalizeCity(draftStudio.city, draftStudio.location);
 
             bodyHTML = `
               <div class="card">
@@ -2074,7 +2128,7 @@
                     <div>
                       <label class="label">城市</label>
                       <select class="select" data-draft="city">
-                        ${CITIES.map(c => `<option value="${c}" ${draftStudio.city === c ? 'selected' : ''}>${c}</option>`).join('')}
+                        ${cityOptionsHTML(normalizedCity, false)}
                       </select>
                     </div>
                     <div>
@@ -2214,6 +2268,7 @@
         } else if (adminTab === 'collabs') {
           if (editingCollabId && draftCollab) {
             const selectedIds = Array.isArray(draftCollab.studioIds) ? draftCollab.studioIds : [];
+            const normalizedCollabCity = normalizeCity(draftCollab.city, draftCollab.location);
             bodyHTML = `
               <div class="card">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid var(--hairline);">
@@ -2233,7 +2288,7 @@
                     <div>
                       <label class="label">主要所在城市</label>
                       <select class="select" data-collab-draft="city">
-                        ${CITIES.map(c => `<option value="${c}" ${draftCollab.city === c ? 'selected' : ''}>${c}</option>`).join('')}
+                        ${cityOptionsHTML(normalizedCollabCity, false)}
                       </select>
                     </div>
                     <div>
@@ -2686,7 +2741,7 @@
           <div class="admin-banner">
             <div>
               <div style="font-size:16px; font-weight:700;">網站內容管理後台</div>
-              <div style="font-size:12px; opacity:0.85;">專屬暗門網址：網址後方加 #admin（修改後自動儲存）</div>
+              <div style="font-size:12px; opacity:0.85;">進入方式：網址加 #admin，或連點左上角「私室選」LOGO 5 下（修改後自動儲存）</div>
             </div>
             <div style="display:flex; gap:8px; flex-wrap:wrap;">
               <button class="btn btn-ivory btn-sm" data-action="toggle-admin">回到前台預覽</button>
@@ -2724,7 +2779,7 @@
           <div class="modal-body">
             <form id="admin-login-form" class="stack" style="margin-top:0;">
               <div>
-                <label class="label">請輸入管理員密碼</label>
+                <label class="label">請輸入管理員密碼（預設 1234）</label>
                 <input class="input" type="password" name="password" id="admin-pw-input" required placeholder="請輸入密碼" autocomplete="current-password" />
                 <div class="error-text hidden" id="admin-pw-error">密碼錯誤，請重新輸入</div>
               </div>
@@ -2739,6 +2794,43 @@
         }, 50);
       }
 
+      function renderCommentsSectionHTML(studioId) {
+        const studioComments = getStudioComments(studioId);
+        return `
+          <div class="service-head-bar" style="justify-content:space-between; margin-bottom:12px;">
+            <span class="body-text" style="font-weight:700;">💬 顧客留言區 (${studioComments.length})</span>
+            <span class="sub-text" style="color:var(--muted);">歡迎分享實際體驗與作品心得</span>
+          </div>
+
+          <div class="comments-list">
+            ${studioComments.length === 0
+              ? `<div class="sub-text" style="color:var(--muted); text-align:center; padding:12px 0;">目前還沒有留言，歡迎成為第一位留下心得的人！</div>`
+              : studioComments.map((cmt) => `
+                  <div class="comment-item">
+                    <div class="comment-item-head">
+                      <span class="comment-author">${esc(cmt.author)}</span>
+                      <span class="comment-date">${esc(cmt.createdAt)}</span>
+                    </div>
+                    <div class="body-text">${esc(cmt.text)}</div>
+                  </div>
+                `).join('')
+            }
+          </div>
+
+          <form id="studio-comment-form" class="comment-form-box stack" style="margin-top:0; gap:10px;" data-studio-id="${esc(studioId)}">
+            <div>
+              <label class="label" for="comment-author-input">您的稱呼 *</label>
+              <input class="input" id="comment-author-input" name="author" required placeholder="例如：王小姐、小美" maxlength="30" />
+            </div>
+            <div>
+              <label class="label" for="comment-text-input">留言內容 *</label>
+              <textarea class="textarea" id="comment-text-input" name="text" rows="2" required placeholder="分享你對這間工作室的感想、作品體驗或推薦之處..." maxlength="300"></textarea>
+            </div>
+            <button type="submit" class="btn btn-forest btn-sm" style="align-self:flex-end;">送出留言</button>
+          </form>
+        `;
+      }
+
       function openStudioModal(id, shouldSyncHash, scrollToComments) {
         if (shouldSyncHash === undefined) shouldSyncHash = true;
         const s = state.studios.find((x) => x.id === id);
@@ -2751,7 +2843,6 @@
         }
         const isSaved = state.savedIds.indexOf(s.id) !== -1;
         const saveCount = getStudioSaveCount(s);
-        const studioComments = getStudioComments(s.id);
         const rate = getStudioDiscountRate(s);
         const discOpt = getDiscountOption(rate);
         const bannerText = getStudioPromoBannerText(s, rate);
@@ -2853,37 +2944,7 @@
             <div id="inquiry-box" class="hidden card" style="border-color:var(--forest);"></div>
 
             <div class="card" id="studio-comments-section" style="padding:16px;">
-              <div class="service-head-bar" style="justify-content:space-between; margin-bottom:12px;">
-                <span class="body-text" style="font-weight:700;">💬 顧客留言區 (${studioComments.length})</span>
-                <span class="sub-text" style="color:var(--muted);">歡迎分享實際體驗與作品心得</span>
-              </div>
-
-              <div class="comments-list">
-                ${studioComments.length === 0
-                  ? `<div class="sub-text" style="color:var(--muted); text-align:center; padding:12px 0;">目前還沒有留言，歡迎成為第一位留下心得的人！</div>`
-                  : studioComments.map((cmt) => `
-                      <div class="comment-item">
-                        <div class="comment-item-head">
-                          <span class="comment-author">${esc(cmt.author)}</span>
-                          <span class="comment-date">${esc(cmt.createdAt)}</span>
-                        </div>
-                        <div class="body-text">${esc(cmt.text)}</div>
-                      </div>
-                    `).join('')
-                }
-              </div>
-
-              <form id="studio-comment-form" class="comment-form-box stack" style="margin-top:0; gap:10px;" data-studio-id="${esc(s.id)}">
-                <div>
-                  <label class="label" for="comment-author-input">您的稱呼 *</label>
-                  <input class="input" id="comment-author-input" name="author" required placeholder="例如：王小姐、小美" maxlength="30" />
-                </div>
-                <div>
-                  <label class="label" for="comment-text-input">留言內容 *</label>
-                  <textarea class="textarea" id="comment-text-input" name="text" rows="2" required placeholder="分享你對這間工作室的感想、作品體驗或推薦之處..." maxlength="300"></textarea>
-                </div>
-                <button type="submit" class="btn btn-forest btn-sm" style="align-self:flex-end;">送出留言</button>
-              </form>
+              ${renderCommentsSectionHTML(s.id)}
             </div>
 
             <div class="grid-2">
@@ -3085,14 +3146,36 @@
         }
       });
 
+      document.addEventListener('mousedown', (e) => {
+        backdropMouseDownOnSelf = (e.target && e.target.id === 'modal-backdrop');
+      });
+
       document.addEventListener('click', (e) => {
         if (e.target && e.target.matches('input[type="date"]') && typeof e.target.showPicker === 'function') {
           try { e.target.showPicker(); } catch (err) {}
         }
 
+        // 連點左上角 LOGO 5 次快速進入後台（方便手機或沙盒預覽）
+        if (e.target.closest('#brand-trigger') && viewMode === 'front') {
+          logoTapCount += 1;
+          clearTimeout(logoTapTimer);
+          logoTapTimer = setTimeout(() => { logoTapCount = 0; }, 1600);
+          if (logoTapCount >= 5) {
+            logoTapCount = 0;
+            if (isAdminAuthed) {
+              viewMode = 'admin';
+              syncHash('#admin');
+              renderAll();
+            } else {
+              openAdminLoginModal();
+            }
+            return;
+          }
+        }
+
         const el = e.target.closest('[data-action]');
         if (!el) {
-          if (e.target.id === 'modal-backdrop') closeModal(true);
+          if (e.target.id === 'modal-backdrop' && backdropMouseDownOnSelf) closeModal(true);
           return;
         }
         const act = el.dataset.action;
@@ -3168,10 +3251,14 @@
           if (state.savedIds.indexOf(id) !== -1) state.savedIds = state.savedIds.filter(x => x !== id);
           else state.savedIds.push(id);
           saveState();
-          openStudioModal(id, false, false);
+          const st = state.studios.find(x => x.id === id);
+          const isSavedNow = state.savedIds.indexOf(id) !== -1;
+          el.classList.toggle('btn-forest', isSavedNow);
+          el.classList.toggle('btn-ivory', !isSavedNow);
+          el.textContent = `${isSavedNow ? '♥ 已收藏' : '♡ 收藏'} (${getStudioSaveCount(st).toLocaleString()})`;
           if (frontTab === 'saved') renderFront();
           else if (frontTab === 'explore') renderExploreResults();
-          showToast(state.savedIds.indexOf(id) !== -1 ? '已加入收藏' : '已取消收藏');
+          showToast(isSavedNow ? '已加入收藏' : '已取消收藏');
         } else if (act === 'copy-text') {
           const val = el.dataset.val;
           copyToClipboard(val);
@@ -3298,6 +3385,7 @@
           const found = state.studios.find(x => x.id === el.dataset.id);
           if (found) {
             draftStudio = JSON.parse(JSON.stringify(found));
+            draftStudio.city = normalizeCity(draftStudio.city, draftStudio.location);
             if (draftStudio.discountRate === undefined) draftStudio.discountRate = 'default';
             if (draftStudio.igUrl === undefined) draftStudio.igUrl = '';
             if (draftStudio.lineUrl === undefined) draftStudio.lineUrl = '';
@@ -3340,7 +3428,7 @@
             id: newId,
             title: '新跨店聯名組合套餐',
             tag: '雙店聯名',
-            city: defaultP1 ? defaultP1.city : '台北',
+            city: defaultP1 ? normalizeCity(defaultP1.city, defaultP1.location) : '台北',
             location: defaultP1 ? defaultP1.location : '台北大安',
             studioIds: pIds,
             origPrice: 2500,
@@ -3361,6 +3449,7 @@
           const found = state.collaborations.find(x => x.id === el.dataset.id);
           if (found) {
             draftCollab = JSON.parse(JSON.stringify(found));
+            draftCollab.city = normalizeCity(draftCollab.city, draftCollab.location);
             if (!Array.isArray(draftCollab.studioIds)) draftCollab.studioIds = [];
             if (!Array.isArray(draftCollab.includes)) draftCollab.includes = [];
             editingCollabId = found.id;
@@ -3543,9 +3632,12 @@
                   ...parsed,
                   fontSizes: { ...DEFAULT_FONT_SIZES, ...(parsed.fontSizes || {}) },
                   site: { ...DEFAULT_DATA.site, ...(parsed.site || {}) },
-                  collaborations: Array.isArray(parsed.collaborations)
-                    ? parsed.collaborations
-                    : JSON.parse(JSON.stringify(DEFAULT_DATA.collaborations)),
+                  studios: normalizeListCities(parsed.studios),
+                  collaborations: normalizeListCities(
+                    Array.isArray(parsed.collaborations)
+                      ? parsed.collaborations
+                      : JSON.parse(JSON.stringify(DEFAULT_DATA.collaborations))
+                  ),
                   comments: Array.isArray(parsed.comments) ? parsed.comments : []
                 };
                 saveState(); renderAll(); showToast('匯入還原成功！');
@@ -3678,7 +3770,12 @@
             createdAt: new Date().toLocaleDateString('zh-TW')
           });
           saveState();
-          openStudioModal(studioId, false, true);
+          const cmtSec = document.getElementById('studio-comments-section');
+          if (cmtSec) {
+            cmtSec.innerHTML = renderCommentsSectionHTML(studioId);
+          } else {
+            openStudioModal(studioId, false, true);
+          }
           if (frontTab === 'explore') renderExploreResults();
           else if (frontTab === 'saved') renderFront();
           showToast('已發布留言！');
