@@ -50,7 +50,11 @@
       -webkit-font-smoothing: antialiased;
       padding-bottom: 76px;
     }
-    @media (min-width: 768px) { body { padding-bottom: 32px; } }
+    body.has-compare-dock { padding-bottom: 148px; }
+    @media (min-width: 768px) {
+      body { padding-bottom: 32px; }
+      body.has-compare-dock { padding-bottom: 96px; }
+    }
 
     a, button, input, select, textarea { font-family: inherit; color: inherit; }
     button { cursor: pointer; border: none; background: none; }
@@ -142,6 +146,49 @@
       display: block; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .bottom-nav button.active { color: var(--forest); font-weight: 700; }
+
+    /* 底部懸浮對照列（避免壓住底部導覽） */
+    .compare-dock {
+      position: fixed; left: 50%; transform: translateX(-50%);
+      bottom: 70px; z-index: 28;
+      width: calc(100% - 24px); max-width: 760px;
+      background: rgba(255, 254, 250, 0.97);
+      backdrop-filter: blur(10px);
+      border: 1.5px solid var(--forest);
+      border-radius: 18px;
+      padding: 10px 14px;
+      box-shadow: 0 10px 28px rgba(34, 73, 55, 0.18);
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; flex-wrap: wrap;
+    }
+    @media (min-width: 768px) {
+      .compare-dock { bottom: 20px; }
+    }
+    .compare-dock-chips {
+      display: flex; align-items: center; gap: 6px; flex-wrap: wrap; flex: 1; min-width: 0;
+    }
+    .compare-dock-title {
+      font-size: 12px; font-weight: 700; color: var(--forest); margin-right: 2px; white-space: nowrap;
+    }
+    .compare-dock-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: var(--sage); color: var(--forest);
+      padding: 4px 9px; border-radius: 999px;
+      font-size: 12px; font-weight: 700; max-width: 150px;
+    }
+    .compare-dock-chip span {
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .compare-dock-remove {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 16px; height: 16px; border-radius: 50%;
+      background: rgba(34, 73, 55, 0.16); color: var(--forest);
+      font-size: 11px; line-height: 1; flex-shrink: 0;
+    }
+    .compare-dock-remove:hover { background: var(--forest); color: #fff; }
+    .compare-dock-actions {
+      display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+    }
 
     /* 版面容器 */
     .container { max-width: 980px; margin: 0 auto; padding: 20px 16px; }
@@ -457,6 +504,18 @@
       background: rgba(255, 254, 250, 0.92); color: var(--forest);
       padding: 3px 8px; border-radius: 999px; font-size: 11px; font-weight: 700;
     }
+    .studio-compare-btn {
+      position: absolute; top: 8px; right: 8px; z-index: 2;
+      background: rgba(255, 254, 250, 0.92); color: var(--ink);
+      border: 1px solid rgba(40, 38, 35, 0.14);
+      padding: 3px 9px; border-radius: 999px;
+      font-size: 11px; font-weight: 700; line-height: 1.35;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .studio-compare-btn:hover { background: var(--ivory); border-color: var(--forest); }
+    .studio-compare-btn.active {
+      background: var(--forest); color: #fff; border-color: var(--forest);
+    }
     .studio-body { padding: 12px; display: flex; flex-direction: column; flex: 1; }
     .studio-name {
       font-size: calc(var(--fs-card-title) * var(--font-scale));
@@ -493,6 +552,70 @@
     .studio-comment-btn:hover {
       background: var(--sage);
       border-color: rgba(34, 73, 55, 0.25);
+    }
+
+    /* 價值與服務並排對照彈窗 */
+    .modal-box-lg { max-width: 920px; }
+    .compare-notice {
+      background: var(--sage); color: var(--forest);
+      border: 1px solid rgba(34, 73, 55, 0.18);
+      border-radius: 14px; padding: 10px 14px;
+      font-size: calc(var(--fs-sub) * var(--font-scale));
+      font-weight: 600; line-height: 1.5;
+    }
+    .compare-scroll {
+      overflow-x: auto; -webkit-overflow-scrolling: touch;
+      padding-bottom: 4px;
+    }
+    .compare-grid {
+      display: grid; gap: 12px; align-items: stretch;
+    }
+    .compare-grid.cols-1 { grid-template-columns: minmax(250px, 1fr); }
+    .compare-grid.cols-2 { grid-template-columns: repeat(2, minmax(245px, 1fr)); }
+    .compare-grid.cols-3 { grid-template-columns: repeat(3, minmax(235px, 1fr)); }
+    .compare-col {
+      background: var(--ivory); border: 1px solid var(--hairline);
+      border-radius: 18px; overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    .compare-col-head {
+      position: relative; aspect-ratio: 16 / 10; background: var(--sand);
+    }
+    .compare-col-head img { width: 100%; height: 100%; object-fit: cover; }
+    .compare-col-remove {
+      position: absolute; top: 8px; right: 8px;
+      background: rgba(40, 38, 35, 0.72); color: #fff;
+      padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 600;
+    }
+    .compare-col-body {
+      padding: 14px; display: flex; flex-direction: column; gap: 10px; flex: 1;
+    }
+    .compare-row-block {
+      padding-top: 9px; border-top: 1px solid #EFE9DF;
+    }
+    .compare-row-label {
+      font-size: calc(11px * var(--font-scale));
+      font-weight: 700; color: var(--muted); margin-bottom: 4px;
+    }
+    .compare-srv-list {
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .compare-srv-item {
+      background: var(--linen); border: 1px solid #EAE2D5;
+      border-radius: 10px; padding: 7px 9px;
+    }
+    .compare-srv-top {
+      display: flex; justify-content: space-between; align-items: baseline; gap: 6px;
+      font-size: calc(var(--fs-sub) * var(--font-scale));
+      font-weight: 700;
+    }
+    .compare-srv-dur {
+      font-size: calc(11px * var(--font-scale));
+      color: var(--muted); margin-top: 2px;
+    }
+    .compare-suggest-box {
+      background: #FAF7F0; border: 1px dashed var(--hairline);
+      border-radius: 16px; padding: 14px;
     }
 
     /* 工作室留言區樣式 */
@@ -681,6 +804,9 @@
     </div>
   </main>
 
+  <!-- 底部懸浮對照列 -->
+  <div id="compare-dock" class="compare-dock hidden"></div>
+
   <!-- 手機底部導覽列 -->
   <nav class="bottom-nav" id="mobile-nav">
     <button class="active" data-action="go-tab" data-tab="home"><span data-nav-key="navHome">首頁</span></button>
@@ -754,6 +880,14 @@
         { rate: 0.2, label: '2 折', short: '2折' },
         { rate: 0.15, label: '1.5 折', short: '1.5折' },
         { rate: 0.1, label: '1 折', short: '1折' }
+      ];
+
+      const BUDGET_OPTIONS = [
+        { value: '全部', label: '不限預算' },
+        { value: 'under-1000', label: '$1,000 以下' },
+        { value: '1000-2500', label: '$1,000 – $2,500' },
+        { value: '2500-5000', label: '$2,500 – $5,000' },
+        { value: 'above-5000', label: '$5,000 以上' }
       ];
 
       const DEFAULT_FONT_SIZES = {
@@ -899,7 +1033,7 @@
             { title: '價格與地區先看懂，不需反覆私訊試探', desc: '先確認預算範圍、所在地區與預約規則，確定適合自己再放心聯繫。' },
             { title: '作品實拍有人把關，大幅降低踩雷風險', desc: '人工審核作品真實性與標價透明度，避免修圖過度或現場臨時加價。' },
             { title: '遇見演算法以外的寶藏手藝人', desc: '避開大品牌廣告洗版，依照喜歡的風格與色系，找到隱身巷弄的一人工作室。' },
-            { title: '一鍵收藏比較，預約不再手忙腳亂', desc: '把喜歡的店家存進收藏夾，有興趣直接送出預約詢問或直接聯繫 LINE / IG。' }
+            { title: '一鍵收藏比較，預約不再手忙腳亂', desc: '把喜歡的店家存進收藏夾，或加入「價值與服務並排對照」，有興趣再送出預約詢問。' }
           ],
           helpStudioTitle: '幫助了「用心創作的工作室」',
           helpStudioBefore: '以前接案日常：白天忙完客人，晚上還要一直回「多少錢、在哪裡」，不買廣告就很難被看見⋯⋯',
@@ -1300,6 +1434,7 @@
           }
         ],
         savedIds: ['shiguang-gift', 'chuzhi-floral'],
+        compareIds: [],
         inquiries: [],
         comments: [
           {
@@ -1351,7 +1486,7 @@
       let draftStudio = null;
       let editingCollabId = null;
       let draftCollab = null;
-      let filters = { q: '', city: '全部', category: '全部', style: '全部' };
+      let filters = { q: '', city: '全部', category: '全部', style: '全部', budget: '全部' };
       let collabFilters = { q: '', city: '全部', tag: '全部' };
       let lastHandledHash = '';
       let pendingAdminPrompt = false;
@@ -1428,6 +1563,18 @@
 
       function getStudioComments(studioId) {
         return (state.comments || []).filter(c => c.studioId === studioId);
+      }
+
+      function getCompareStudios() {
+        const ids = Array.isArray(state.compareIds) ? state.compareIds : [];
+        const valid = ids
+          .map(id => state.studios.find(s => s.id === id))
+          .filter(Boolean)
+          .slice(0, 3);
+        if (valid.length !== ids.length) {
+          state.compareIds = valid.map(s => s.id);
+        }
+        return valid;
       }
 
       function getSessionAuth() {
@@ -1508,6 +1655,7 @@
               studios: normalizeListCities(Array.isArray(parsed.studios) ? parsed.studios : DEFAULT_DATA.studios),
               collaborations: normalizeListCities(Array.isArray(parsed.collaborations) ? parsed.collaborations : DEFAULT_DATA.collaborations),
               savedIds: Array.isArray(parsed.savedIds) ? parsed.savedIds : DEFAULT_DATA.savedIds,
+              compareIds: Array.isArray(parsed.compareIds) ? parsed.compareIds : [],
               inquiries: Array.isArray(parsed.inquiries) ? parsed.inquiries : [],
               comments: Array.isArray(parsed.comments) ? parsed.comments : JSON.parse(JSON.stringify(DEFAULT_DATA.comments))
             };
@@ -1549,6 +1697,7 @@
               studios: normalizeListCities(mergedStudios),
               collaborations: normalizeListCities(Array.isArray(prev.collaborations) ? prev.collaborations : JSON.parse(JSON.stringify(DEFAULT_DATA.collaborations))),
               savedIds: mergedSaved,
+              compareIds: Array.isArray(prev.compareIds) ? prev.compareIds : [],
               inquiries: Array.isArray(prev.inquiries) ? prev.inquiries : [],
               comments: Array.isArray(prev.comments) ? prev.comments : JSON.parse(JSON.stringify(DEFAULT_DATA.comments))
             };
@@ -1724,6 +1873,7 @@
 
       function studioCardHTML(s) {
         const isSaved = state.savedIds.indexOf(s.id) !== -1;
+        const isCompared = (state.compareIds || []).indexOf(s.id) !== -1;
         const saveCount = getStudioSaveCount(s);
         const commentCount = getStudioComments(s.id).length;
         return `
@@ -1731,6 +1881,9 @@
             <div class="studio-thumb">
               <img src="${esc(s.coverImage)}" alt="${esc(s.name)}" onerror="this.style.display='none'" />
               ${s.certified ? '<span class="studio-cert-tag">✓ 優質認證</span>' : ''}
+              <button type="button" class="studio-compare-btn ${isCompared ? 'active' : ''}" data-action="toggle-compare" data-id="${esc(s.id)}" title="加入並排價值比較">
+                ${isCompared ? '✓ 比較中' : '+ 比較'}
+              </button>
             </div>
             <div class="studio-body">
               <div class="studio-name">${esc(s.name)}</div>
@@ -1803,6 +1956,13 @@
           if (filters.city !== '全部' && normalizeCity(st.city, st.location) !== filters.city) return false;
           if (filters.category !== '全部' && st.category !== filters.category) return false;
           if (filters.style !== '全部' && st.style !== filters.style) return false;
+          if (filters.budget !== '全部') {
+            const p = Number(st.minPrice || 0);
+            if (filters.budget === 'under-1000' && p >= 1000) return false;
+            if (filters.budget === '1000-2500' && (p < 1000 || p > 2500)) return false;
+            if (filters.budget === '2500-5000' && (p <= 2500 || p > 5000)) return false;
+            if (filters.budget === 'above-5000' && p <= 5000) return false;
+          }
           if (filters.q.trim()) {
             const kw = filters.q.trim().toLowerCase();
             const hay = `${st.name} ${st.location} ${st.category} ${st.style}`.toLowerCase();
@@ -1861,6 +2021,39 @@
         const container = document.getElementById('collab-results');
         if (!container) return;
         container.innerHTML = collabResultsHTML(getFilteredCollabs());
+      }
+
+      function renderCompareDock() {
+        const dock = document.getElementById('compare-dock');
+        if (!dock) return;
+        const items = getCompareStudios();
+
+        if (viewMode !== 'front' || items.length === 0) {
+          dock.classList.add('hidden');
+          dock.innerHTML = '';
+          document.body.classList.remove('has-compare-dock');
+          return;
+        }
+
+        document.body.classList.add('has-compare-dock');
+        dock.classList.remove('hidden');
+        dock.innerHTML = `
+          <div class="compare-dock-chips">
+            <span class="compare-dock-title">⚖️ 價值對照 (${items.length}/3)</span>
+            ${items.map(st => `
+              <span class="compare-dock-chip">
+                <span>${esc(st.name)}</span>
+                <button type="button" class="compare-dock-remove" data-action="toggle-compare" data-id="${esc(st.id)}" title="移除 ${esc(st.name)}">×</button>
+              </span>
+            `).join('')}
+          </div>
+          <div class="compare-dock-actions">
+            <button type="button" class="btn btn-ivory btn-sm" data-action="clear-compare">清空</button>
+            <button type="button" class="btn btn-forest btn-sm" data-action="open-compare">
+              ${items.length >= 2 ? '開始並排比較 →' : '查看 / 新增對照'}
+            </button>
+          </div>
+        `;
       }
 
       function helpCardHTML(title, beforeText, items, isHiddenMobile, role) {
@@ -2033,7 +2226,7 @@
           main.innerHTML = `
             <div>
               <h1 class="section-heading">${esc(s.exploreTitle)}</h1>
-              <p class="body-text" style="color:var(--muted);">${esc(s.exploreSub)}</p>
+              <p class="body-text" style="color:var(--muted);">${esc(s.exploreSub)} 點擊卡片右上角「+ 比較」即可並排對照服務內容與預算。</p>
               <div class="filter-bar">
                 <input class="input" style="min-width:180px; flex:1;" placeholder="搜尋工作室名稱、地區、類型..." value="${esc(filters.q)}" data-filter="q" />
                 <select class="select" data-filter="city">
@@ -2046,6 +2239,9 @@
                 <select class="select" data-filter="style">
                   <option value="全部">全部風格</option>
                   ${STYLES.map((st) => `<option value="${st}" ${filters.style === st ? 'selected' : ''}>${st}</option>`).join('')}
+                </select>
+                <select class="select" data-filter="budget">
+                  ${BUDGET_OPTIONS.map((b) => `<option value="${b.value}" ${filters.budget === b.value ? 'selected' : ''}>${b.label}</option>`).join('')}
                 </select>
               </div>
             </div>
@@ -2084,9 +2280,15 @@
         if (frontTab === 'saved') {
           const savedList = state.studios.filter((st) => state.savedIds.indexOf(st.id) !== -1);
           main.innerHTML = `
-            <div>
-              <h1 class="section-heading">${esc(s.savedTitle)} (${savedList.length})</h1>
-              <p class="body-text" style="color:var(--muted); margin-top:4px;">${esc(s.savedSub)}</p>
+            <div style="display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+              <div>
+                <h1 class="section-heading">${esc(s.savedTitle)} (${savedList.length})</h1>
+                <p class="body-text" style="color:var(--muted); margin-top:4px;">${esc(s.savedSub)}</p>
+              </div>
+              ${savedList.length >= 2
+                ? `<button type="button" class="btn btn-sage btn-sm" data-action="compare-saved">⚖️ 並排比較已收藏的工作室</button>`
+                : ''
+              }
             </div>
             ${savedList.length === 0
               ? `<div class="card" style="text-align:center; padding:36px 20px;">
@@ -2865,10 +3067,12 @@
         renderHeader();
         if (viewMode === 'admin') renderAdmin();
         else renderFront();
+        renderCompareDock();
       }
 
       function openAdminLoginModal() {
         const box = document.getElementById('modal-box');
+        box.classList.remove('modal-box-lg');
         box.classList.add('modal-box-sm');
         box.innerHTML = `
           <div class="modal-head">
@@ -2941,6 +3145,7 @@
           syncHash('#' + targetTab + '/' + encodeURIComponent(s.id));
         }
         const isSaved = state.savedIds.indexOf(s.id) !== -1;
+        const isCompared = (state.compareIds || []).indexOf(s.id) !== -1;
         const saveCount = getStudioSaveCount(s);
         const rate = getStudioDiscountRate(s);
         const discOpt = getDiscountOption(rate);
@@ -2950,12 +3155,15 @@
         const linkedCollabs = state.collaborations.filter(c => Array.isArray(c.studioIds) && c.studioIds.includes(s.id));
 
         const box = document.getElementById('modal-box');
-        box.classList.remove('modal-box-sm');
+        box.classList.remove('modal-box-sm', 'modal-box-lg');
         box.innerHTML = `
           <div class="modal-head">
             <strong class="section-heading">${esc(s.name)}</strong>
             <div class="modal-head-actions">
               ${fontSelectHTML('modal-font-size-select')}
+              <button class="btn btn-sm ${isCompared ? 'btn-sage' : 'btn-ivory'}" data-action="toggle-compare" data-id="${esc(s.id)}">
+                ${isCompared ? '✓ 比較中' : '+ 加入比較'}
+              </button>
               <button class="btn btn-sm ${isSaved ? 'btn-forest' : 'btn-ivory'}" data-action="toggle-save" data-id="${esc(s.id)}">
                 ${isSaved ? '♥ 已收藏' : '♡ 收藏'} (${saveCount.toLocaleString()})
               </button>
@@ -3074,6 +3282,146 @@
         }
       }
 
+      function openCompareModal() {
+        const items = getCompareStudios();
+        if (items.length === 0) {
+          closeModal(false);
+          return;
+        }
+        currentStudioId = null;
+        currentCollabId = null;
+
+        const baseCategory = items[0].category;
+        const selectedSet = new Set(items.map(x => x.id));
+        const suggestions = state.studios
+          .filter(st => !selectedSet.has(st.id))
+          .sort((a, b) => (a.category === baseCategory ? 0 : 1) - (b.category === baseCategory ? 0 : 1))
+          .slice(0, 6);
+
+        const box = document.getElementById('modal-box');
+        box.classList.remove('modal-box-sm');
+        box.classList.add('modal-box-lg');
+        box.innerHTML = `
+          <div class="modal-head">
+            <div>
+              <strong class="section-heading">⚖️ 價值與服務並排對照 (${items.length}/3)</strong>
+            </div>
+            <div class="modal-head-actions">
+              <button type="button" class="btn btn-ivory btn-sm" data-action="clear-compare-in-modal">清空列表</button>
+              <button type="button" class="btn btn-ivory btn-sm" data-action="close-modal">關閉</button>
+            </div>
+          </div>
+          <div class="modal-body stack">
+            <div class="compare-notice">
+              💡 我們不做「最低價排行」：每間獨立工作室的價格皆反映用料來源、客製深度與投入時長，建議將「服務內容、時長、風格與地區」並排一起評估，挑出最契合你的手藝人。
+            </div>
+
+            <div class="compare-scroll">
+              <div class="compare-grid cols-${Math.min(3, Math.max(1, items.length))}">
+                ${items.map((s) => {
+                  const rate = getStudioDiscountRate(s);
+                  const discOpt = getDiscountOption(rate);
+                  const saveCount = getStudioSaveCount(s);
+                  const commentCount = getStudioComments(s.id).length;
+                  return `
+                    <div class="compare-col">
+                      <div class="compare-col-head">
+                        <img src="${esc(s.coverImage)}" alt="${esc(s.name)}" onerror="this.style.display='none'" />
+                        ${s.certified ? '<span class="studio-cert-tag">✓ 優質認證</span>' : ''}
+                        <button type="button" class="compare-col-remove" data-action="compare-remove-in-modal" data-id="${esc(s.id)}">移除</button>
+                      </div>
+                      <div class="compare-col-body">
+                        <div>
+                          <div class="studio-name" style="white-space:normal;">${esc(s.name)}</div>
+                          <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;">
+                            <span class="pill pill-sage">${esc(s.category)}</span>
+                            <span class="pill pill-peach">${esc(s.style)}</span>
+                          </div>
+                        </div>
+
+                        <div class="compare-row-block">
+                          <div class="compare-row-label">起價參考與平台禮遇</div>
+                          <div style="display:flex; align-items:center; justify-content:space-between; gap:6px; flex-wrap:wrap;">
+                            <strong style="font-size:calc(16px * var(--font-scale)); color:var(--forest);">$${Number(s.minPrice || 0).toLocaleString()}起</strong>
+                            ${rate < 0.999 ? `<span class="promo-tag">完成預約享 ${esc(discOpt.label)}</span>` : '<span class="sub-text" style="color:var(--muted);">標準實價</span>'}
+                          </div>
+                        </div>
+
+                        <div class="compare-row-block">
+                          <div class="compare-row-label">價格包含的服務明細</div>
+                          <div class="compare-srv-list">
+                            ${(s.services || []).map((srv) => {
+                              const deal = calcDiscountPrice(srv.price, rate);
+                              return `
+                                <div class="compare-srv-item">
+                                  <div class="compare-srv-top">
+                                    <span>${esc(srv.name)}</span>
+                                    <span style="color:var(--forest); flex-shrink:0;">
+                                      ${deal ? `${esc(deal)} <span style="font-size:10px; color:var(--muted); text-decoration:line-through; font-weight:400;">${esc(srv.price)}</span>` : esc(srv.price)}
+                                    </span>
+                                  </div>
+                                  <div class="compare-srv-dur">包含：${esc(srv.duration || '依店內說明')}</div>
+                                </div>
+                              `;
+                            }).join('')}
+                          </div>
+                        </div>
+
+                        <div class="compare-row-block">
+                          <div class="compare-row-label">地區與交通位置</div>
+                          <div class="sub-text" style="font-weight:700;">${esc(s.location)}</div>
+                          <div class="sub-text" style="color:var(--muted);">${esc(s.address)}</div>
+                        </div>
+
+                        <div class="compare-row-block">
+                          <div class="compare-row-label">預約前置期與規則</div>
+                          <div class="sub-text">${esc(s.bookingInfo)}</div>
+                        </div>
+
+                        <div class="compare-row-block">
+                          <div class="compare-row-label">作品風格與一句話理念</div>
+                          <div class="sub-text" style="color:var(--muted);">${esc(s.tagline)}</div>
+                        </div>
+
+                        <div class="compare-row-block">
+                          <div class="compare-row-label">口碑與人氣參考</div>
+                          <div class="sub-text" style="font-weight:600;">
+                            ♥ ${saveCount.toLocaleString()} 人收藏 ・ 💬 ${commentCount.toLocaleString()} 則留言
+                          </div>
+                        </div>
+
+                        <div style="margin-top:auto; padding-top:8px;">
+                          <button type="button" class="btn btn-forest btn-sm" style="width:100%;" data-action="open-studio" data-id="${esc(s.id)}">
+                            查看詳情並預約 →
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+
+            ${items.length < 3 && suggestions.length > 0
+              ? `<div class="compare-suggest-box">
+                   <div class="sub-text" style="font-weight:700; color:var(--forest); margin-bottom:8px;">
+                     ＋ 再選 ${3 - items.length} 間工作室並排對照（已優先推薦同分類）：
+                   </div>
+                   <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                     ${suggestions.map(st => `
+                       <button type="button" class="btn btn-ivory btn-sm" data-action="compare-add-in-modal" data-id="${esc(st.id)}">
+                         + ${esc(st.name)}（${esc(st.category)}・$${Number(st.minPrice || 0).toLocaleString()}起）
+                       </button>
+                     `).join('')}
+                   </div>
+                 </div>`
+              : ''
+            }
+          </div>
+        `;
+        document.getElementById('modal-backdrop').classList.remove('hidden');
+      }
+
       function openCollabModal(id, shouldSyncHash) {
         if (shouldSyncHash === undefined) shouldSyncHash = true;
         const c = state.collaborations.find((x) => x.id === id);
@@ -3091,7 +3439,7 @@
         const diff = orig > combo ? orig - combo : 0;
 
         const box = document.getElementById('modal-box');
-        box.classList.remove('modal-box-sm');
+        box.classList.remove('modal-box-sm', 'modal-box-lg');
         box.innerHTML = `
           <div class="modal-head">
             <strong class="section-heading">${esc(c.title)}</strong>
@@ -3185,7 +3533,7 @@
 
       function openCertModal() {
         const box = document.getElementById('modal-box');
-        box.classList.remove('modal-box-sm');
+        box.classList.remove('modal-box-sm', 'modal-box-lg');
         box.innerHTML = `
           <div class="modal-head">
             <strong class="section-heading">優質認證，不是買得到的</strong>
@@ -3217,6 +3565,28 @@
         } else if (shouldSyncHash && viewMode === 'front' && window.location.hash === '#admin') {
           syncHash('#' + frontTab);
         }
+      }
+
+      function toggleCompareStudio(id) {
+        if (!Array.isArray(state.compareIds)) state.compareIds = [];
+        const exists = state.compareIds.indexOf(id) !== -1;
+        if (exists) {
+          state.compareIds = state.compareIds.filter(x => x !== id);
+          showToast('已從並排比較移除');
+        } else {
+          if (state.compareIds.length >= 3) {
+            showToast('一次最多同時比較 3 間工作室，請先移除其中一間');
+            return false;
+          }
+          state.compareIds.push(id);
+          const st = state.studios.find(x => x.id === id);
+          showToast(`已加入比較（${state.compareIds.length}/3）：${st ? st.name : ''}`);
+        }
+        saveState();
+        renderCompareDock();
+        if (frontTab === 'explore') renderExploreResults();
+        else if (frontTab === 'saved') renderFront();
+        return true;
       }
 
       window.addEventListener('hashchange', () => {
@@ -3254,7 +3624,7 @@
           try { e.target.showPicker(); } catch (err) {}
         }
 
-        // 連點左上角 LOGO 5 次快速進入後台（方便手機或沙盒預覽）
+        // 連點左上角 LOGO 5 次快速進入後台
         if (e.target.closest('#brand-trigger') && viewMode === 'front') {
           logoTapCount += 1;
           clearTimeout(logoTapTimer);
@@ -3339,6 +3709,60 @@
           openCertModal();
         } else if (act === 'close-modal') {
           closeModal(true);
+        } else if (act === 'toggle-compare') {
+          const id = el.dataset.id;
+          toggleCompareStudio(id);
+          if (currentStudioId === id) {
+            const isNow = (state.compareIds || []).indexOf(id) !== -1;
+            el.classList.toggle('btn-sage', isNow);
+            el.classList.toggle('btn-ivory', !isNow);
+            el.textContent = isNow ? '✓ 比較中' : '+ 加入比較';
+          }
+        } else if (act === 'clear-compare') {
+          state.compareIds = [];
+          saveState();
+          renderCompareDock();
+          if (frontTab === 'explore') renderExploreResults();
+          else if (frontTab === 'saved') renderFront();
+          showToast('已清空比較清單');
+        } else if (act === 'open-compare') {
+          openCompareModal();
+        } else if (act === 'compare-saved') {
+          const savedStudios = state.studios.filter(st => state.savedIds.indexOf(st.id) !== -1);
+          if (savedStudios.length === 0) return;
+          state.compareIds = savedStudios.slice(0, 3).map(st => st.id);
+          saveState();
+          renderCompareDock();
+          renderFront();
+          openCompareModal();
+        } else if (act === 'compare-add-in-modal') {
+          const id = el.dataset.id;
+          if (!Array.isArray(state.compareIds)) state.compareIds = [];
+          if (state.compareIds.length < 3 && state.compareIds.indexOf(id) === -1) {
+            state.compareIds.push(id);
+            saveState();
+            renderCompareDock();
+            if (frontTab === 'explore') renderExploreResults();
+            else if (frontTab === 'saved') renderFront();
+            openCompareModal();
+          }
+        } else if (act === 'compare-remove-in-modal') {
+          const id = el.dataset.id;
+          state.compareIds = (state.compareIds || []).filter(x => x !== id);
+          saveState();
+          renderCompareDock();
+          if (frontTab === 'explore') renderExploreResults();
+          else if (frontTab === 'saved') renderFront();
+          if (state.compareIds.length === 0) closeModal(false);
+          else openCompareModal();
+        } else if (act === 'clear-compare-in-modal') {
+          state.compareIds = [];
+          saveState();
+          renderCompareDock();
+          if (frontTab === 'explore') renderExploreResults();
+          else if (frontTab === 'saved') renderFront();
+          closeModal(false);
+          showToast('已清空比較清單');
         } else if (act === 'cert-apply') {
           closeModal(false);
           viewMode = 'front';
@@ -3380,7 +3804,7 @@
               預約詢問：${esc(el.dataset.srv)}（${dealTxt}）
             </div>
             <form id="inquiry-form" class="stack" style="margin-top:0;" data-studio-id="${esc(el.dataset.id)}" data-service="${esc(savedServiceLabel)}" data-rate-label="${esc(rateLabel)}">
-              <div class="grid-2">
+            <div class="grid-2">
                 <div>
                   <label class="label">您的稱呼 *</label>
                   <input class="input" name="customerName" required placeholder="例如：林小姐" />
@@ -3437,7 +3861,7 @@
           `;
           box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         } else if (act === 'reset-filters') {
-          filters = { q: '', city: '全部', category: '全部', style: '全部' };
+          filters = { q: '', city: '全部', category: '全部', style: '全部', budget: '全部' };
           renderFront();
         } else if (act === 'reset-collab-filters') {
           collabFilters = { q: '', city: '全部', tag: '全部' };
@@ -3502,6 +3926,7 @@
             const delId = el.dataset.id;
             state.studios = state.studios.filter(s => s.id !== delId);
             state.savedIds = state.savedIds.filter(id => id !== delId);
+            state.compareIds = (state.compareIds || []).filter(id => id !== delId);
             state.comments = (state.comments || []).filter(c => c.studioId !== delId);
             state.collaborations = state.collaborations.map(c => ({
               ...c,
@@ -3740,6 +4165,7 @@
                       ? parsed.collaborations
                       : JSON.parse(JSON.stringify(DEFAULT_DATA.collaborations))
                   ),
+                  compareIds: Array.isArray(parsed.compareIds) ? parsed.compareIds : [],
                   comments: Array.isArray(parsed.comments) ? parsed.comments : []
                 };
                 saveState(); renderAll(); showToast('匯入還原成功！');
@@ -3870,7 +4296,7 @@
           };
           state.studios.unshift(newStudio);
           saveState();
-          filters = { q: '', city: '全部', category: '全部', style: '全部' };
+          filters = { q: '', city: '全部', category: '全部', style: '全部', budget: '全部' };
           frontTab = 'explore';
           syncHash('#explore');
           renderAll();
