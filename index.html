@@ -147,11 +147,11 @@
     }
     .bottom-nav button.active { color: var(--forest); font-weight: 700; }
 
-    /* 底部懸浮對照列（避免壓住底部導覽） */
+    /* 底部懸浮對照列 */
     .compare-dock {
       position: fixed; left: 50%; transform: translateX(-50%);
       bottom: 70px; z-index: 28;
-      width: calc(100% - 24px); max-width: 760px;
+      width: calc(100% - 24px); max-width: 980px;
       background: rgba(255, 254, 250, 0.97);
       backdrop-filter: blur(10px);
       border: 1.5px solid var(--forest);
@@ -174,7 +174,7 @@
       display: inline-flex; align-items: center; gap: 5px;
       background: var(--sage); color: var(--forest);
       padding: 4px 9px; border-radius: 999px;
-      font-size: 12px; font-weight: 700; max-width: 150px;
+      font-size: 12px; font-weight: 700; max-width: 145px;
     }
     .compare-dock-chip span {
       overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
@@ -555,7 +555,6 @@
     }
 
     /* 價值與服務並排對照彈窗 */
-    .modal-box-lg { max-width: 920px; }
     .compare-notice {
       background: var(--sage); color: var(--forest);
       border: 1px solid rgba(34, 73, 55, 0.18);
@@ -563,16 +562,30 @@
       font-size: calc(var(--fs-sub) * var(--font-scale));
       font-weight: 600; line-height: 1.5;
     }
+    .compare-scroll-tools {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;
+    }
+    .compare-scroll-arrows {
+      display: inline-flex; align-items: center; gap: 6px;
+    }
     .compare-scroll {
       overflow-x: auto; -webkit-overflow-scrolling: touch;
-      padding-bottom: 4px;
+      padding-bottom: 10px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(34, 73, 55, 0.45) rgba(230, 223, 211, 0.55);
     }
+    .compare-scroll::-webkit-scrollbar { height: 8px; }
+    .compare-scroll::-webkit-scrollbar-track { background: rgba(230, 223, 211, 0.55); border-radius: 999px; }
+    .compare-scroll::-webkit-scrollbar-thumb { background: rgba(34, 73, 55, 0.45); border-radius: 999px; }
     .compare-grid {
       display: grid; gap: 12px; align-items: stretch;
     }
-    .compare-grid.cols-1 { grid-template-columns: minmax(250px, 1fr); }
-    .compare-grid.cols-2 { grid-template-columns: repeat(2, minmax(245px, 1fr)); }
-    .compare-grid.cols-3 { grid-template-columns: repeat(3, minmax(235px, 1fr)); }
+    .compare-grid.cols-1 { grid-template-columns: minmax(250px, 420px); }
+    .compare-grid.cols-2 { grid-template-columns: repeat(2, minmax(240px, 1fr)); }
+    .compare-grid.cols-3 { grid-template-columns: repeat(3, minmax(230px, 1fr)); }
+    .compare-grid.cols-4 { grid-template-columns: repeat(4, minmax(220px, 1fr)); }
+    .compare-grid.cols-5 { grid-template-columns: repeat(5, minmax(210px, 1fr)); }
+    .compare-grid.cols-6 { grid-template-columns: repeat(6, minmax(205px, 1fr)); }
     .compare-col {
       background: var(--ivory); border: 1px solid var(--hairline);
       border-radius: 18px; overflow: hidden;
@@ -664,7 +677,7 @@
     .modal-backdrop {
       position: fixed; inset: 0; z-index: 50;
       background: rgba(40, 38, 35, 0.5); backdrop-filter: blur(2px);
-      display: flex; align-items: center; justify-content: center; padding: 16px;
+      display: flex; align-items: center; justify-content: center; padding: 12px;
     }
     .modal-box {
       background: var(--linen); width: 100%; max-width: 680px; max-height: 90vh;
@@ -672,6 +685,7 @@
       overflow-y: auto; overflow-x: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.2);
     }
     .modal-box-sm { max-width: 380px; }
+    .modal-box.modal-box-lg { max-width: min(1380px, calc(100vw - 24px)); }
     .modal-head {
       position: sticky; top: 0; background: var(--linen);
       padding: 14px 18px; border-bottom: 1px solid var(--hairline);
@@ -837,6 +851,7 @@
       const STORAGE_KEY = 'sishixuan_unified_v6';
       const LEGACY_KEYS = ['sishixuan_unified_v5', 'sishixuan_unified_v4', 'sishixuan_unified_v3'];
       const SESSION_AUTH_KEY = 'sishixuan_admin_authed';
+      const MAX_COMPARE = 6;
 
       function getTodayDateStr() {
         const d = new Date();
@@ -1471,8 +1486,7 @@
           }
         ]
       };
-
-      let state = loadState();
+            let state = loadState();
       recordPageView();
 
       let isAdminAuthed = getSessionAuth();
@@ -1570,7 +1584,7 @@
         const valid = ids
           .map(id => state.studios.find(s => s.id === id))
           .filter(Boolean)
-          .slice(0, 3);
+          .slice(0, MAX_COMPARE);
         if (valid.length !== ids.length) {
           state.compareIds = valid.map(s => s.id);
         }
@@ -2039,7 +2053,7 @@
         dock.classList.remove('hidden');
         dock.innerHTML = `
           <div class="compare-dock-chips">
-            <span class="compare-dock-title">⚖️ 價值對照 (${items.length}/3)</span>
+            <span class="compare-dock-title">⚖️ 價值對照 (${items.length}/${MAX_COMPARE})</span>
             ${items.map(st => `
               <span class="compare-dock-chip">
                 <span>${esc(st.name)}</span>
@@ -2226,7 +2240,7 @@
           main.innerHTML = `
             <div>
               <h1 class="section-heading">${esc(s.exploreTitle)}</h1>
-              <p class="body-text" style="color:var(--muted);">${esc(s.exploreSub)} 點擊卡片右上角「+ 比較」即可並排對照服務內容與預算。</p>
+              <p class="body-text" style="color:var(--muted);">${esc(s.exploreSub)} 點擊卡片右上角「+ 比較」即可並排對照服務內容與預算（最多 ${MAX_COMPARE} 間）。</p>
               <div class="filter-bar">
                 <input class="input" style="min-width:180px; flex:1;" placeholder="搜尋工作室名稱、地區、類型..." value="${esc(filters.q)}" data-filter="q" />
                 <select class="select" data-filter="city">
@@ -3296,7 +3310,7 @@
         const suggestions = state.studios
           .filter(st => !selectedSet.has(st.id))
           .sort((a, b) => (a.category === baseCategory ? 0 : 1) - (b.category === baseCategory ? 0 : 1))
-          .slice(0, 6);
+          .slice(0, 8);
 
         const box = document.getElementById('modal-box');
         box.classList.remove('modal-box-sm');
@@ -3304,7 +3318,7 @@
         box.innerHTML = `
           <div class="modal-head">
             <div>
-              <strong class="section-heading">⚖️ 價值與服務並排對照 (${items.length}/3)</strong>
+              <strong class="section-heading">⚖️ 價值與服務並排對照 (${items.length}/${MAX_COMPARE})</strong>
             </div>
             <div class="modal-head-actions">
               <button type="button" class="btn btn-ivory btn-sm" data-action="clear-compare-in-modal">清空列表</button>
@@ -3316,8 +3330,19 @@
               💡 我們不做「最低價排行」：每間獨立工作室的價格皆反映用料來源、客製深度與投入時長，建議將「服務內容、時長、風格與地區」並排一起評估，挑出最契合你的手藝人。
             </div>
 
-            <div class="compare-scroll">
-              <div class="compare-grid cols-${Math.min(3, Math.max(1, items.length))}">
+            ${items.length >= 3
+              ? `<div class="compare-scroll-tools">
+                   <span class="sub-text" style="color:var(--muted);">若螢幕較窄無法一次看完 ${items.length} 間，可左右滑動或點擊箭頭切換：</span>
+                   <div class="compare-scroll-arrows">
+                     <button type="button" class="btn btn-ivory btn-sm" data-action="compare-scroll" data-dir="-1">◀ 往左看</button>
+                     <button type="button" class="btn btn-ivory btn-sm" data-action="compare-scroll" data-dir="1">往右看 ▶</button>
+                   </div>
+                 </div>`
+              : ''
+            }
+
+            <div class="compare-scroll" id="compare-scroll-area">
+              <div class="compare-grid cols-${Math.min(MAX_COMPARE, Math.max(1, items.length))}">
                 ${items.map((s) => {
                   const rate = getStudioDiscountRate(s);
                   const discOpt = getDiscountOption(rate);
@@ -3402,10 +3427,10 @@
               </div>
             </div>
 
-            ${items.length < 3 && suggestions.length > 0
+            ${items.length < MAX_COMPARE && suggestions.length > 0
               ? `<div class="compare-suggest-box">
                    <div class="sub-text" style="font-weight:700; color:var(--forest); margin-bottom:8px;">
-                     ＋ 再選 ${3 - items.length} 間工作室並排對照（已優先推薦同分類）：
+                     ＋ 還可以再加入 ${MAX_COMPARE - items.length} 間工作室並排對照（已優先推薦同分類）：
                    </div>
                    <div style="display:flex; flex-wrap:wrap; gap:8px;">
                      ${suggestions.map(st => `
@@ -3574,13 +3599,13 @@
           state.compareIds = state.compareIds.filter(x => x !== id);
           showToast('已從並排比較移除');
         } else {
-          if (state.compareIds.length >= 3) {
-            showToast('一次最多同時比較 3 間工作室，請先移除其中一間');
+          if (state.compareIds.length >= MAX_COMPARE) {
+            showToast(`一次最多同時比較 ${MAX_COMPARE} 間工作室，請先移除其中一間`);
             return false;
           }
           state.compareIds.push(id);
           const st = state.studios.find(x => x.id === id);
-          showToast(`已加入比較（${state.compareIds.length}/3）：${st ? st.name : ''}`);
+          showToast(`已加入比較（${state.compareIds.length}/${MAX_COMPARE}）：${st ? st.name : ''}`);
         }
         saveState();
         renderCompareDock();
@@ -3730,7 +3755,7 @@
         } else if (act === 'compare-saved') {
           const savedStudios = state.studios.filter(st => state.savedIds.indexOf(st.id) !== -1);
           if (savedStudios.length === 0) return;
-          state.compareIds = savedStudios.slice(0, 3).map(st => st.id);
+          state.compareIds = savedStudios.slice(0, MAX_COMPARE).map(st => st.id);
           saveState();
           renderCompareDock();
           renderFront();
@@ -3738,13 +3763,19 @@
         } else if (act === 'compare-add-in-modal') {
           const id = el.dataset.id;
           if (!Array.isArray(state.compareIds)) state.compareIds = [];
-          if (state.compareIds.length < 3 && state.compareIds.indexOf(id) === -1) {
+          if (state.compareIds.length < MAX_COMPARE && state.compareIds.indexOf(id) === -1) {
             state.compareIds.push(id);
             saveState();
             renderCompareDock();
             if (frontTab === 'explore') renderExploreResults();
             else if (frontTab === 'saved') renderFront();
             openCompareModal();
+          }
+        } else if (act === 'compare-scroll') {
+          const scroller = document.getElementById('compare-scroll-area');
+          if (scroller) {
+            const dir = Number(el.dataset.dir) || 1;
+            scroller.scrollBy({ left: dir * 260, behavior: 'smooth' });
           }
         } else if (act === 'compare-remove-in-modal') {
           const id = el.dataset.id;
@@ -3804,7 +3835,7 @@
               預約詢問：${esc(el.dataset.srv)}（${dealTxt}）
             </div>
             <form id="inquiry-form" class="stack" style="margin-top:0;" data-studio-id="${esc(el.dataset.id)}" data-service="${esc(savedServiceLabel)}" data-rate-label="${esc(rateLabel)}">
-            <div class="grid-2">
+              <div class="grid-2">
                 <div>
                   <label class="label">您的稱呼 *</label>
                   <input class="input" name="customerName" required placeholder="例如：林小姐" />
