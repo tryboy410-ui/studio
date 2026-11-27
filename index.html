@@ -50,7 +50,7 @@
       -webkit-font-smoothing: antialiased;
       padding-bottom: 76px;
     }
-    body.has-compare-dock { padding-bottom: 122px; }
+    body.has-compare-dock { padding-bottom: 84px; }
     @media (min-width: 768px) {
       body { padding-bottom: 32px; }
       body.has-compare-dock { padding-bottom: 96px; }
@@ -147,35 +147,20 @@
     }
     .bottom-nav button.active { color: var(--forest); font-weight: 700; }
 
-    /* 底部懸浮對照列（手機預設單行精簡、電腦完整展開） */
+    /* 底部懸浮對照列（手機為右下角迷你膠囊、電腦為底部完整展開列） */
     .compare-dock {
-      position: fixed; left: 50%; transform: translateX(-50%);
-      bottom: 68px; z-index: 28;
-      width: calc(100% - 16px); max-width: 980px;
-      background: rgba(255, 254, 250, 0.97);
-      backdrop-filter: blur(10px);
-      border: 1.5px solid var(--forest);
-      border-radius: 14px;
-      padding: 7px 11px;
-      box-shadow: 0 8px 24px rgba(34, 73, 55, 0.18);
-      display: flex; align-items: center; justify-content: space-between;
-      gap: 8px; flex-wrap: wrap;
+      position: fixed; right: 12px; bottom: 70px; left: auto; transform: none; z-index: 28;
+      width: auto; max-width: none;
+      background: var(--forest);
+      color: #fff;
+      border: 1.5px solid rgba(255, 255, 255, 0.28);
+      border-radius: 999px;
+      padding: 3px 4px;
+      box-shadow: 0 6px 20px rgba(34, 73, 55, 0.3);
+      display: inline-flex; align-items: center; gap: 2px;
     }
-    .compare-dock-toggle {
-      display: inline-flex; align-items: center; gap: 6px;
-      font-size: 12px; font-weight: 700; color: var(--forest);
-      white-space: nowrap; padding: 3px 0;
-    }
-    .compare-dock-caret {
-      font-size: 11px; font-weight: 600; color: var(--forest);
-      background: var(--sage); padding: 2px 7px; border-radius: 999px;
-    }
-    .compare-dock-chips {
-      display: none; align-items: center; gap: 6px; flex-wrap: wrap;
-      width: 100%; order: 3;
-      padding-top: 6px; border-top: 1px dashed var(--hairline);
-    }
-    .compare-dock-chips.is-open { display: flex; }
+    .compare-dock-title { display: none; }
+    .compare-dock-chips { display: none; }
     .compare-dock-chip {
       display: inline-flex; align-items: center; gap: 5px;
       background: var(--sage); color: var(--forest);
@@ -193,20 +178,49 @@
     }
     .compare-dock-remove:hover { background: var(--forest); color: #fff; }
     .compare-dock-actions {
-      display: flex; align-items: center; gap: 6px; flex-shrink: 0; margin-left: auto;
+      display: inline-flex; align-items: center; gap: 2px; flex-shrink: 0;
     }
+    .compare-dock-go {
+      background: transparent; color: #fff; padding: 5px 10px; border-radius: 999px;
+      font-size: 12px; font-weight: 700;
+    }
+    .compare-dock-clear {
+      background: rgba(255, 255, 255, 0.2); color: #fff; border: none;
+      width: 24px; height: 24px; padding: 0; border-radius: 50%; font-size: 11px;
+    }
+    .compare-dock .hide-mobile { display: none; }
+    .compare-dock .show-mobile { display: inline; }
     @media (min-width: 768px) {
       .compare-dock {
-        bottom: 20px; width: calc(100% - 24px);
+        left: 50%; right: auto; bottom: 20px; transform: translateX(-50%);
+        width: calc(100% - 24px); max-width: 980px;
+        background: rgba(255, 254, 250, 0.97);
+        backdrop-filter: blur(10px);
+        color: var(--ink);
+        border: 1.5px solid var(--forest);
         border-radius: 18px; padding: 10px 14px; gap: 10px;
+        box-shadow: 0 10px 28px rgba(34, 73, 55, 0.18);
+        display: flex; justify-content: space-between; flex-wrap: wrap;
       }
-      .compare-dock-toggle { cursor: default; }
-      .compare-dock-caret { display: none; }
+      .compare-dock-title {
+        display: inline-block; font-size: 12px; font-weight: 700;
+        color: var(--forest); white-space: nowrap;
+      }
       .compare-dock-chips {
-        display: flex; flex: 1; width: auto; min-width: 0; order: 0;
-        padding-top: 0; border-top: none;
+        display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+        flex: 1; min-width: 0;
       }
-      .compare-dock-actions { margin-left: 0; }
+      .compare-dock-actions { gap: 6px; }
+      .compare-dock-go {
+        background: var(--forest); color: #fff; padding: 6px 12px;
+      }
+      .compare-dock-clear {
+        order: -1;
+        background: var(--ivory); color: var(--ink); border: 1px solid var(--hairline);
+        width: auto; height: auto; padding: 6px 11px; border-radius: 999px; font-size: 12px;
+      }
+      .compare-dock .hide-mobile { display: inline; }
+      .compare-dock .show-mobile { display: none; }
     }
 
     /* 版面容器 */
@@ -1505,7 +1519,7 @@
           }
         ]
       };
-      let state = loadState();
+       let state = loadState();
       recordPageView();
 
       let isAdminAuthed = getSessionAuth();
@@ -1522,7 +1536,6 @@
       let filters = { q: '', city: '全部', category: '全部', style: '全部', budget: '全部' };
       let collabFilters = { q: '', city: '全部', tag: '全部' };
       let lastHandledHash = '';
-      let compareDockExpanded = false;
       let pendingAdminPrompt = false;
       let backdropMouseDownOnSelf = false;
       let logoTapCount = 0;
@@ -2063,7 +2076,6 @@
         const items = getCompareStudios();
 
         if (viewMode !== 'front' || items.length === 0) {
-          compareDockExpanded = false;
           dock.classList.add('hidden');
           dock.innerHTML = '';
           document.body.classList.remove('has-compare-dock');
@@ -2073,11 +2085,8 @@
         document.body.classList.add('has-compare-dock');
         dock.classList.remove('hidden');
         dock.innerHTML = `
-          <button type="button" class="compare-dock-toggle" data-action="toggle-dock-expand" title="展開或收合已選名單">
-            <span>⚖️ 已選 ${items.length}/${MAX_COMPARE} 間</span>
-            <span class="compare-dock-caret">${compareDockExpanded ? '收合 ▴' : '名單 ▾'}</span>
-          </button>
-          <div class="compare-dock-chips ${compareDockExpanded ? 'is-open' : ''}">
+          <span class="compare-dock-title">⚖️ 價值對照 (${items.length}/${MAX_COMPARE})</span>
+          <div class="compare-dock-chips">
             ${items.map(st => `
               <span class="compare-dock-chip">
                 <span>${esc(st.name)}</span>
@@ -2086,9 +2095,13 @@
             `).join('')}
           </div>
           <div class="compare-dock-actions">
-            <button type="button" class="btn btn-ivory btn-sm" data-action="clear-compare">清空</button>
-            <button type="button" class="btn btn-forest btn-sm" data-action="open-compare">
-              ${items.length >= 2 ? '開始比較 →' : '查看 / 新增'}
+            <button type="button" class="btn btn-sm compare-dock-go" data-action="open-compare">
+              <span class="hide-mobile">${items.length >= 2 ? '開始比較 →' : '查看 / 新增'}</span>
+              <span class="show-mobile">⚖️ 比較 (${items.length}/${MAX_COMPARE})</span>
+            </button>
+            <button type="button" class="btn btn-sm compare-dock-clear" data-action="clear-compare" title="清空比較清單">
+              <span class="hide-mobile">清空</span>
+              <span class="show-mobile">✕</span>
             </button>
           </div>
         `;
@@ -3767,14 +3780,8 @@
             el.classList.toggle('btn-ivory', !isNow);
             el.textContent = isNow ? '✓ 比較中' : '+ 加入比較';
           }
-        } else if (act === 'toggle-dock-expand') {
-          if (window.innerWidth < 768) {
-            compareDockExpanded = !compareDockExpanded;
-            renderCompareDock();
-          }
         } else if (act === 'clear-compare') {
           state.compareIds = [];
-          compareDockExpanded = false;
           saveState();
           renderCompareDock();
           if (frontTab === 'explore') renderExploreResults();
@@ -3818,7 +3825,6 @@
           else openCompareModal();
         } else if (act === 'clear-compare-in-modal') {
           state.compareIds = [];
-          compareDockExpanded = false;
           saveState();
           renderCompareDock();
           if (frontTab === 'explore') renderExploreResults();
